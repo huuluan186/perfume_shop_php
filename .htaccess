@@ -1,0 +1,29 @@
+RewriteEngine On
+RewriteBase /perfume_shop_php/
+
+# Prevent directory listing
+Options -Indexes
+
+# Redirect to HTTPS (optional, uncomment if using HTTPS)
+# RewriteCond %{HTTPS} off
+# RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Remove .php extension
+# RewriteCond %{REQUEST_FILENAME} !-d
+# RewriteCond %{REQUEST_FILENAME}\.php -f
+# RewriteRule ^(.*)$ $1.php [L]
+
+# Custom error pages (optional)
+ErrorDocument 404 /perfume_shop_php/404.php
+ErrorDocument 500 /perfume_shop_php/500.php
+
+# Protect config files
+<FilesMatch "^(config\.php|database\.php)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Allow access to assets
+<FilesMatch "\.(css|js|jpg|jpeg|png|gif|ico|svg|woff|woff2|ttf|eot)$">
+    Header set Cache-Control "max-age=2592000, public"
+</FilesMatch>
