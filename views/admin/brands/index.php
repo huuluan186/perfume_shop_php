@@ -19,7 +19,7 @@ $total_brands = $brandModel->count();
 $pagination = paginate($total_brands, $page, $limit);
 
 $page_title = "Quản lý thương hiệu";
-include __DIR__ . '/../../layout/header.php';
+include __DIR__ . '/../layout/header.php';
 ?>
 
 <div class="container-fluid my-4">
@@ -120,4 +120,4 @@ $(document).on('click', '.delete-brand', function() {
 });
 </script>
 
-<?php include __DIR__ . '/../../layout/footer.php'; ?>
+<?php include __DIR__ . '/../layout/footer.php'; ?>

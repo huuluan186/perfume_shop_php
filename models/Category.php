@@ -59,6 +59,14 @@ class Category {
         return $stmt->execute();
     }
     
+    // Đếm số lượng danh mục
+    public function count() {
+        $query = "SELECT COUNT(*) as total FROM {$this->table}";
+        $result = $this->conn->query($query);
+        $row = $result->fetch_assoc();
+        return $row['total'];
+    }
+    
     public function __destruct() {
         if ($this->conn) {
             $this->conn->close();

@@ -12,7 +12,13 @@ class Brand {
     
     // Lấy tất cả thương hiệu
     public function getAll($limit = null, $offset = 0) {
-        $query = "SELECT * FROM {$this->table} WHERE ngay_xoa IS NULL ORDER BY ten_thuong_hieu ASC";
+        $query = "SELECT th.*, 
+                  COALESCE(COUNT(sp.id), 0) as product_count
+                  FROM {$this->table} th
+                  LEFT JOIN san_pham sp ON th.id = sp.id_thuong_hieu AND sp.ngay_xoa IS NULL
+                  WHERE th.ngay_xoa IS NULL
+                  GROUP BY th.id
+                  ORDER BY th.ten_thuong_hieu ASC";
         
         if ($limit) {
             $query .= " LIMIT ? OFFSET ?";

@@ -42,7 +42,7 @@ include __DIR__ . '/../layout/header.php';
                                 <?php foreach ($cart as $key => $item): ?>
                                 <tr data-cart-key="<?php echo $key; ?>">
                                     <td>
-                                        <img src="<?php echo UPLOAD_URL . $item['image']; ?>" 
+                                        <img src="<?php echo ASSETS_URL . urldecode($item['image']); ?>" 
                                              class="img-thumbnail" style="width: 60px; height: 60px; object-fit: cover;"
                                              onerror="this.src='<?php echo ASSETS_URL; ?>images/placeholder.jpg'">
                                     </td>
@@ -52,15 +52,18 @@ include __DIR__ . '/../layout/header.php';
                                     </td>
                                     <td><?php echo format_currency($item['price']); ?></td>
                                     <td>
-                                        <div class="input-group" style="width: 120px;">
-                                            <button class="btn btn-sm btn-outline-secondary update-cart-quantity" 
-                                                    data-action="decrease" data-cart-key="<?php echo $key; ?>">
+                                        <div class="d-flex align-items-center justify-content-center" style="gap: 0.3rem;">
+                                            <button class="btn btn-sm btn-outline-primary update-cart-quantity" 
+                                                    data-action="decrease" data-cart-key="<?php echo $key; ?>"
+                                                    style="width: 32px; height: 32px; padding: 0;">
                                                 <i class="fas fa-minus"></i>
                                             </button>
-                                            <input type="number" class="form-control form-control-sm text-center cart-quantity" 
-                                                   value="<?php echo $item['quantity']; ?>" min="1" readonly>
-                                            <button class="btn btn-sm btn-outline-secondary update-cart-quantity" 
-                                                    data-action="increase" data-cart-key="<?php echo $key; ?>">
+                                            <input type="text" class="form-control form-control-sm text-center fw-bold cart-quantity" 
+                                                   value="<?php echo $item['quantity']; ?>" readonly
+                                                   style="width: 60px; background-color: #fff !important; color: #000 !important; border: 1px solid #dee2e6;">
+                                            <button class="btn btn-sm btn-outline-primary update-cart-quantity" 
+                                                    data-action="increase" data-cart-key="<?php echo $key; ?>"
+                                                    style="width: 32px; height: 32px; padding: 0;">
                                                 <i class="fas fa-plus"></i>
                                             </button>
                                         </div>
@@ -125,43 +128,87 @@ include __DIR__ . '/../layout/header.php';
 </div>
 
 <script>
-$(document).on('click', '.update-cart-quantity', function() {
-    const cartKey = $(this).data('cart-key');
-    const action = $(this).data('action');
+// Update cart quantity - tương tự trang chi tiết sản phẩm
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle all increase buttons
+    document.querySelectorAll('.update-cart-quantity[data-action="increase"]').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            const cartKey = this.getAttribute('data-cart-key');
+            const row = this.closest('tr');
+            const input = row.querySelector('.cart-quantity');
+            
+            $.ajax({
+                url: 'update.php',
+                method: 'POST',
+                data: { cart_key: cartKey, action: 'increase' },
+                dataType: 'json',
+                success: function(response) {
+                    if (response.success) {
+                        location.reload();
+                    } else {
+                        showNotification('error', response.message);
+                    }
+                }
+            });
+        });
+    });
     
-    $.ajax({
-        url: 'update.php',
-        method: 'POST',
-        data: { cart_key: cartKey, action: action },
-        dataType: 'json',
-        success: function(response) {
-            if (response.success) {
-                location.reload();
-            } else {
-                showNotification('error', response.message);
+    // Handle all decrease buttons
+    document.querySelectorAll('.update-cart-quantity[data-action="decrease"]').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            const cartKey = this.getAttribute('data-cart-key');
+            const row = this.closest('tr');
+            const input = row.querySelector('.cart-quantity');
+            const currentQty = parseInt(input.value) || 1;
+            
+            if (currentQty <= 1) {
+                showNotification('error', 'Số lượng tối thiểu là 1');
+                return;
             }
-        }
+            
+            $.ajax({
+                url: 'update.php',
+                method: 'POST',
+                data: { cart_key: cartKey, action: 'decrease' },
+                dataType: 'json',
+                success: function(response) {
+                    if (response.success) {
+                        location.reload();
+                    } else {
+                        showNotification('error', response.message);
+                    }
+                }
+            });
+        });
     });
 });
 
-$(document).on('click', '.remove-from-cart', function() {
-    if (!confirm('Bạn có chắc muốn xóa sản phẩm này?')) return;
-    
-    const cartKey = $(this).data('cart-key');
-    
-    $.ajax({
-        url: 'remove.php',
-        method: 'POST',
-        data: { cart_key: cartKey },
-        dataType: 'json',
-        success: function(response) {
-            if (response.success) {
-                showNotification('success', response.message);
-                location.reload();
-            } else {
-                showNotification('error', response.message);
-            }
-        }
+// Remove from cart
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.remove-from-cart').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            if (!confirm('Bạn có chắc muốn xóa sản phẩm này?')) return;
+            
+            const cartKey = this.getAttribute('data-cart-key');
+            
+            $.ajax({
+                url: 'remove.php',
+                method: 'POST',
+                data: { cart_key: cartKey },
+                dataType: 'json',
+                success: function(response) {
+                    if (response.success) {
+                        showNotification('success', response.message);
+                        location.reload();
+                    } else {
+                        showNotification('error', response.message);
+                        if (response.debug) {
+                            console.log('Debug info:', response.debug);
+                        }
+                    }
+                }
+            });
+        });
     });
 });
 </script>

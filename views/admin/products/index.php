@@ -34,7 +34,7 @@ $categories = $categoryModel->getAll();
 $brands = $brandModel->getAll();
 
 $page_title = "Quản lý sản phẩm";
-include __DIR__ . '/../../layout/header.php';
+include __DIR__ . '/../layout/header.php';
 ?>
 
 <div class="container-fluid my-4">
@@ -110,7 +110,7 @@ include __DIR__ . '/../../layout/header.php';
                         <tr>
                             <td><strong>#<?php echo $product['id']; ?></strong></td>
                             <td>
-                                <img src="<?php echo UPLOAD_URL . $product['duong_dan_hinh_anh']; ?>" 
+                                <img src="<?php echo ASSETS_URL . urldecode($product['duong_dan_hinh_anh']); ?>" 
                                      class="rounded" style="width: 60px; height: 60px; object-fit: cover;"
                                      onerror="this.src='<?php echo ASSETS_URL; ?>images/placeholder.jpg'">
                             </td>
@@ -201,4 +201,4 @@ $(document).on('click', '.delete-product', function() {
 });
 </script>
 
-<?php include __DIR__ . '/../../layout/footer.php'; ?>
+<?php include __DIR__ . '/../layout/footer.php'; ?>

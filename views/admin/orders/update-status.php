@@ -16,9 +16,9 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 $order_id = intval($_POST['order_id'] ?? 0);
-$status = clean_input($_POST['status'] ?? '');
+$status = intval($_POST['status'] ?? 0);
 
-if ($order_id <= 0 || empty($status)) {
+if ($order_id <= 0 || $status < 0) {
     echo json_encode(['success' => false, 'message' => 'Dữ liệu không hợp lệ!']);
     exit;
 }

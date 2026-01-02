@@ -25,7 +25,7 @@
             <div class="container">
                 <div class="row align-items-center">
                     <div class="col-md-4">
-                        <small><i class="fas fa-phone me-2"></i>Hotline: 1900 xxxx</small>
+                        <small><i class="fas fa-phone me-2"></i>Hotline: 1900 1836</small>
                         <small class="ms-3"><i class="fas fa-envelope me-2"></i>contact@perfumeshop.com</small>
                     </div>
                     <div class="col-md-4 text-center">

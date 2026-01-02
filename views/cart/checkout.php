@@ -27,7 +27,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $ten_nguoi_nhan = clean_input($_POST['ten_nguoi_nhan'] ?? '');
     $sdt_nguoi_nhan = clean_input($_POST['sdt_nguoi_nhan'] ?? '');
     $dia_chi_giao_hang = clean_input($_POST['dia_chi_giao_hang'] ?? '');
-    $ghi_chu = clean_input($_POST['ghi_chu'] ?? '');
     $phuong_thuc_thanh_toan = clean_input($_POST['phuong_thuc_thanh_toan'] ?? '');
     
     if (empty($ten_nguoi_nhan)) $errors[] = 'Vui lòng nhập tên người nhận!';
@@ -39,13 +38,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $orderModel = new Order();
         $order_id = $orderModel->create(
             $_SESSION['user_id'],
-            $cart,
-            $total,
             $ten_nguoi_nhan,
             $sdt_nguoi_nhan,
             $dia_chi_giao_hang,
-            $ghi_chu,
-            $phuong_thuc_thanh_toan
+            $cart,
+            $total
         );
         
         if ($order_id) {
@@ -96,11 +93,6 @@ include __DIR__ . '/../layout/header.php';
                                 <label class="form-label">Địa chỉ giao hàng <span class="text-danger">*</span></label>
                                 <textarea class="form-control" name="dia_chi_giao_hang" rows="3" required></textarea>
                             </div>
-                            <div class="col-md-12 mb-3">
-                                <label class="form-label">Ghi chú</label>
-                                <textarea class="form-control" name="ghi_chu" rows="2" 
-                                          placeholder="Ghi chú về đơn hàng (tùy chọn)"></textarea>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -110,20 +102,13 @@ include __DIR__ . '/../layout/header.php';
                         <h5 class="mb-0 fw-bold">Phương thức thanh toán</h5>
                     </div>
                     <div class="card-body">
-                        <div class="form-check mb-3">
+                        <div class="form-check">
                             <input class="form-check-input" type="radio" name="phuong_thuc_thanh_toan" 
-                                   id="cod" value="COD" checked>
+                                   id="cod" value="COD" checked required>
                             <label class="form-check-label" for="cod">
                                 <i class="fas fa-money-bill-wave text-success me-2"></i>
                                 <strong>Thanh toán khi nhận hàng (COD)</strong>
-                            </label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="phuong_thuc_thanh_toan" 
-                                   id="bank" value="Chuyển khoản">
-                            <label class="form-check-label" for="bank">
-                                <i class="fas fa-university text-primary me-2"></i>
-                                <strong>Chuyển khoản ngân hàng</strong>
+                                <p class="text-muted small mb-0 mt-1">Quý khách sẽ thanh toán bằng tiền mặt khi nhận hàng từ nhân viên giao hàng.</p>
                             </label>
                         </div>
                     </div>
@@ -139,7 +124,7 @@ include __DIR__ . '/../layout/header.php';
                         <div class="order-items mb-3" style="max-height: 200px; overflow-y: auto;">
                             <?php foreach ($cart as $item): ?>
                             <div class="d-flex mb-2 pb-2 border-bottom">
-                                <img src="<?php echo UPLOAD_URL . $item['image']; ?>" 
+                                <img src="<?php echo ASSETS_URL . urldecode($item['image']); ?>" 
                                      style="width: 50px; height: 50px; object-fit: cover;" class="rounded me-2"
                                      onerror="this.src='<?php echo ASSETS_URL; ?>images/placeholder.jpg'">
                                 <div class="flex-grow-1">

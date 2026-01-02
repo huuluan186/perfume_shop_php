@@ -33,12 +33,14 @@ include __DIR__ . '/../layout/header.php';
             <div class="product-card card h-100 border-0 shadow-sm">
                 <div class="position-relative">
                     <button class="btn btn-sm btn-danger position-absolute top-0 end-0 m-2 remove-from-wishlist" 
-                            data-product-id="<?php echo $item['id']; ?>" style="z-index: 10;">
-                        <i class="fas fa-times"></i>
+                            data-product-id="<?php echo $item['id']; ?>" 
+                            style="z-index: 10; border-radius: 50%; width: 36px; height: 36px; padding: 0;"
+                            title="Xóa khỏi yêu thích">
+                        <i class="fas fa-heart"></i>
                     </button>
                 </div>
                 <div class="product-image position-relative overflow-hidden">
-                    <img src="<?php echo UPLOAD_URL . $item['duong_dan_hinh_anh']; ?>" 
+                    <img src="<?php echo ASSETS_URL . urldecode($item['duong_dan_hinh_anh']); ?>" 
                          class="card-img-top" alt="<?php echo htmlspecialchars($item['ten_san_pham']); ?>"
                          onerror="this.src='<?php echo ASSETS_URL; ?>images/placeholder.jpg'">
                     <div class="product-overlay">

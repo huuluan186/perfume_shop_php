@@ -19,7 +19,7 @@ $total_users = $userModel->count();
 $pagination = paginate($total_users, $page, $limit);
 
 $page_title = "Quản lý người dùng";
-include __DIR__ . '/../../layout/header.php';
+include __DIR__ . '/../layout/header.php';
 ?>
 
 <div class="container-fluid my-4">
@@ -129,4 +129,4 @@ $(document).on('click', '.toggle-status', function() {
 });
 </script>
 
-<?php include __DIR__ . '/../../layout/footer.php'; ?>
+<?php include __DIR__ . '/../layout/footer.php'; ?>

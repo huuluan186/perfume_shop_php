@@ -19,7 +19,17 @@ $(document).ready(function() {
     $(document).on('click', '.add-to-cart', function(e) {
         e.preventDefault();
         const productId = $(this).data('product-id');
-        const quantity = $(this).data('quantity') || 1;
+        
+        // Lấy số lượng từ input nếu có (trang detail), nếu không thì từ data-quantity, nếu không có thì mặc định là 1
+        let quantity = 1;
+        const quantityInput = document.getElementById('productQuantity');
+        if (quantityInput) {
+            quantity = parseInt(quantityInput.value) || 1;
+        } else if ($(this).data('quantity')) {
+            quantity = $(this).data('quantity');
+        }
+        
+        console.log('Adding to cart - Product ID:', productId, 'Quantity:', quantity);
         
         $.ajax({
             url: baseUrl + 'views/cart/add.php',
@@ -122,35 +132,6 @@ $(document).ready(function() {
                 showNotification('error', 'Có lỗi xảy ra!');
             }
         });
-    });
-
-    // Remove from cart
-    $(document).on('click', '.remove-from-cart', function(e) {
-        e.preventDefault();
-        const productId = $(this).data('product-id');
-        
-        if (confirm('Bạn có chắc muốn xóa sản phẩm này khỏi giỏ hàng?')) {
-            $.ajax({
-                url: baseUrl + 'views/cart/remove.php',
-                method: 'POST',
-                data: {
-                    product_id: productId
-                },
-                dataType: 'json',
-                success: function(response) {
-                    if (response.success) {
-                        showNotification('success', response.message);
-                        updateCartCount();
-                        location.reload();
-                    } else {
-                        showNotification('error', response.message);
-                    }
-                },
-                error: function() {
-                    showNotification('error', 'Có lỗi xảy ra!');
-                }
-            });
-        }
     });
 
     // Product image gallery

@@ -18,7 +18,7 @@ if (!$product) {
 }
 
 // Lấy sản phẩm liên quan
-$related_products = $productModel->getRelated($product_id, $product['danh_muc_id'], 4);
+$related_products = $productModel->getRelated($product_id, $product['id_danh_muc'] ?? 0, 4);
 
 // Kiểm tra wishlist
 $is_in_wishlist = false;
@@ -31,7 +31,7 @@ $page_title = $product['ten_san_pham'];
 include __DIR__ . '/../layout/header.php';
 ?>
 
-<div class="container my-5">
+<div class="container my-4">
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="<?php echo BASE_URL; ?>">Trang chủ</a></li>
@@ -40,79 +40,109 @@ include __DIR__ . '/../layout/header.php';
         </ol>
     </nav>
     
-    <div class="row">
+    <div class="row mt-4">
         <div class="col-lg-5">
             <div class="product-image-gallery">
                 <div class="main-image mb-3">
-                    <img src="<?php echo UPLOAD_URL . $product['duong_dan_hinh_anh']; ?>" 
+                    <img src="<?php echo ASSETS_URL . urldecode($product['duong_dan_hinh_anh']); ?>" 
                          class="img-fluid rounded shadow" id="mainProductImage"
                          alt="<?php echo htmlspecialchars($product['ten_san_pham']); ?>"
-                         onerror="this.src='<?php echo ASSETS_URL; ?>images/placeholder.jpg'">
+                         onerror="this.src='<?php echo ASSETS_URL; ?>images/placeholder.jpg'"
+                         style="width: 100%; height: auto; max-height: 500px; object-fit: cover;">
                 </div>
             </div>
         </div>
         
         <div class="col-lg-7">
             <div class="product-details">
+                <?php if (isset($product['thuong_hieu_id']) && isset($product['ten_thuong_hieu'])): ?>
                 <p class="text-muted mb-2">
                     <a href="<?php echo BASE_URL; ?>views/brands/detail.php?id=<?php echo $product['thuong_hieu_id']; ?>" 
                        class="text-decoration-none">
                         <?php echo htmlspecialchars($product['ten_thuong_hieu']); ?>
                     </a>
                 </p>
+                <?php endif; ?>
                 <h2 class="fw-bold mb-3"><?php echo htmlspecialchars($product['ten_san_pham']); ?></h2>
                 
-                <div class="price-section mb-4">
-                    <h3 class="text-primary fw-bold mb-0"><?php echo format_currency($product['gia_ban']); ?></h3>
+                <div class="price-section mb-2">
+                    <h3 class="text-primary fw-bold mb-0 d-inline-block me-3"><?php echo format_currency($product['gia_ban']); ?></h3>
+                    <?php if ($product['so_luong_ton'] > 0): ?>
+                        <span class="badge bg-success fs-6">Còn hàng (<?php echo $product['so_luong_ton']; ?>)</span>
+                    <?php else: ?>
+                        <span class="badge bg-danger fs-6">Hết hàng</span>
+                    <?php endif; ?>
                 </div>
                 
-                <div class="product-info mb-4">
-                    <table class="table table-borderless">
+                <div class="product-info mb-4 mt-4">
+                    <table class="table table-borderless" style="font-size: 1.05rem;">
                         <tr>
-                            <td width="150"><strong>Danh mục:</strong></td>
+                            <td width="150" style="white-space: nowrap;"><strong>Danh mục:</strong></td>
                             <td><?php echo htmlspecialchars($product['ten_danh_muc']); ?></td>
                         </tr>
+                        <?php if (isset($product['dung_tich_ml']) && !empty($product['dung_tich_ml'])): ?>
                         <tr>
-                            <td><strong>Dung tích:</strong></td>
-                            <td><?php echo htmlspecialchars($product['dung_tich']); ?></td>
+                            <td style="white-space: nowrap;"><strong>Dung tích:</strong></td>
+                            <td><?php echo htmlspecialchars($product['dung_tich_ml']); ?> ml</td>
                         </tr>
+                        <?php endif; ?>
+                        <?php if (isset($product['gioi_tinh_phu_hop']) && !empty($product['gioi_tinh_phu_hop'])): ?>
                         <tr>
-                            <td><strong>Giới tính:</strong></td>
-                            <td><?php echo ucfirst($product['gioi_tinh']); ?></td>
+                            <td style="white-space: nowrap;"><strong>Giới tính:</strong></td>
+                            <td><?php echo ucfirst($product['gioi_tinh_phu_hop']); ?></td>
                         </tr>
+                        <?php endif; ?>
+                        <?php if (isset($product['nhom_huomg']) && !empty($product['nhom_huomg'])): ?>
                         <tr>
-                            <td><strong>Tình trạng:</strong></td>
-                            <td>
-                                <?php if ($product['so_luong_ton'] > 0): ?>
-                                    <span class="badge bg-success">Còn hàng (<?php echo $product['so_luong_ton']; ?>)</span>
-                                <?php else: ?>
-                                    <span class="badge bg-danger">Hết hàng</span>
-                                <?php endif; ?>
-                            </td>
+                            <td style="white-space: nowrap; vertical-align: top;"><strong>Nhóm hương:</strong></td>
+                            <td><?php echo htmlspecialchars($product['nhom_huomg']); ?></td>
                         </tr>
+                        <?php endif; ?>
+                        <?php if (isset($product['phong_cach']) && !empty($product['phong_cach'])): ?>
+                        <tr>
+                            <td style="white-space: nowrap;"><strong>Phong cách:</strong></td>
+                            <td><?php echo htmlspecialchars($product['phong_cach']); ?></td>
+                        </tr>
+                        <?php endif; ?>
+                        <?php if (isset($product['xuat_xu']) && !empty($product['xuat_xu'])): ?>
+                        <tr>
+                            <td style="white-space: nowrap;"><strong>Xuất xứ:</strong></td>
+                            <td><?php echo htmlspecialchars($product['xuat_xu']); ?></td>
+                        </tr>
+                        <?php endif; ?>
+                        <?php if (isset($product['nam_phat_hanh']) && !empty($product['nam_phat_hanh'])): ?>
+                        <tr>
+                            <td style="white-space: nowrap;"><strong>Năm phát hành:</strong></td>
+                            <td><?php echo htmlspecialchars($product['nam_phat_hanh']); ?></td>
+                        </tr>
+                        <?php endif; ?>
                     </table>
                 </div>
                 
                 <?php if ($product['so_luong_ton'] > 0): ?>
                 <div class="quantity-section mb-4">
-                    <label class="form-label fw-bold">Số lượng:</label>
-                    <div class="input-group" style="width: 150px;">
-                        <button class="btn btn-outline-secondary" type="button" onclick="decreaseQuantity()">
+                    <label class="form-label fw-bold mb-2">Số lượng:</label>
+                    <div class="input-group" style="width: 160px;">
+                        <button class="btn btn-outline-primary" type="button" id="decreaseBtn">
                             <i class="fas fa-minus"></i>
                         </button>
-                        <input type="number" class="form-control text-center" id="productQuantity" 
-                               value="1" min="1" max="<?php echo $product['so_luong_ton']; ?>">
-                        <button class="btn btn-outline-secondary" type="button" onclick="increaseQuantity(<?php echo $product['so_luong_ton']; ?>)">
+                        <input type="text" class="form-control text-center" id="productQuantity" 
+                               value="1" readonly
+                               style="font-size: 1.1rem; font-weight: bold; background-color: #fff !important; color: #000 !important; -webkit-appearance: none;">
+                        <button class="btn btn-outline-primary" type="button" id="increaseBtn">
                             <i class="fas fa-plus"></i>
                         </button>
                     </div>
                 </div>
                 
                 <div class="action-buttons mb-4">
-                    <button class="btn btn-primary btn-lg px-5 me-2 add-to-cart" data-product-id="<?php echo $product['id']; ?>">
+                    <button class="btn btn-primary btn-lg px-4 me-2 add-to-cart" data-product-id="<?php echo $product['id']; ?>">
                         <i class="fas fa-shopping-cart me-2"></i>Thêm vào giỏ
                     </button>
-                    <button class="btn btn-outline-danger btn-lg toggle-wishlist" 
+                    <button class="btn btn-success btn-lg px-4 me-2 buy-now" data-product-id="<?php echo $product['id']; ?>">
+                        <i class="fas fa-bolt me-2"></i>Mua ngay
+                    </button>
+                    <button class="btn <?php echo $is_in_wishlist ? 'btn-danger' : 'btn-outline-danger'; ?> btn-lg toggle-wishlist" 
                             data-product-id="<?php echo $product['id']; ?>"
                             data-in-wishlist="<?php echo $is_in_wishlist ? '1' : '0'; ?>">
                         <i class="<?php echo $is_in_wishlist ? 'fas' : 'far'; ?> fa-heart"></i>
@@ -123,11 +153,16 @@ include __DIR__ . '/../layout/header.php';
                     <i class="fas fa-exclamation-triangle me-2"></i>Sản phẩm tạm thời hết hàng
                 </div>
                 <?php endif; ?>
-                
-                <div class="product-description">
-                    <h5 class="fw-bold mb-3">Mô tả sản phẩm</h5>
-                    <p><?php echo nl2br(htmlspecialchars($product['mo_ta'] ?? 'Đang cập nhật...')); ?></p>
-                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Mô tả sản phẩm -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="product-description">
+                <h5 class="fw-bold mb-3">Mô tả sản phẩm</h5>
+                <div class="text-muted text-justify"><?php echo nl2br($product['mo_ta'] ?? 'Đang cập nhật...'); ?></div>
             </div>
         </div>
     </div>
@@ -141,7 +176,7 @@ include __DIR__ . '/../layout/header.php';
             <div class="col-lg-3 col-md-6">
                 <div class="product-card card h-100 border-0 shadow-sm">
                     <div class="product-image position-relative overflow-hidden">
-                        <img src="<?php echo UPLOAD_URL . $rp['duong_dan_hinh_anh']; ?>" 
+                        <img src="<?php echo ASSETS_URL . urldecode($rp['duong_dan_hinh_anh']); ?>" 
                              class="card-img-top" alt="<?php echo htmlspecialchars($rp['ten_san_pham']); ?>"
                              onerror="this.src='<?php echo ASSETS_URL; ?>images/placeholder.jpg'">
                         <div class="product-overlay">
@@ -170,41 +205,63 @@ include __DIR__ . '/../layout/header.php';
 </div>
 
 <script>
-function increaseQuantity(max) {
-    const input = document.getElementById('productQuantity');
-    const currentValue = parseInt(input.value);
-    if (currentValue < max) {
-        input.value = currentValue + 1;
-    }
-}
+const maxQuantity = <?php echo $product['so_luong_ton'] ?? 999; ?>;
 
-function decreaseQuantity() {
-    const input = document.getElementById('productQuantity');
-    const currentValue = parseInt(input.value);
-    if (currentValue > 1) {
-        input.value = currentValue - 1;
-    }
-}
-
-// Override add to cart to include quantity
-$(document).on('click', '.add-to-cart', function() {
-    const productId = $(this).data('product-id');
-    const quantity = $('#productQuantity').val();
+// Quantity controls
+document.addEventListener('DOMContentLoaded', function() {
+    const quantityInput = document.getElementById('productQuantity');
+    const increaseBtn = document.getElementById('increaseBtn');
+    const decreaseBtn = document.getElementById('decreaseBtn');
     
-    $.ajax({
-        url: '<?php echo BASE_URL; ?>views/cart/add.php',
-        method: 'POST',
-        data: { product_id: productId, quantity: quantity },
-        dataType: 'json',
-        success: function(response) {
-            if (response.success) {
-                showNotification('success', response.message);
-                updateCartCount();
-            } else {
-                showNotification('error', response.message);
+    if (increaseBtn) {
+        increaseBtn.addEventListener('click', function() {
+            let current = parseInt(quantityInput.value) || 1;
+            if (current < maxQuantity) {
+                quantityInput.value = current + 1;
             }
-        }
-    });
+        });
+    }
+    
+    if (decreaseBtn) {
+        decreaseBtn.addEventListener('click', function() {
+            let current = parseInt(quantityInput.value) || 1;
+            if (current > 1) {
+                quantityInput.value = current - 1;
+            }
+        });
+    }
+    
+    // Buy now button - using direct selector instead of delegation
+    const buyNowBtn = document.querySelector('.buy-now');
+    if (buyNowBtn) {
+        buyNowBtn.addEventListener('click', function() {
+            console.log('Buy now clicked!');
+            const productId = this.getAttribute('data-product-id');
+            const quantity = document.getElementById('productQuantity').value || 1;
+            
+            console.log('Product ID:', productId, 'Quantity:', quantity);
+            
+            $.ajax({
+                url: '<?php echo BASE_URL; ?>views/cart/add.php',
+                method: 'POST',
+                data: { product_id: productId, quantity: quantity },
+                dataType: 'json',
+                success: function(response) {
+                    console.log('Response:', response);
+                    if (response.success) {
+                        console.log('Redirecting to checkout...');
+                        window.location.href = '<?php echo BASE_URL; ?>views/cart/checkout.php';
+                    } else {
+                        showNotification('error', response.message);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('AJAX Error:', status, error);
+                    showNotification('error', 'Có lỗi xảy ra. Vui lòng thử lại!');
+                }
+            });
+        });
+    }
 });
 </script>
 

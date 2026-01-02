@@ -34,9 +34,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             $_SESSION['success'] = 'Đăng nhập thành công!';
             
-            // Redirect về trang trước đó hoặc trang chủ
-            $redirect = $_GET['redirect'] ?? (is_admin() ? 'views/admin/dashboard.php' : 'index.php');
-            redirect($redirect);
+            // Nếu là admin thì redirect về admin dashboard, ngược lại về trang chủ
+            if ($user['vai_tro'] === 'admin') {
+                redirect('views/admin/dashboard.php');
+            } else {
+                $redirect = $_GET['redirect'] ?? 'index.php';
+                redirect($redirect);
+            }
         } else {
             $errors[] = 'Email hoặc mật khẩu không đúng!';
         }

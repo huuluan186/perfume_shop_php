@@ -86,7 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $page_title = "Sửa sản phẩm";
-include __DIR__ . '/../../layout/header.php';
+include __DIR__ . '/../layout/header.php';
 ?>
 
 <div class="container-fluid my-4">
@@ -194,7 +194,7 @@ include __DIR__ . '/../../layout/header.php';
                             <small class="text-muted">Để trống nếu không thay đổi</small>
                         </div>
                         <div class="text-center">
-                            <img id="imagePreview" src="<?php echo UPLOAD_URL . $product['duong_dan_hinh_anh']; ?>" 
+                            <img id="imagePreview" src="<?php echo ASSETS_URL . urldecode($product['duong_dan_hinh_anh']); ?>" 
                                  class="img-fluid rounded shadow-sm" style="max-height: 300px;"
                                  onerror="this.src='<?php echo ASSETS_URL; ?>images/placeholder.jpg'">
                         </div>
@@ -229,4 +229,4 @@ function previewImage(input) {
 }
 </script>
 
-<?php include __DIR__ . '/../../layout/footer.php'; ?>
+<?php include __DIR__ . '/../layout/footer.php'; ?>

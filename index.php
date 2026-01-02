@@ -103,7 +103,7 @@ include __DIR__ . '/views/layout/header.php';
             <div class="col-lg-3 col-md-4 col-sm-6">
                 <div class="product-card card h-100 border-0 shadow-sm">
                     <div class="product-image position-relative overflow-hidden">
-                        <img src="<?php echo ASSETS_URL . $product['duong_dan_hinh_anh']; ?>" 
+                        <img src="<?php echo ASSETS_URL . urldecode($product['duong_dan_hinh_anh']); ?>" 
                              class="card-img-top" alt="<?php echo htmlspecialchars($product['ten_san_pham']); ?>"
                              onerror="this.src='<?php echo ASSETS_URL; ?>images/placeholder.jpg'">
                         <div class="product-overlay">
@@ -154,7 +154,7 @@ include __DIR__ . '/views/layout/header.php';
             <div class="col-lg-3 col-md-4 col-sm-6">
                 <div class="product-card card h-100 border-0 shadow-sm">
                     <div class="product-image position-relative overflow-hidden">
-                        <img src="<?php echo ASSETS_URL . $product['duong_dan_hinh_anh']; ?>" 
+                        <img src="<?php echo ASSETS_URL . urldecode($product['duong_dan_hinh_anh']); ?>" 
                              class="card-img-top" alt="<?php echo htmlspecialchars($product['ten_san_pham']); ?>"
                              onerror="this.src='<?php echo ASSETS_URL; ?>images/placeholder.jpg'">
                         <div class="product-overlay">
@@ -192,27 +192,29 @@ include __DIR__ . '/views/layout/header.php';
 <section class="brands py-5">
     <div class="container">
         <div class="section-header text-center mb-5">
-            <h2 class="fw-bold">Thương Hiệu Nổi Bật</h2>
+            <h2 class="fw-bold">Thương Hiệu</h2>
             <p class="text-muted">Các thương hiệu nước hoa hàng đầu thế giới</p>
         </div>
         <div class="row g-4">
             <?php foreach ($brands as $brand): ?>
             <div class="col-lg-2 col-md-3 col-sm-4 col-6">
                 <a href="<?php echo BASE_URL; ?>views/brands/detail.php?id=<?php echo $brand['id']; ?>" 
-                   class="brand-item d-block text-center p-3 border rounded hover-shadow" style="text-decoration: none;">
-                    <?php if (!empty($brand['logo'])): ?>
-                        <img src="<?php echo htmlspecialchars($brand['logo']); ?>" 
-                             alt="<?php echo htmlspecialchars($brand['ten_thuong_hieu']); ?>"
-                             class="img-fluid mb-2" 
-                             style="max-height: 60px; object-fit: contain;"
-                             onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                        <h6 class="mb-0 text-dark" style="display: none;"><?php echo htmlspecialchars($brand['ten_thuong_hieu']); ?></h6>
-                    <?php else: ?>
-                        <div class="bg-light rounded p-2 mb-2" style="height: 60px; display: flex; align-items: center; justify-content: center;">
+                   class="brand-item d-block text-center p-3 border rounded hover-shadow h-100" 
+                   style="text-decoration: none; min-height: 120px; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: all 0.3s ease;">
+                    <div style="height: 70px; display: flex; align-items: center; justify-content: center; width: 100%; margin-bottom: 10px;">
+                        <?php if (!empty($brand['duong_dan_logo'])): ?>
+                            <img src="<?php echo htmlspecialchars($brand['duong_dan_logo']); ?>" 
+                                 alt="<?php echo htmlspecialchars($brand['ten_thuong_hieu']); ?>"
+                                 class="img-fluid" 
+                                 style="max-height: 60px; max-width: 100%; object-fit: contain;"
+                                 onerror="this.style.display='none'; this.parentElement.parentElement.querySelector('.brand-name').style.display='block';">
+                        <?php else: ?>
                             <i class="fas fa-copyright fa-2x text-muted"></i>
-                        </div>
-                        <h6 class="mb-0 text-dark" style="font-size: 0.85rem;"><?php echo htmlspecialchars($brand['ten_thuong_hieu']); ?></h6>
-                    <?php endif; ?>
+                        <?php endif; ?>
+                    </div>
+                    <h6 class="mb-0 text-dark brand-name" style="font-size: 0.8rem; <?php echo !empty($brand['duong_dan_logo']) ? 'display: none;' : ''; ?>">
+                        <?php echo htmlspecialchars($brand['ten_thuong_hieu']); ?>
+                    </h6>
                 </a>
             </div>
             <?php endforeach; ?>

@@ -42,10 +42,10 @@ include __DIR__ . '/../layout/header.php';
         <div class="card-body p-5">
             <div class="row align-items-center">
                 <div class="col-md-3 text-center">
-                    <?php if (!empty($brand['logo'])): ?>
-                    <img src="<?php echo htmlspecialchars($brand['logo']); ?>" 
+                    <?php if (!empty($brand['duong_dan_logo'])): ?>
+                    <img src="<?php echo htmlspecialchars($brand['duong_dan_logo']); ?>" 
                          alt="<?php echo htmlspecialchars($brand['ten_thuong_hieu']); ?>"
-                         class="img-fluid" style="max-height: 150px;"
+                         class="img-fluid" style="max-height: 150px; object-fit: contain;"
                          onerror="this.style.display='none'">
                     <?php else: ?>
                     <h2 class="text-muted"><?php echo htmlspecialchars($brand['ten_thuong_hieu']); ?></h2>
@@ -53,6 +53,11 @@ include __DIR__ . '/../layout/header.php';
                 </div>
                 <div class="col-md-9">
                     <h1 class="fw-bold mb-3"><?php echo htmlspecialchars($brand['ten_thuong_hieu']); ?></h1>
+                    <?php if (!empty($brand['quoc_gia'])): ?>
+                    <p class="text-muted mb-2">
+                        <i class="fas fa-globe me-2"></i><?php echo htmlspecialchars($brand['quoc_gia']); ?>
+                    </p>
+                    <?php endif; ?>
                     <p class="lead text-muted mb-3"><?php echo nl2br(htmlspecialchars($brand['mo_ta'] ?? 'Thương hiệu nước hoa cao cấp')); ?></p>
                     <p class="mb-0">
                         <i class="fas fa-box text-primary me-2"></i>
@@ -76,7 +81,7 @@ include __DIR__ . '/../layout/header.php';
         <div class="col-lg-3 col-md-4 col-sm-6">
             <div class="product-card card h-100 border-0 shadow-sm">
                 <div class="product-image position-relative overflow-hidden">
-                    <img src="<?php echo UPLOAD_URL . $product['duong_dan_hinh_anh']; ?>" 
+                    <img src="<?php echo ASSETS_URL . urldecode($product['duong_dan_hinh_anh']); ?>" 
                          class="card-img-top" alt="<?php echo htmlspecialchars($product['ten_san_pham']); ?>"
                          onerror="this.src='<?php echo ASSETS_URL; ?>images/placeholder.jpg'">
                     <div class="product-overlay">

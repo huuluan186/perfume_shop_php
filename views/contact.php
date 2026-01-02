@@ -25,7 +25,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     
     if (empty($errors)) {
-        // Ở đây bạn có thể lưu vào database hoặc gửi email
+        // Lưu vào file log
+        $log_dir = __DIR__ . '/../logs';
+        if (!file_exists($log_dir)) {
+            mkdir($log_dir, 0777, true);
+        }
+        
+        $log_file = $log_dir . '/contact_' . date('Y-m') . '.txt';
+        $log_content = sprintf(
+            "\n========================================\nNgày giờ: %s\nHọ tên: %s\nEmail: %s\nSố điện thoại: %s\nNội dung:\n%s\n========================================\n",
+            date('d/m/Y H:i:s'),
+            $name,
+            $email,
+            $phone ?: 'Không có',
+            $message
+        );
+        file_put_contents($log_file, $log_content, FILE_APPEND);
+        
+        // Gửi email thông báo cho admin (nếu cấu hình mail)
+        $admin_email = 'admin@perfumeshop.com'; // Thay bằng email của bạn
+        $subject = '[Liên hệ mới] ' . $name;
+        $email_body = "Có liên hệ mới từ website:\n\n" . $log_content;
+        $headers = "From: noreply@perfumeshop.com\r\n";
+        $headers .= "Reply-To: $email\r\n";
+        
+        // Uncomment dòng dưới khi đã cấu hình mail server
+        // mail($admin_email, $subject, $email_body, $headers);
+        
         $success = true;
     }
 }
@@ -85,14 +111,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="card border-0 shadow-sm mb-3">
                 <div class="card-body">
                     <h6 class="fw-bold mb-3"><i class="fas fa-map-marker-alt text-primary me-2"></i>Địa chỉ</h6>
-                    <p class="mb-0">123 Đường ABC, Quận 1, TP.HCM</p>
+                    <p class="mb-0">126 Nguyễn Thiện Thành, Phường Hòa Thuận, tỉnh Vĩnh Long</p>
                 </div>
             </div>
             
             <div class="card border-0 shadow-sm mb-3">
                 <div class="card-body">
                     <h6 class="fw-bold mb-3"><i class="fas fa-phone text-primary me-2"></i>Điện thoại</h6>
-                    <p class="mb-0">1900 xxxx</p>
+                    <p class="mb-0">1900 1836</p>
                 </div>
             </div>
             
@@ -111,7 +137,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             
             <div class="mt-4">
-                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.4958890444356!2d106.69530731471941!3d10.772461392323178!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752f4b3330bcc9%3A0x5a981a5efee9566d!2zUXXhuq1uIDEsIEjhu5MgQ2jDrSBNaW5oLCBWaeG7h3QgTmFt!5e0!3m2!1svi!2s!4v1234567890" 
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3930.126073441039!2d106.34394437353973!3d9.923456874350201!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31a0175ea296facb%3A0x55ded92e29068221!2zVHLGsOG7nW5nIMSQ4bqhaSBI4buNYyBUcsOgIFZpbmg!5e0!3m2!1svi!2s!4v1767326142234!5m2!1svi!2s" 
                         width="100%" height="250" style="border:0; border-radius: 10px;" allowfullscreen="" loading="lazy"></iframe>
             </div>
         </div>

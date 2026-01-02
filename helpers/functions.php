@@ -162,6 +162,11 @@ function show_message($type = 'info') {
     return null;
 }
 
+// Set message vào session
+function set_message($type, $message) {
+    $_SESSION[$type] = $message;
+}
+
 // Tạo token CSRF
 function generate_csrf_token() {
     if (!isset($_SESSION['csrf_token'])) {

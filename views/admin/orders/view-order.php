@@ -31,16 +31,17 @@ $items = $order_details['items'];
         <h6 class="fw-bold">Thông tin đơn hàng</h6>
         <table class="table table-sm table-borderless">
             <tr><td width="120"><strong>Mã đơn:</strong></td><td>#<?php echo $order['id']; ?></td></tr>
-            <tr><td><strong>Ngày đặt:</strong></td><td><?php echo format_date($order['ngay_dat_hang']); ?></td></tr>
+            <tr><td><strong>Ngày đặt:</strong></td><td><?php echo format_date($order['ngay_dat']); ?></td></tr>
             <tr><td><strong>Trạng thái:</strong></td>
                 <td>
                     <?php
+                    $status = (int)$order['trang_thai'];
                     $badge = 'secondary';
-                    $text = $order['trang_thai'];
-                    switch($order['trang_thai']) {
-                        case ORDER_STATUS_PENDING: $badge = 'warning'; $text = 'Chờ xác nhận'; break;
-                        case ORDER_STATUS_CONFIRMED: $badge = 'info'; $text = 'Đã xác nhận'; break;
-                        case ORDER_STATUS_SHIPPING: $badge = 'primary'; $text = 'Đang giao'; break;
+                    $text = 'Không xác định';
+                    switch($status) {
+                        case ORDER_STATUS_PENDING: $badge = 'warning'; $text = 'Chưa duyệt'; break;
+                        case ORDER_STATUS_APPROVED: $badge = 'info'; $text = 'Đã duyệt'; break;
+                        case ORDER_STATUS_SHIPPING: $badge = 'primary'; $text = 'Đang giao hàng'; break;
                         case ORDER_STATUS_COMPLETED: $badge = 'success'; $text = 'Hoàn thành'; break;
                         case ORDER_STATUS_CANCELLED: $badge = 'danger'; $text = 'Đã hủy'; break;
                     }

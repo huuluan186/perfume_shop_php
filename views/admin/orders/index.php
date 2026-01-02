@@ -26,7 +26,7 @@ $total_orders = $orderModel->count($filters);
 $pagination = paginate($total_orders, $page, $limit);
 
 $page_title = "Quản lý đơn hàng";
-include __DIR__ . '/../../layout/header.php';
+include __DIR__ . '/../layout/header.php';
 ?>
 
 <div class="container-fluid my-4">
@@ -46,11 +46,11 @@ include __DIR__ . '/../../layout/header.php';
                 <div class="col-md-4">
                     <select name="status" class="form-select">
                         <option value="">Tất cả trạng thái</option>
-                        <option value="<?php echo ORDER_STATUS_PENDING; ?>" <?php echo ($filters['status'] === ORDER_STATUS_PENDING) ? 'selected' : ''; ?>>Chờ xác nhận</option>
-                        <option value="<?php echo ORDER_STATUS_CONFIRMED; ?>" <?php echo ($filters['status'] === ORDER_STATUS_CONFIRMED) ? 'selected' : ''; ?>>Đã xác nhận</option>
-                        <option value="<?php echo ORDER_STATUS_SHIPPING; ?>" <?php echo ($filters['status'] === ORDER_STATUS_SHIPPING) ? 'selected' : ''; ?>>Đang giao</option>
-                        <option value="<?php echo ORDER_STATUS_COMPLETED; ?>" <?php echo ($filters['status'] === ORDER_STATUS_COMPLETED) ? 'selected' : ''; ?>>Hoàn thành</option>
-                        <option value="<?php echo ORDER_STATUS_CANCELLED; ?>" <?php echo ($filters['status'] === ORDER_STATUS_CANCELLED) ? 'selected' : ''; ?>>Đã hủy</option>
+                        <option value="<?php echo ORDER_STATUS_PENDING; ?>" <?php echo ($filters['status'] == ORDER_STATUS_PENDING) ? 'selected' : ''; ?>>Chưa duyệt</option>
+                        <option value="<?php echo ORDER_STATUS_APPROVED; ?>" <?php echo ($filters['status'] == ORDER_STATUS_APPROVED) ? 'selected' : ''; ?>>Đã duyệt</option>
+                        <option value="<?php echo ORDER_STATUS_SHIPPING; ?>" <?php echo ($filters['status'] == ORDER_STATUS_SHIPPING) ? 'selected' : ''; ?>>Đang giao hàng</option>
+                        <option value="<?php echo ORDER_STATUS_COMPLETED; ?>" <?php echo ($filters['status'] == ORDER_STATUS_COMPLETED) ? 'selected' : ''; ?>>Hoàn thành</option>
+                        <option value="<?php echo ORDER_STATUS_CANCELLED; ?>" <?php echo ($filters['status'] == ORDER_STATUS_CANCELLED) ? 'selected' : ''; ?>>Đã hủy</option>
                     </select>
                 </div>
                 <div class="col-md-2">
@@ -94,27 +94,28 @@ include __DIR__ . '/../../layout/header.php';
                             <td><strong class="text-primary"><?php echo format_currency($order['tong_tien']); ?></strong></td>
                             <td>
                                 <?php
+                                $status = (int)$order['trang_thai'];
                                 $badge = 'secondary';
-                                $text = $order['trang_thai'];
-                                switch($order['trang_thai']) {
-                                    case ORDER_STATUS_PENDING: $badge = 'warning'; $text = 'Chờ xác nhận'; break;
-                                    case ORDER_STATUS_CONFIRMED: $badge = 'info'; $text = 'Đã xác nhận'; break;
-                                    case ORDER_STATUS_SHIPPING: $badge = 'primary'; $text = 'Đang giao'; break;
+                                $text = 'Không xác định';
+                                switch($status) {
+                                    case ORDER_STATUS_PENDING: $badge = 'warning'; $text = 'Chưa duyệt'; break;
+                                    case ORDER_STATUS_APPROVED: $badge = 'info'; $text = 'Đã duyệt'; break;
+                                    case ORDER_STATUS_SHIPPING: $badge = 'primary'; $text = 'Đang giao hàng'; break;
                                     case ORDER_STATUS_COMPLETED: $badge = 'success'; $text = 'Hoàn thành'; break;
                                     case ORDER_STATUS_CANCELLED: $badge = 'danger'; $text = 'Đã hủy'; break;
                                 }
                                 ?>
                                 <span class="badge bg-<?php echo $badge; ?>"><?php echo $text; ?></span>
                             </td>
-                            <td><small><?php echo htmlspecialchars($order['phuong_thuc_thanh_toan']); ?></small></td>
-                            <td><?php echo format_date($order['ngay_dat_hang']); ?></td>
+                            <td><small><?php echo htmlspecialchars($order['phuong_thuc_thanh_toan'] ?? 'COD'); ?></small></td>
+                            <td><?php echo format_date($order['ngay_dat']); ?></td>
                             <td>
                                 <button class="btn btn-sm btn-outline-info view-order" 
                                         data-id="<?php echo $order['id']; ?>"
                                         data-bs-toggle="modal" data-bs-target="#orderModal">
                                     <i class="fas fa-eye"></i>
                                 </button>
-                                <?php if ($order['trang_thai'] !== ORDER_STATUS_CANCELLED && $order['trang_thai'] !== ORDER_STATUS_COMPLETED): ?>
+                                <?php if ($status !== ORDER_STATUS_CANCELLED && $status !== ORDER_STATUS_COMPLETED): ?>
                                 <button class="btn btn-sm btn-outline-primary update-status" 
                                         data-id="<?php echo $order['id']; ?>"
                                         data-bs-toggle="modal" data-bs-target="#statusModal">
@@ -196,7 +197,9 @@ include __DIR__ . '/../../layout/header.php';
                         <select class="form-select" name="status" required>
                             <option value="<?php echo ORDER_STATUS_PENDING; ?>">Chờ xác nhận</option>
                             <option value="<?php echo ORDER_STATUS_CONFIRMED; ?>">Đã xác nhận</option>
-                            <option value="<?php echo ORDER_STATUS_SHIPPING; ?>">Đang giao</option>
+                            <option value="<?php echo ORDER_STATUS_PENDING; ?>">Chưa duyệt</option>
+                            <option value="<?php echo ORDER_STATUS_APPROVED; ?>">Đã duyệt</option>
+                            <option value="<?php echo ORDER_STATUS_SHIPPING; ?>">Đang giao hàng</option>
                             <option value="<?php echo ORDER_STATUS_COMPLETED; ?>">Hoàn thành</option>
                             <option value="<?php echo ORDER_STATUS_CANCELLED; ?>">Đã hủy</option>
                         </select>
@@ -245,4 +248,4 @@ $('#statusForm').on('submit', function(e) {
 });
 </script>
 
-<?php include __DIR__ . '/../../layout/footer.php'; ?>
+<?php include __DIR__ . '/../layout/footer.php'; ?>

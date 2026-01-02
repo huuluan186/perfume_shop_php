@@ -27,7 +27,7 @@ $total_orders = $orderModel->count([]);
 
 // Thống kê đơn hàng theo trạng thái
 $pending_orders = $orderModel->count(['status' => ORDER_STATUS_PENDING]);
-$confirmed_orders = $orderModel->count(['status' => ORDER_STATUS_CONFIRMED]);
+$approved_orders = $orderModel->count(['status' => ORDER_STATUS_APPROVED]);
 $shipping_orders = $orderModel->count(['status' => ORDER_STATUS_SHIPPING]);
 $completed_orders = $orderModel->count(['status' => ORDER_STATUS_COMPLETED]);
 
@@ -41,7 +41,7 @@ $recent_orders = $orderModel->getAll([], 5, 0);
 $low_stock_products = $productModel->getLowStock(5);
 
 $page_title = "Admin Dashboard";
-include __DIR__ . '/../layout/header.php';
+include __DIR__ . '/layout/header.php';
 ?>
 
 <div class="container-fluid my-4">
@@ -143,7 +143,7 @@ include __DIR__ . '/../layout/header.php';
         <div class="col-xl-3 col-md-6">
             <div class="card border-0 shadow-sm">
                 <div class="card-body">
-                    <h6 class="text-muted mb-2">Chờ xác nhận</h6>
+                    <h6 class="text-muted mb-2">Chưa duyệt</h6>
                     <h4 class="mb-0 text-warning"><?php echo $pending_orders; ?> đơn</h4>
                 </div>
             </div>
@@ -151,8 +151,8 @@ include __DIR__ . '/../layout/header.php';
         <div class="col-xl-3 col-md-6">
             <div class="card border-0 shadow-sm">
                 <div class="card-body">
-                    <h6 class="text-muted mb-2">Đã xác nhận</h6>
-                    <h4 class="mb-0 text-info"><?php echo $confirmed_orders; ?> đơn</h4>
+                    <h6 class="text-muted mb-2">Đã duyệt</h6>
+                    <h4 class="mb-0 text-info"><?php echo $approved_orders; ?> đơn</h4>
                 </div>
             </div>
         </div>
@@ -205,16 +205,20 @@ include __DIR__ . '/../layout/header.php';
                                     <td><?php echo format_currency($order['tong_tien']); ?></td>
                                     <td>
                                         <?php
+                                        $status = (int)$order['trang_thai'];
                                         $badge = 'secondary';
-                                        if ($order['trang_thai'] === ORDER_STATUS_PENDING) $badge = 'warning';
-                                        elseif ($order['trang_thai'] === ORDER_STATUS_CONFIRMED) $badge = 'info';
-                                        elseif ($order['trang_thai'] === ORDER_STATUS_SHIPPING) $badge = 'primary';
-                                        elseif ($order['trang_thai'] === ORDER_STATUS_COMPLETED) $badge = 'success';
-                                        elseif ($order['trang_thai'] === ORDER_STATUS_CANCELLED) $badge = 'danger';
+                                        $text = 'Không xác định';
+                                        switch($status) {
+                                            case ORDER_STATUS_PENDING: $badge = 'warning'; $text = 'Chưa duyệt'; break;
+                                            case ORDER_STATUS_APPROVED: $badge = 'info'; $text = 'Đã duyệt'; break;
+                                            case ORDER_STATUS_SHIPPING: $badge = 'primary'; $text = 'Đang giao hàng'; break;
+                                            case ORDER_STATUS_COMPLETED: $badge = 'success'; $text = 'Hoàn thành'; break;
+                                            case ORDER_STATUS_CANCELLED: $badge = 'danger'; $text = 'Đã hủy'; break;
+                                        }
                                         ?>
-                                        <span class="badge bg-<?php echo $badge; ?>"><?php echo $order['trang_thai']; ?></span>
+                                        <span class="badge bg-<?php echo $badge; ?>"><?php echo $text; ?></span>
                                     </td>
-                                    <td><?php echo format_date($order['ngay_dat_hang']); ?></td>
+                                    <td><?php echo format_date($order['ngay_dat']); ?></td>
                                 </tr>
                                 <?php endforeach; ?>
                             </tbody>
@@ -255,4 +259,4 @@ include __DIR__ . '/../layout/header.php';
     </div>
 </div>
 
-<?php include __DIR__ . '/../layout/footer.php'; ?>
+<?php include __DIR__ . '/layout/footer.php'; ?>

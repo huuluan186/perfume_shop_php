@@ -15,15 +15,19 @@ $(document).on('click', '.toggle-wishlist', function() {
                 showNotification('success', response.message);
                 updateWishlistCount();
                 
-                // Toggle icon and data attribute
+                // Toggle icon and button style
                 const button = $('.toggle-wishlist[data-product-id="' + productId + '"]');
                 const icon = button.find('i');
                 
                 if (isInWishlist) {
+                    // Remove from wishlist
                     icon.removeClass('fas').addClass('far');
+                    button.removeClass('btn-danger').addClass('btn-outline-danger');
                     button.data('in-wishlist', '0');
                 } else {
+                    // Add to wishlist
                     icon.removeClass('far').addClass('fas');
+                    button.removeClass('btn-outline-danger').addClass('btn-danger');
                     button.data('in-wishlist', '1');
                 }
             } else {

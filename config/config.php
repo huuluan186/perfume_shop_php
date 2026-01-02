@@ -21,13 +21,12 @@ date_default_timezone_set('Asia/Ho_Chi_Minh');
 define('ROLE_ADMIN', 'quan_tri_vien');
 define('ROLE_CUSTOMER', 'khach_hang');
 
-// Trạng thái đơn hàng
-define('ORDER_STATUS_PENDING', 'cho_xu_ly');
-define('ORDER_STATUS_CONFIRMED', 'da_xac_nhan');
-define('ORDER_STATUS_SHIPPING', 'dang_giao');
-define('ORDER_STATUS_DELIVERED', 'da_giao');
-define('ORDER_STATUS_COMPLETED', 'hoan_thanh');
-define('ORDER_STATUS_CANCELLED', 'da_huy');
+// Trạng thái đơn hàng (int)
+define('ORDER_STATUS_PENDING', 0);      // Chưa duyệt
+define('ORDER_STATUS_APPROVED', 1);     // Đã duyệt
+define('ORDER_STATUS_SHIPPING', 2);     // Đang giao hàng
+define('ORDER_STATUS_COMPLETED', 3);    // Hoàn thành
+define('ORDER_STATUS_CANCELLED', 4);    // Đã hủy
 
 // Require file database
 require_once __DIR__ . '/database.php';

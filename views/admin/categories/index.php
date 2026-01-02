@@ -12,7 +12,7 @@ $categoryModel = new Category();
 $categories = $categoryModel->getAll();
 
 $page_title = "Quản lý danh mục";
-include __DIR__ . '/../../layout/header.php';
+include __DIR__ . '/../layout/header.php';
 ?>
 
 <div class="container-fluid my-4">
@@ -99,4 +99,4 @@ $(document).on('click', '.delete-category', function() {
 });
 </script>
 
-<?php include __DIR__ . '/../../layout/footer.php'; ?>
+<?php include __DIR__ . '/../layout/footer.php'; ?>

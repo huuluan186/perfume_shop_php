@@ -87,7 +87,7 @@ include __DIR__ . '/../layout/header.php';
                         
                         <!-- Price Range -->
                         <div class="mb-3">
-                            <label class="form-label">Khoảng giá</label>
+                            <label class="form-label">Khoảng giá (vnđ)</label>
                             <div class="row g-2">
                                 <div class="col-6">
                                     <input type="number" name="min_price" class="form-control form-control-sm" 
@@ -121,7 +121,7 @@ include __DIR__ . '/../layout/header.php';
                 </h4>
                 <div class="d-flex align-items-center">
                     <label class="me-2 mb-0">Sắp xếp:</label>
-                    <select name="sort" class="form-select form-select-sm" style="width: 200px;" onchange="location.href='?sort=' + this.value + '&<?php echo http_build_query(array_diff_key($filters, ['sort' => ''])); ?>'">
+                    <select name="sort" class="form-select form-select-sm" style="width: 200px;" onchange="this.form.submit()" form="filterForm">
                         <option value="newest" <?php echo ($filters['sort'] === 'newest') ? 'selected' : ''; ?>>Mới nhất</option>
                         <option value="price_asc" <?php echo ($filters['sort'] === 'price_asc') ? 'selected' : ''; ?>>Giá tăng dần</option>
                         <option value="price_desc" <?php echo ($filters['sort'] === 'price_desc') ? 'selected' : ''; ?>>Giá giảm dần</option>
@@ -143,9 +143,14 @@ include __DIR__ . '/../layout/header.php';
                 <div class="col-lg-4 col-md-6">
                     <div class="product-card card h-100 border-0 shadow-sm">
                         <div class="product-image position-relative overflow-hidden">
-                            <img src="<?php echo ASSETS_URL . $product['duong_dan_hinh_anh']; ?>" 
+                            <img src="<?php echo ASSETS_URL . urldecode($product['duong_dan_hinh_anh']); ?>" 
                                  class="card-img-top" alt="<?php echo htmlspecialchars($product['ten_san_pham']); ?>"
                                  onerror="this.src='<?php echo ASSETS_URL; ?>images/placeholder.jpg'">
+                            <?php if ($product['so_luong_ton'] <= 0): ?>
+                            <div class="position-absolute top-0 end-0 m-2">
+                                <span class="badge bg-danger">Hết hàng</span>
+                            </div>
+                            <?php endif; ?>
                             <div class="product-overlay">
                                 <a href="detail.php?id=<?php echo $product['id']; ?>" class="btn btn-primary btn-sm">
                                     <i class="fas fa-eye"></i> Xem chi tiết
@@ -164,9 +169,15 @@ include __DIR__ . '/../layout/header.php';
                             </div>
                         </div>
                         <div class="card-footer bg-transparent border-0">
+                            <?php if ($product['so_luong_ton'] > 0): ?>
                             <button class="btn btn-outline-primary w-100 add-to-cart" data-product-id="<?php echo $product['id']; ?>">
                                 <i class="fas fa-shopping-cart"></i> Thêm vào giỏ
                             </button>
+                            <?php else: ?>
+                            <button class="btn btn-secondary w-100" disabled>
+                                <i class="fas fa-times-circle"></i> Hết hàng
+                            </button>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>

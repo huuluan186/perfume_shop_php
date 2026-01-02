@@ -305,6 +305,20 @@ class Product {
         return $stmt->execute();
     }
     
+    // Lấy sản phẩm sắp hết hàng
+    public function getLowStock($limit = 10, $threshold = 10) {
+        $query = "SELECT sp.*, th.ten_thuong_hieu 
+                  FROM {$this->table} sp
+                  LEFT JOIN thuong_hieu th ON sp.id_thuong_hieu = th.id
+                  WHERE sp.ngay_xoa IS NULL AND sp.so_luong_ton <= ?
+                  ORDER BY sp.so_luong_ton ASC
+                  LIMIT ?";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bind_param("ii", $threshold, $limit);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    }
+    
     public function __destruct() {
         if ($this->conn) {
             $this->conn->close();

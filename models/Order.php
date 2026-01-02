@@ -24,7 +24,7 @@ class Order {
             
             $stmt = $this->conn->prepare($query);
             $status = ORDER_STATUS_PENDING;
-            $stmt->bind_param("isssds", $user_id, $ho_ten, $sdt, $dia_chi, $total, $status);
+            $stmt->bind_param("isssdi", $user_id, $ho_ten, $sdt, $dia_chi, $total, $status);
             $stmt->execute();
             
             $order_id = $this->conn->insert_id;
@@ -103,15 +103,27 @@ class Order {
     
     // Lấy chi tiết sản phẩm trong đơn hàng
     public function getOrderDetails($order_id) {
-        $query = "SELECT ct.*, sp.ten_san_pham, sp.duong_dan_hinh_anh 
+        $query = "SELECT ct.id, ct.id_don_hang, ct.id_san_pham, ct.so_luong, ct.don_gia,
+                         sp.ten_san_pham, sp.duong_dan_hinh_anh
                   FROM {$this->detail_table} ct
-                  LEFT JOIN san_pham sp ON ct.id_san_pham = sp.id
-                  WHERE ct.id_don_hang = ?";
+                  INNER JOIN san_pham sp ON ct.id_san_pham = sp.id
+                  WHERE ct.id_don_hang = ? AND sp.ngay_xoa IS NULL";
         
         $stmt = $this->conn->prepare($query);
+        if (!$stmt) {
+            error_log("Lỗi prepare statement: " . $this->conn->error);
+            return [];
+        }
+        
         $stmt->bind_param("i", $order_id);
-        $stmt->execute();
-        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+        if (!$stmt->execute()) {
+            error_log("Lỗi execute: " . $stmt->error);
+            return [];
+        }
+        
+        $result = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+        error_log("Order ID $order_id có " . count($result) . " sản phẩm");
+        return $result;
     }
     
     // Lấy tất cả đơn hàng (admin)
@@ -124,10 +136,10 @@ class Order {
         $params = [];
         $types = "";
         
-        if (!empty($filters['status'])) {
+        if (isset($filters['status']) && $filters['status'] !== '') {
             $query .= " AND dh.trang_thai = ?";
-            $params[] = $filters['status'];
-            $types .= "s";
+            $params[] = (int)$filters['status'];
+            $types .= "i";
         }
         
         if (!empty($filters['search'])) {
@@ -163,10 +175,10 @@ class Order {
         $params = [];
         $types = "";
         
-        if (!empty($filters['status'])) {
+        if (isset($filters['status']) && $filters['status'] !== '') {
             $query .= " AND dh.trang_thai = ?";
-            $params[] = $filters['status'];
-            $types .= "s";
+            $params[] = (int)$filters['status'];
+            $types .= "i";
         }
         
         if (!empty($filters['search'])) {
@@ -193,7 +205,7 @@ class Order {
     public function updateStatus($id, $status) {
         $query = "UPDATE {$this->table} SET trang_thai = ? WHERE id = ?";
         $stmt = $this->conn->prepare($query);
-        $stmt->bind_param("si", $status, $id);
+        $stmt->bind_param("ii", $status, $id);
         return $stmt->execute();
     }
     
@@ -217,7 +229,7 @@ class Order {
                   WHERE trang_thai != ? AND ngay_xoa IS NULL";
         
         $params = [ORDER_STATUS_CANCELLED];
-        $types = "s";
+        $types = "i";
         
         if ($start_date) {
             $query .= " AND DATE(ngay_dat) >= ?";

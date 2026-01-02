@@ -72,7 +72,7 @@ class User {
     
     // Lấy thông tin user theo ID
     public function getUserById($id) {
-        $query = "SELECT id, username, email, gioi_tinh, ngay_sinh, vai_tro, trang_thai, ngay_tao 
+        $query = "SELECT id, username, email, password as mat_khau, gioi_tinh, ngay_sinh, vai_tro, trang_thai, ngay_tao 
                   FROM {$this->table} 
                   WHERE id = ? AND ngay_xoa IS NULL";
         
@@ -112,7 +112,7 @@ class User {
     
     // Đổi mật khẩu đơn giản (không kiểm tra mật khẩu cũ)
     public function changePasswordSimple($id, $new_password) {
-        $query = "UPDATE {$this->table} SET mat_khau = ? WHERE id = ?";
+        $query = "UPDATE {$this->table} SET password = ? WHERE id = ?";
         $stmt = $this->conn->prepare($query);
         $new_hashed = md5($new_password);
         $stmt->bind_param("si", $new_hashed, $id);
@@ -170,6 +170,11 @@ class User {
         $stmt->execute();
         $result = $stmt->get_result()->fetch_assoc();
         return $result['total'];
+    }
+    
+    // Alias cho countUsers (để tương thích với dashboard)
+    public function count() {
+        return $this->countUsers();
     }
     
     // Cập nhật trạng thái user (admin)

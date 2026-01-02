@@ -7,16 +7,14 @@ include __DIR__ . '/layout/header.php';
 ?>
 
 <div class="container my-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-10">
-            <div class="text-center mb-5">
-                <h2 class="fw-bold">Về Chúng Tôi</h2>
-                <p class="text-muted">Cửa hàng nước hoa cao cấp hàng đầu Việt Nam</p>
-            </div>
-            
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-body p-5">
-                    <h4 class="fw-bold mb-4">Câu Chuyện Của Chúng Tôi</h4>
+    <div class="text-center mb-5">
+        <h2 class="fw-bold">Về Chúng Tôi</h2>
+        <p class="text-muted">Cửa hàng nước hoa cao cấp hàng đầu Việt Nam</p>
+    </div>
+    
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body p-4 p-md-5">
+            <h4 class="fw-bold mb-4 text-center">Câu Chuyện Của Chúng Tôi</h4>
                     <p class="lead">
                         Perfume Shop được thành lập với sứ mệnh mang đến cho khách hàng Việt Nam những sản phẩm nước hoa 
                         chính hãng, cao cấp từ các thương hiệu nổi tiếng thế giới với giá cả hợp lý nhất.
@@ -59,8 +57,8 @@ include __DIR__ . '/layout/header.php';
             </div>
             
             <div class="card border-0 shadow-sm mb-4">
-                <div class="card-body p-5">
-                    <h4 class="fw-bold mb-4">Tại Sao Chọn Chúng Tôi?</h4>
+                <div class="card-body p-4 p-md-5">
+                    <h4 class="fw-bold mb-4 text-center">Tại Sao Chọn Chúng Tôi?</h4>
                     <div class="row g-4">
                         <div class="col-md-6">
                             <div class="d-flex">
@@ -117,12 +115,12 @@ include __DIR__ . '/layout/header.php';
                     <div class="col-md-4">
                         <i class="fas fa-map-marker-alt fa-2x text-primary mb-3"></i>
                         <h6 class="fw-bold">Địa chỉ</h6>
-                        <p class="text-muted">123 Nguyễn Huệ, Quận 1<br>TP. Hồ Chí Minh</p>
+                        <p class="text-muted">126 Nguyễn Thiện Thành, Phường Hòa Thuận, tỉnh Vĩnh Long</p>
                     </div>
                     <div class="col-md-4">
                         <i class="fas fa-phone fa-2x text-primary mb-3"></i>
                         <h6 class="fw-bold">Hotline</h6>
-                        <p class="text-muted">1900 xxxx<br>0123 456 789</p>
+                        <p class="text-muted">1900 1836<br>0123 456 789</p>
                     </div>
                     <div class="col-md-4">
                         <i class="fas fa-envelope fa-2x text-primary mb-3"></i>
@@ -131,16 +129,10 @@ include __DIR__ . '/layout/header.php';
                     </div>
                 </div>
             </div>
-                        </div>
-                        <h5 class="fw-bold">Hỗ Trợ 24/7</h5>
-                        <p class="text-muted">Đội ngũ tư vấn luôn sẵn sàng hỗ trợ bạn</p>
-                    </div>
-                </div>
-            </div>
             
             <div class="card border-0 shadow-sm">
-                <div class="card-body p-5">
-                    <h4 class="fw-bold mb-4">Cam Kết Của Chúng Tôi</h4>
+                <div class="card-body p-4 p-md-5">
+                    <h4 class="fw-bold mb-4 text-center">Cam Kết Của Chúng Tôi</h4>
                     <ul class="list-unstyled">
                         <li class="mb-3">
                             <i class="fas fa-check-circle text-success me-2"></i>
@@ -165,8 +157,6 @@ include __DIR__ . '/layout/header.php';
                     </ul>
                 </div>
             </div>
-        </div>
-    </div>
 </div>
 
 <?php include __DIR__ . '/layout/footer.php'; ?>
