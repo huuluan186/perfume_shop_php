@@ -20,7 +20,7 @@ $productModel = new Product();
 $categoryModel = new Category();
 $brandModel = new Brand();
 
-$product = $productModel->getById($product_id);
+$product = $productModel->getByIdWithDeleted($product_id);
 if (!$product) {
     set_message('error', 'Không tìm thấy sản phẩm!');
     redirect('views/admin/products/index.php');

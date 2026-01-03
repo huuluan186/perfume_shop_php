@@ -134,8 +134,6 @@ include __DIR__ . '/../layout/header.php';
                                     <span class="badge bg-danger">
                                         <i class="fas fa-trash me-1"></i>Đã xóa
                                     </span>
-                                    <br>
-                                    <small class="text-muted"><?php echo date('d/m/Y H:i', strtotime($product['ngay_xoa'])); ?></small>
                                 <?php else: ?>
                                     <span class="badge bg-success">
                                         <i class="fas fa-check-circle me-1"></i>Hoạt động
@@ -152,7 +150,9 @@ include __DIR__ . '/../layout/header.php';
                                     <i class="fas fa-trash"></i>
                                 </button>
                                 <?php else: ?>
-                                <span class="text-muted" title="Sản phẩm đã bị xóa"><i class="fas fa-ban"></i></span>
+                                <a href="edit.php?id=<?php echo $product['id']; ?>" class="btn btn-sm btn-outline-secondary" title="Xem chi tiết">
+                                    <i class="fas fa-eye"></i>
+                                </a>
                                 <?php endif; ?>
                             </td>
                         </tr>

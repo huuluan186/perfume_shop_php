@@ -18,6 +18,12 @@
     <link rel="stylesheet" href="<?php echo ASSETS_URL; ?>css/style.css">
 </head>
 <body>
+<?php 
+// Kiểm tra trạng thái tài khoản - tự động đăng xuất nếu bị khóa
+if (is_logged_in() && !is_admin()) {
+    check_account_status();
+}
+?>
     <!-- Header Wrapper - Sticky cả khối -->
     <div class="header-wrapper sticky-top" style="z-index: 1030;">
         <!-- Top Bar -->

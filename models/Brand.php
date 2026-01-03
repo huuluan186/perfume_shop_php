@@ -54,6 +54,20 @@ class Brand {
         return false;
     }
     
+    // Lấy thương hiệu theo ID kể cả đã xóa (dùng cho admin)
+    public function getByIdWithDeleted($id) {
+        $query = "SELECT * FROM {$this->table} WHERE id = ?";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        if ($result->num_rows > 0) {
+            return $result->fetch_assoc();
+        }
+        return false;
+    }
+    
     // Lấy sản phẩm của thương hiệu
     public function getProducts($brand_id, $limit = 12, $offset = 0) {
         $query = "SELECT sp.*, dm.ten_danh_muc, th.ten_thuong_hieu 

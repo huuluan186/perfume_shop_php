@@ -92,10 +92,10 @@ include __DIR__ . '/../layout/header.php';
                             <td><?php echo ucfirst($product['gioi_tinh_phu_hop']); ?></td>
                         </tr>
                         <?php endif; ?>
-                        <?php if (isset($product['nhom_huomg']) && !empty($product['nhom_huomg'])): ?>
+                        <?php if (isset($product['nhom_huong']) && !empty($product['nhom_huong'])): ?>
                         <tr>
                             <td style="white-space: nowrap; vertical-align: top;"><strong>Nhóm hương:</strong></td>
-                            <td><?php echo htmlspecialchars($product['nhom_huomg']); ?></td>
+                            <td><?php echo htmlspecialchars($product['nhom_huong']); ?></td>
                         </tr>
                         <?php endif; ?>
                         <?php if (isset($product['phong_cach']) && !empty($product['phong_cach'])): ?>

@@ -20,6 +20,23 @@ function is_logged_in() {
     return isset($_SESSION['user_id']);
 }
 
+// Kiểm tra trạng thái tài khoản và tự động đăng xuất nếu bị khóa
+function check_account_status() {
+    if (is_logged_in()) {
+        require_once __DIR__ . '/../models/User.php';
+        $userModel = new User();
+        $user = $userModel->getUserById($_SESSION['user_id']);
+        
+        // Nếu không tìm thấy user hoặc tài khoản bị khóa
+        if (!$user || $user['trang_thai'] != 1) {
+            // Xóa session và đăng xuất
+            session_destroy();
+            set_message('error', 'Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên!');
+            redirect('views/auth/login.php');
+        }
+    }
+}
+
 // Kiểm tra admin
 function is_admin() {
     return isset($_SESSION['user_role']) && $_SESSION['user_role'] === ROLE_ADMIN;

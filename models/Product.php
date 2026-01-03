@@ -180,6 +180,25 @@ class Product {
         return false;
     }
     
+    // Lấy sản phẩm theo ID kể cả đã xóa (dùng cho admin)
+    public function getByIdWithDeleted($id) {
+        $query = "SELECT sp.*, dm.ten_danh_muc, th.ten_thuong_hieu, th.quoc_gia 
+                  FROM {$this->table} sp
+                  LEFT JOIN danh_muc dm ON sp.id_danh_muc = dm.id
+                  LEFT JOIN thuong_hieu th ON sp.id_thuong_hieu = th.id
+                  WHERE sp.id = ?";
+        
+        $stmt = $this->conn->prepare($query);
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        if ($result->num_rows > 0) {
+            return $result->fetch_assoc();
+        }
+        return false;
+    }
+    
     // Lấy sản phẩm mới nhất
     public function getNewest($limit = 8) {
         $query = "SELECT sp.*, dm.ten_danh_muc, th.ten_thuong_hieu 
@@ -231,7 +250,7 @@ class Product {
     // Thêm sản phẩm mới (admin)
     public function create($data) {
         $query = "INSERT INTO {$this->table} 
-                  (ten_san_pham, gia_ban, dung_tich_ml, nhom_huomg, gioi_tinh_phu_hop, 
+                  (ten_san_pham, gia_ban, dung_tich_ml, nhom_huong, gioi_tinh_phu_hop, 
                    phong_cach, xuat_xu, nam_phat_hanh, mo_ta, duong_dan_hinh_anh, 
                    so_luong_ton, id_danh_muc, id_thuong_hieu) 
                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -241,7 +260,7 @@ class Product {
         $gioi_tinh_phu_hop = $data['gioi_tinh_phu_hop'] ?? ($data['gioi_tinh'] ?? '');
         
         $stmt = $this->conn->prepare($query);
-        $nhom_huomg = $data['nhom_huomg'] ?? '';
+        $nhom_huong = $data['nhom_huong'] ?? '';
         $phong_cach = $data['phong_cach'] ?? '';
         $xuat_xu = $data['xuat_xu'] ?? '';
         $nam_phat_hanh = $data['nam_phat_hanh'] ?? 0;
@@ -250,7 +269,7 @@ class Product {
             $data['ten_san_pham'],
             $data['gia_ban'],
             $dung_tich_ml,
-            $nhom_huomg,
+            $nhom_huong,
             $gioi_tinh_phu_hop,
             $phong_cach,
             $xuat_xu,
@@ -271,7 +290,7 @@ class Product {
     // Cập nhật sản phẩm (admin)
     public function update($id, $data) {
         $query = "UPDATE {$this->table} SET 
-                  ten_san_pham = ?, gia_ban = ?, dung_tich_ml = ?, nhom_huomg = ?, 
+                  ten_san_pham = ?, gia_ban = ?, dung_tich_ml = ?, nhom_huong = ?, 
                   gioi_tinh_phu_hop = ?, phong_cach = ?, xuat_xu = ?, nam_phat_hanh = ?, 
                   mo_ta = ?, duong_dan_hinh_anh = ?, so_luong_ton = ?, 
                   id_danh_muc = ?, id_thuong_hieu = ? 
@@ -282,7 +301,7 @@ class Product {
         $gioi_tinh_phu_hop = $data['gioi_tinh_phu_hop'] ?? ($data['gioi_tinh'] ?? '');
         
         $stmt = $this->conn->prepare($query);
-        $nhom_huomg = $data['nhom_huomg'] ?? '';
+        $nhom_huong = $data['nhom_huong'] ?? '';
         $phong_cach = $data['phong_cach'] ?? '';
         $xuat_xu = $data['xuat_xu'] ?? '';
         $nam_phat_hanh = $data['nam_phat_hanh'] ?? 0;
@@ -291,7 +310,7 @@ class Product {
             $data['ten_san_pham'],
             $data['gia_ban'],
             $dung_tich_ml,
-            $nhom_huomg,
+            $nhom_huong,
             $gioi_tinh_phu_hop,
             $phong_cach,
             $xuat_xu,

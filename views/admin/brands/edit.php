@@ -15,7 +15,7 @@ if ($brand_id <= 0) {
 }
 
 $brandModel = new Brand();
-$brand = $brandModel->getById($brand_id);
+$brand = $brandModel->getByIdWithDeleted($brand_id);
 
 if (!$brand) {
     set_message('error', 'Không tìm thấy thương hiệu!');

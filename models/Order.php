@@ -211,7 +211,39 @@ class Order {
     
     // Hủy đơn hàng
     public function cancel($id) {
-        return $this->updateStatus($id, ORDER_STATUS_CANCELLED);
+        // Lấy chi tiết đơn hàng để hoàn lại số lượng
+        $orderDetails = $this->getOrderDetails($id);
+        
+        // Bắt đầu transaction
+        $this->conn->begin_transaction();
+        
+        try {
+            // Hoàn lại số lượng cho từng sản phẩm
+            foreach ($orderDetails as $detail) {
+                $query = "UPDATE san_pham SET so_luong_ton = so_luong_ton + ? WHERE id = ?";
+                $stmt = $this->conn->prepare($query);
+                $stmt->bind_param("ii", $detail['so_luong'], $detail['id_san_pham']);
+                
+                if (!$stmt->execute()) {
+                    throw new Exception("Không thể hoàn lại số lượng sản phẩm");
+                }
+            }
+            
+            // Cập nhật trạng thái đơn hàng
+            if (!$this->updateStatus($id, ORDER_STATUS_CANCELLED)) {
+                throw new Exception("Không thể cập nhật trạng thái đơn hàng");
+            }
+            
+            // Commit transaction
+            $this->conn->commit();
+            return true;
+            
+        } catch (Exception $e) {
+            // Rollback nếu có lỗi
+            $this->conn->rollback();
+            error_log("Lỗi khi hủy đơn hàng: " . $e->getMessage());
+            return false;
+        }
     }
     
     // Xóa mềm đơn hàng
