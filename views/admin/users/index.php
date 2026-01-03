@@ -54,7 +54,7 @@ include __DIR__ . '/../layout/header.php';
                         <?php foreach ($users as $user): ?>
                         <tr>
                             <td><strong>#<?php echo $user['id']; ?></strong></td>
-                            <td><?php echo htmlspecialchars($user['ten_nguoi_dung']); ?></td>
+                            <td><?php echo htmlspecialchars($user['username'] ?? ''); ?></td>
                             <td><?php echo htmlspecialchars($user['email']); ?></td>
                             <td><?php echo $user['gioi_tinh'] ? ucfirst($user['gioi_tinh']) : '-'; ?></td>
                             <td><?php echo $user['ngay_sinh'] ? format_date($user['ngay_sinh']) : '-'; ?></td>
@@ -104,27 +104,34 @@ include __DIR__ . '/../layout/header.php';
     </div>
 </div>
 
+<?php include __DIR__ . '/../layout/footer.php'; ?>
+
 <script>
-$(document).on('click', '.toggle-status', function() {
-    const userId = $(this).data('id');
-    const currentStatus = $(this).data('status');
-    const action = currentStatus == 1 ? 'khóa' : 'mở khóa';
-    
-    if (!confirm(`Bạn có chắc muốn ${action} tài khoản này?`)) return;
-    
-    $.ajax({
-        url: 'toggle-status.php',
-        method: 'POST',
-        data: { id: userId, status: currentStatus },
-        dataType: 'json',
-        success: function(response) {
-            if (response.success) {
-                showNotification('success', response.message);
-                setTimeout(() => location.reload(), 1000);
-            } else {
-                showNotification('error', response.message);
+$(document).ready(function() {
+    $('.toggle-status').on('click', function() {
+        const userId = $(this).data('id');
+        const currentStatus = $(this).data('status');
+        const action = currentStatus == 1 ? 'khóa' : 'mở khóa';
+        
+        if (!confirm(`Bạn có chắc muốn ${action} tài khoản này?`)) return;
+        
+        $.ajax({
+            url: 'toggle-status.php',
+            method: 'POST',
+            data: { id: userId, status: currentStatus },
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    showNotification('success', response.message);
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    showNotification('error', response.message);
+                }
+            },
+            error: function() {
+                showNotification('error', 'Có lỗi xảy ra!');
             }
-        }
+        });
     });
 });
 </script>

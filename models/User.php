@@ -128,7 +128,7 @@ class User {
     }
     
     // Lấy tất cả users (admin)
-    public function getAllUsers($search = '', $limit = 20, $offset = 0) {
+    public function getAllUsers($limit = 20, $offset = 0, $search = '') {
         $query = "SELECT id, username, email, gioi_tinh, ngay_sinh, vai_tro, trang_thai, ngay_tao 
                   FROM {$this->table} 
                   WHERE ngay_xoa IS NULL";

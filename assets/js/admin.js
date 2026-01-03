@@ -117,3 +117,17 @@ function showLoading() {
 function hideLoading() {
     $('.loading-overlay').remove();
 }
+
+// Show notification
+function showNotification(type, message) {
+    const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+    const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+    const alert = $(`
+        <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+            <i class="fas ${icon} me-2"></i>${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    `);
+    $('main').prepend(alert);
+    setTimeout(() => alert.fadeOut('slow', () => alert.remove()), 5000);
+}

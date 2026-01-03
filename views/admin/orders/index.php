@@ -89,8 +89,8 @@ include __DIR__ . '/../layout/header.php';
                         <?php foreach ($orders as $order): ?>
                         <tr>
                             <td><strong>#<?php echo $order['id']; ?></strong></td>
-                            <td><?php echo htmlspecialchars($order['ten_nguoi_nhan']); ?></td>
-                            <td><?php echo htmlspecialchars($order['sdt_nguoi_nhan']); ?></td>
+                            <td><?php echo htmlspecialchars($order['ho_ten_nguoi_nhan'] ?? ''); ?></td>
+                            <td><?php echo htmlspecialchars($order['so_dien_thoai_nhan'] ?? ''); ?></td>
                             <td><strong class="text-primary"><?php echo format_currency($order['tong_tien']); ?></strong></td>
                             <td>
                                 <?php
@@ -214,38 +214,50 @@ include __DIR__ . '/../layout/header.php';
     </div>
 </div>
 
+<?php include __DIR__ . '/../layout/footer.php'; ?>
+
 <script>
-$(document).on('click', '.view-order', function() {
-    const orderId = $(this).data('id');
-    $.get('view-order.php?id=' + orderId, function(data) {
-        $('#orderContent').html(data);
+$(document).ready(function() {
+    // View order details
+    $('.view-order').on('click', function() {
+        const orderId = $(this).data('id');
+        $('#orderContent').html('<div class="text-center py-5"><div class="spinner-border text-primary"></div></div>');
+        
+        $.get('view-order.php?id=' + orderId, function(data) {
+            $('#orderContent').html(data);
+        }).fail(function() {
+            $('#orderContent').html('<div class="alert alert-danger">Không thể tải chi tiết đơn hàng!</div>');
+        });
     });
-});
 
-$(document).on('click', '.update-status', function() {
-    const orderId = $(this).data('id');
-    $('#order_id').val(orderId);
-});
+    // Update status
+    $('.update-status').on('click', function() {
+        const orderId = $(this).data('id');
+        $('#order_id').val(orderId);
+    });
 
-$('#statusForm').on('submit', function(e) {
-    e.preventDefault();
-    
-    $.ajax({
-        url: 'update-status.php',
-        method: 'POST',
-        data: $(this).serialize(),
-        dataType: 'json',
-        success: function(response) {
-            if (response.success) {
-                showNotification('success', response.message);
-                $('#statusModal').modal('hide');
-                setTimeout(() => location.reload(), 1000);
-            } else {
-                showNotification('error', response.message);
+    // Submit status form
+    $('#statusForm').on('submit', function(e) {
+        e.preventDefault();
+        
+        $.ajax({
+            url: 'update-status.php',
+            method: 'POST',
+            data: $(this).serialize(),
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    showNotification('success', response.message);
+                    $('#statusModal').modal('hide');
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    showNotification('error', response.message);
+                }
+            },
+            error: function() {
+                showNotification('error', 'Có lỗi xảy ra!');
             }
-        }
+        });
     });
 });
 </script>
-
-<?php include __DIR__ . '/../layout/footer.php'; ?>

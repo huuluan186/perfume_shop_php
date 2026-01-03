@@ -97,27 +97,32 @@ include __DIR__ . '/../layout/header.php';
     </div>
 </div>
 
+<?php include __DIR__ . '/../layout/footer.php'; ?>
+
 <script>
-$(document).on('click', '.delete-brand', function() {
-    if (!confirm('Bạn có chắc muốn xóa thương hiệu này?')) return;
-    
-    const brandId = $(this).data('id');
-    
-    $.ajax({
-        url: 'delete.php',
-        method: 'POST',
-        data: { id: brandId },
-        dataType: 'json',
-        success: function(response) {
-            if (response.success) {
-                showNotification('success', response.message);
-                setTimeout(() => location.reload(), 1000);
-            } else {
-                showNotification('error', response.message);
+$(document).ready(function() {
+    $('.delete-brand').on('click', function() {
+        if (!confirm('Bạn có chắc muốn xóa thương hiệu này?')) return;
+        
+        const brandId = $(this).data('id');
+        
+        $.ajax({
+            url: 'delete.php',
+            method: 'POST',
+            data: { id: brandId },
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    showNotification('success', response.message);
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    showNotification('error', response.message);
+                }
+            },
+            error: function() {
+                showNotification('error', 'Có lỗi xảy ra!');
             }
-        }
+        });
     });
 });
 </script>
-
-<?php include __DIR__ . '/../layout/footer.php'; ?>

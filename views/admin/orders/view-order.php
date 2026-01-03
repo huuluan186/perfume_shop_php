@@ -15,15 +15,14 @@ if ($order_id <= 0) {
 }
 
 $orderModel = new Order();
-$order_details = $orderModel->getOrderDetails($order_id);
+$order = $orderModel->getById($order_id);
 
-if (!$order_details) {
+if (!$order) {
     echo '<div class="alert alert-danger">Không tìm thấy đơn hàng!</div>';
     exit;
 }
 
-$order = $order_details['order'];
-$items = $order_details['items'];
+$items = $orderModel->getOrderDetails($order_id);
 ?>
 
 <div class="row mb-3">
@@ -54,10 +53,10 @@ $items = $order_details['items'];
     <div class="col-md-6">
         <h6 class="fw-bold">Thông tin giao hàng</h6>
         <table class="table table-sm table-borderless">
-            <tr><td width="120"><strong>Người nhận:</strong></td><td><?php echo htmlspecialchars($order['ten_nguoi_nhan']); ?></td></tr>
-            <tr><td><strong>SĐT:</strong></td><td><?php echo htmlspecialchars($order['sdt_nguoi_nhan']); ?></td></tr>
-            <tr><td><strong>Địa chỉ:</strong></td><td><?php echo htmlspecialchars($order['dia_chi_giao_hang']); ?></td></tr>
-            <tr><td><strong>Thanh toán:</strong></td><td><?php echo htmlspecialchars($order['phuong_thuc_thanh_toan']); ?></td></tr>
+            <tr><td width="120"><strong>Người nhận:</strong></td><td><?php echo htmlspecialchars($order['ho_ten_nguoi_nhan'] ?? ''); ?></td></tr>
+            <tr><td><strong>SĐT:</strong></td><td><?php echo htmlspecialchars($order['so_dien_thoai_nhan'] ?? ''); ?></td></tr>
+            <tr><td><strong>Địa chỉ:</strong></td><td><?php echo htmlspecialchars($order['dia_chi_giao_hang'] ?? ''); ?></td></tr>
+            <tr><td><strong>Thanh toán:</strong></td><td><?php echo htmlspecialchars($order['phuong_thuc_thanh_toan'] ?? 'COD'); ?></td></tr>
         </table>
     </div>
 </div>
@@ -77,9 +76,9 @@ $items = $order_details['items'];
             <?php foreach ($items as $item): ?>
             <tr>
                 <td><?php echo htmlspecialchars($item['ten_san_pham']); ?></td>
-                <td><?php echo format_currency($item['gia_ban']); ?></td>
+                <td><?php echo format_currency($item['don_gia']); ?></td>
                 <td class="text-center"><?php echo $item['so_luong']; ?></td>
-                <td><strong><?php echo format_currency($item['gia_ban'] * $item['so_luong']); ?></strong></td>
+                <td><strong><?php echo format_currency($item['don_gia'] * $item['so_luong']); ?></strong></td>
             </tr>
             <?php endforeach; ?>
         </tbody>

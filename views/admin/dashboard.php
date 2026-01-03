@@ -201,7 +201,7 @@ include __DIR__ . '/layout/header.php';
                                 <?php foreach ($recent_orders as $order): ?>
                                 <tr>
                                     <td><strong>#<?php echo $order['id']; ?></strong></td>
-                                    <td><?php echo htmlspecialchars($order['ten_nguoi_nhan']); ?></td>
+                                    <td><?php echo htmlspecialchars($order['ho_ten_nguoi_nhan'] ?? ''); ?></td>
                                     <td><?php echo format_currency($order['tong_tien']); ?></td>
                                     <td>
                                         <?php

@@ -154,7 +154,7 @@ include __DIR__ . '/../layout/header.php';
                             <div class="col-md-4 mb-3">
                                 <label class="form-label">Dung tích <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" name="dung_tich" 
-                                       value="<?php echo htmlspecialchars($product['dung_tich']); ?>" required>
+                                       value="<?php echo htmlspecialchars($product['dung_tich'] ?? ''); ?>" required>
                             </div>
                             
                             <div class="col-md-4 mb-3">

@@ -116,7 +116,7 @@ include __DIR__ . '/../layout/header.php';
                             </td>
                             <td>
                                 <strong><?php echo htmlspecialchars($product['ten_san_pham']); ?></strong><br>
-                                <small class="text-muted"><?php echo htmlspecialchars($product['dung_tich']); ?> | <?php echo ucfirst($product['gioi_tinh']); ?></small>
+                                <small class="text-muted"><?php echo htmlspecialchars($product['dung_tich'] ?? ''); ?> | <?php echo ucfirst($product['gioi_tinh'] ?? ''); ?></small>
                             </td>
                             <td><?php echo htmlspecialchars($product['ten_danh_muc']); ?></td>
                             <td><?php echo htmlspecialchars($product['ten_thuong_hieu']); ?></td>
@@ -178,27 +178,32 @@ include __DIR__ . '/../layout/header.php';
     </div>
 </div>
 
+<?php include __DIR__ . '/../layout/footer.php'; ?>
+
 <script>
-$(document).on('click', '.delete-product', function() {
-    if (!confirm('Bạn có chắc muốn xóa sản phẩm này?')) return;
-    
-    const productId = $(this).data('id');
-    
-    $.ajax({
-        url: 'delete.php',
-        method: 'POST',
-        data: { id: productId },
-        dataType: 'json',
-        success: function(response) {
-            if (response.success) {
-                showNotification('success', response.message);
-                setTimeout(() => location.reload(), 1000);
-            } else {
-                showNotification('error', response.message);
+$(document).ready(function() {
+    $('.delete-product').on('click', function() {
+        if (!confirm('Bạn có chắc muốn xóa sản phẩm này?')) return;
+        
+        const productId = $(this).data('id');
+        
+        $.ajax({
+            url: 'delete.php',
+            method: 'POST',
+            data: { id: productId },
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    showNotification('success', response.message);
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    showNotification('error', response.message);
+                }
+            },
+            error: function() {
+                showNotification('error', 'Có lỗi xảy ra!');
             }
-        }
+        });
     });
 });
 </script>
-
-<?php include __DIR__ . '/../layout/footer.php'; ?>
