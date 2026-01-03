@@ -96,17 +96,23 @@
                         </a>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-user-circle me-1"></i><?php echo $_SESSION['username'] ?? 'Admin'; ?>
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" 
+                           data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-user-circle me-1"></i>
+                            <span class="d-none d-md-inline">admin</span>
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="<?php echo BASE_URL; ?>views/account/profile.php">
-                                <i class="fas fa-user me-2"></i>Tài khoản
-                            </a></li>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li>
+                                <a class="dropdown-item" href="<?php echo BASE_URL; ?>views/account/profile.php">
+                                    <i class="fas fa-user me-2"></i>Tài khoản
+                                </a>
+                            </li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item text-danger" href="<?php echo BASE_URL; ?>views/auth/logout.php">
-                                <i class="fas fa-sign-out-alt me-2"></i>Đăng xuất
-                            </a></li>
+                            <li>
+                                <a class="dropdown-item text-danger" href="<?php echo BASE_URL; ?>views/auth/logout.php">
+                                    <i class="fas fa-sign-out-alt me-2"></i>Đăng xuất
+                                </a>
+                            </li>
                         </ul>
                     </li>
                 </ul>
@@ -117,7 +123,7 @@
     <div class="container-fluid">
         <div class="row">
             <!-- Sidebar -->
-            <nav class="col-md-2 d-md-block bg-white sidebar">
+            <nav class="col-md-2 d-md-block bg-white sidebar" style="width: 250px;">
                 <div class="position-sticky pt-3">
                     <ul class="nav flex-column">
                         <li class="nav-item">

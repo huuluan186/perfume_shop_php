@@ -14,8 +14,8 @@ $page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
 $limit = 20;
 $offset = ($page - 1) * $limit;
 
-$brands = $brandModel->getAll($limit, $offset);
-$total_brands = $brandModel->count();
+$brands = $brandModel->getAllForAdmin($limit, $offset);
+$total_brands = $brandModel->countForAdmin();
 $pagination = paginate($total_brands, $page, $limit);
 
 $page_title = "Quản lý thương hiệu";
@@ -47,12 +47,13 @@ include __DIR__ . '/../layout/header.php';
                             <th>Tên thương hiệu</th>
                             <th>Quốc gia</th>
                             <th>Số sản phẩm</th>
+                            <th>Trạng thái</th>
                             <th width="150">Thao tác</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php foreach ($brands as $brand): ?>
-                        <tr>
+                        <tr <?php echo $brand['ngay_xoa'] ? 'class="table-secondary" style="opacity: 0.6;"' : ''; ?>>
                             <td><strong>#<?php echo $brand['id']; ?></strong></td>
                             <td>
                                 <?php if (!empty($brand['logo'])): ?>
@@ -67,13 +68,32 @@ include __DIR__ . '/../layout/header.php';
                             <td><?php echo htmlspecialchars($brand['quoc_gia'] ?? '-'); ?></td>
                             <td><span class="badge bg-info"><?php echo $brand['product_count']; ?> sản phẩm</span></td>
                             <td>
-                                <a href="edit.php?id=<?php echo $brand['id']; ?>" class="btn btn-sm btn-outline-primary">
+                                <?php if ($brand['ngay_xoa']): ?>
+                                    <span class="badge bg-danger">
+                                        <i class="fas fa-trash me-1"></i>Đã xóa
+                                    </span>
+                                    <br>
+                                    <small class="text-muted"><?php echo date('d/m/Y H:i', strtotime($brand['ngay_xoa'])); ?></small>
+                                <?php else: ?>
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-check-circle me-1"></i>Hoạt động
+                                    </span>
+                                <?php endif; ?>
+                            </td>
+                            <td>
+                                <?php if (!$brand['ngay_xoa']): ?>
+                                <a href="edit.php?id=<?php echo $brand['id']; ?>" class="btn btn-sm btn-outline-primary me-1" title="Sửa">
                                     <i class="fas fa-edit"></i>
                                 </a>
                                 <button class="btn btn-sm btn-outline-danger delete-brand" 
-                                        data-id="<?php echo $brand['id']; ?>">
+                                        data-id="<?php echo $brand['id']; ?>" title="Xóa">
                                     <i class="fas fa-trash"></i>
                                 </button>
+                                <?php else: ?>
+                                <button class="btn btn-sm btn-outline-secondary" disabled title="Không thể cập nhật">
+                                    <i class="fas fa-ban"></i>
+                                </button>
+                                <?php endif; ?>
                             </td>
                         </tr>
                         <?php endforeach; ?>
@@ -101,10 +121,16 @@ include __DIR__ . '/../layout/header.php';
 
 <script>
 $(document).ready(function() {
-    $('.delete-brand').on('click', function() {
+    $('.delete-brand').on('click', function(e) {
+        e.preventDefault();
+        
         if (!confirm('Bạn có chắc muốn xóa thương hiệu này?')) return;
         
         const brandId = $(this).data('id');
+        const $button = $(this);
+        
+        // Disable button to prevent double click
+        $button.prop('disabled', true);
         
         $.ajax({
             url: 'delete.php',
@@ -113,14 +139,18 @@ $(document).ready(function() {
             dataType: 'json',
             success: function(response) {
                 if (response.success) {
-                    showNotification('success', response.message);
-                    setTimeout(() => location.reload(), 1000);
+                    alert(response.message);
+                    location.reload();
                 } else {
-                    showNotification('error', response.message);
+                    alert(response.message);
+                    $button.prop('disabled', false);
                 }
             },
-            error: function() {
-                showNotification('error', 'Có lỗi xảy ra!');
+            error: function(xhr, status, error) {
+                console.error('Error:', error);
+                console.log('Response:', xhr.responseText);
+                alert('Có lỗi xảy ra khi xóa thương hiệu!');
+                $button.prop('disabled', false);
             }
         });
     });

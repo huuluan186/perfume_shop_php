@@ -26,8 +26,8 @@ $page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
 $limit = PRODUCTS_PER_PAGE;
 $offset = ($page - 1) * $limit;
 
-$products = $productModel->getAll($filters, $limit, $offset);
-$total_products = $productModel->count($filters);
+$products = $productModel->getAllForAdmin($filters, $limit, $offset);
+$total_products = $productModel->countForAdmin($filters);
 $pagination = paginate($total_products, $page, $limit);
 
 $categories = $categoryModel->getAll();
@@ -102,12 +102,13 @@ include __DIR__ . '/../layout/header.php';
                             <th>Thương hiệu</th>
                             <th>Giá bán</th>
                             <th>Tồn kho</th>
+                            <th>Trạng thái</th>
                             <th width="150">Thao tác</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php foreach ($products as $product): ?>
-                        <tr>
+                        <tr <?php echo $product['ngay_xoa'] ? 'class="table-secondary" style="opacity: 0.6;"' : ''; ?>>
                             <td><strong>#<?php echo $product['id']; ?></strong></td>
                             <td>
                                 <img src="<?php echo ASSETS_URL . urldecode($product['duong_dan_hinh_anh']); ?>" 
@@ -129,6 +130,20 @@ include __DIR__ . '/../layout/header.php';
                                 <?php endif; ?>
                             </td>
                             <td>
+                                <?php if ($product['ngay_xoa']): ?>
+                                    <span class="badge bg-danger">
+                                        <i class="fas fa-trash me-1"></i>Đã xóa
+                                    </span>
+                                    <br>
+                                    <small class="text-muted"><?php echo date('d/m/Y H:i', strtotime($product['ngay_xoa'])); ?></small>
+                                <?php else: ?>
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-check-circle me-1"></i>Hoạt động
+                                    </span>
+                                <?php endif; ?>
+                            </td>
+                            <td>
+                                <?php if (!$product['ngay_xoa']): ?>
                                 <a href="edit.php?id=<?php echo $product['id']; ?>" class="btn btn-sm btn-outline-primary" title="Sửa">
                                     <i class="fas fa-edit"></i>
                                 </a>
@@ -136,6 +151,9 @@ include __DIR__ . '/../layout/header.php';
                                         data-id="<?php echo $product['id']; ?>" title="Xóa">
                                     <i class="fas fa-trash"></i>
                                 </button>
+                                <?php else: ?>
+                                <span class="text-muted" title="Sản phẩm đã bị xóa"><i class="fas fa-ban"></i></span>
+                                <?php endif; ?>
                             </td>
                         </tr>
                         <?php endforeach; ?>
@@ -182,10 +200,16 @@ include __DIR__ . '/../layout/header.php';
 
 <script>
 $(document).ready(function() {
-    $('.delete-product').on('click', function() {
+    $('.delete-product').on('click', function(e) {
+        e.preventDefault();
+        
         if (!confirm('Bạn có chắc muốn xóa sản phẩm này?')) return;
         
         const productId = $(this).data('id');
+        const $button = $(this);
+        
+        // Disable button to prevent double click
+        $button.prop('disabled', true);
         
         $.ajax({
             url: 'delete.php',
@@ -194,14 +218,18 @@ $(document).ready(function() {
             dataType: 'json',
             success: function(response) {
                 if (response.success) {
-                    showNotification('success', response.message);
-                    setTimeout(() => location.reload(), 1000);
+                    alert(response.message);
+                    location.reload();
                 } else {
-                    showNotification('error', response.message);
+                    alert(response.message);
+                    $button.prop('disabled', false);
                 }
             },
-            error: function() {
-                showNotification('error', 'Có lỗi xảy ra!');
+            error: function(xhr, status, error) {
+                console.error('Error:', error);
+                console.log('Response:', xhr.responseText);
+                alert('Có lỗi xảy ra khi xóa sản phẩm!');
+                $button.prop('disabled', false);
             }
         });
     });

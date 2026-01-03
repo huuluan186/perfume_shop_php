@@ -55,8 +55,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($errors)) {
         $data = [
             'ten_san_pham' => $ten_san_pham,
-            'danh_muc_id' => $danh_muc_id,
-            'thuong_hieu_id' => $thuong_hieu_id,
+            'id_danh_muc' => $danh_muc_id,
+            'id_thuong_hieu' => $thuong_hieu_id,
             'dung_tich' => $dung_tich,
             'gia_ban' => $gia_ban,
             'so_luong_ton' => $so_luong_ton,

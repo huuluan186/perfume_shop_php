@@ -123,7 +123,8 @@
                         <!-- User Menu -->
                         <?php if (is_logged_in()): ?>
                         <div class="dropdown">
-                            <a class="text-dark dropdown-toggle" href="#" role="button" id="userDropdown" data-bs-toggle="dropdown">
+                            <a class="text-dark dropdown-toggle" href="#" role="button" id="userDropdown" 
+                               data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="fas fa-user-circle fa-lg"></i>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
@@ -135,7 +136,7 @@
                                 <li><a class="dropdown-item" href="<?php echo BASE_URL; ?>views/admin/dashboard.php"><i class="fas fa-tachometer-alt me-2"></i>Quản trị</a></li>
                                 <?php endif; ?>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="<?php echo BASE_URL; ?>views/auth/logout.php"><i class="fas fa-sign-out-alt me-2"></i>Đăng xuất</a></li>
+                                <li><a class="dropdown-item text-danger" href="<?php echo BASE_URL; ?>views/auth/logout.php"><i class="fas fa-sign-out-alt me-2"></i>Đăng xuất</a></li>
                             </ul>
                         </div>
                         <?php endif; ?>

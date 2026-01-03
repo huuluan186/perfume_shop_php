@@ -122,6 +122,35 @@ class Brand {
         return $stmt->execute();
     }
     
+    // Lấy tất cả thương hiệu cho admin (bao gồm cả đã xóa)
+    public function getAllForAdmin($limit = null, $offset = 0) {
+        $query = "SELECT th.*, 
+                  COALESCE(COUNT(sp.id), 0) as product_count
+                  FROM {$this->table} th
+                  LEFT JOIN san_pham sp ON th.id = sp.id_thuong_hieu AND sp.ngay_xoa IS NULL
+                  GROUP BY th.id
+                  ORDER BY CASE WHEN th.ngay_xoa IS NULL THEN 0 ELSE 1 END, th.ten_thuong_hieu ASC";
+        
+        if ($limit) {
+            $query .= " LIMIT ? OFFSET ?";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bind_param("ii", $limit, $offset);
+            $stmt->execute();
+            return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+        }
+        
+        $result = $this->conn->query($query);
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+    
+    // Đếm tổng thương hiệu cho admin (bao gồm cả đã xóa)
+    public function countForAdmin() {
+        $query = "SELECT COUNT(*) as total FROM {$this->table}";
+        $result = $this->conn->query($query);
+        $row = $result->fetch_assoc();
+        return $row['total'];
+    }
+    
     public function __destruct() {
         if ($this->conn) {
             $this->conn->close();

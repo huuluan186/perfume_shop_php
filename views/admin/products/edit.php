@@ -65,8 +65,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($errors)) {
         $data = [
             'ten_san_pham' => $ten_san_pham,
-            'danh_muc_id' => $danh_muc_id,
-            'thuong_hieu_id' => $thuong_hieu_id,
+            'id_danh_muc' => $danh_muc_id,
+            'id_thuong_hieu' => $thuong_hieu_id,
             'dung_tich' => $dung_tich,
             'gia_ban' => $gia_ban,
             'so_luong_ton' => $so_luong_ton,
@@ -129,7 +129,7 @@ include __DIR__ . '/../layout/header.php';
                                     <option value="">Chọn danh mục</option>
                                     <?php foreach ($categories as $cat): ?>
                                     <option value="<?php echo $cat['id']; ?>" 
-                                            <?php echo ($product['danh_muc_id'] == $cat['id']) ? 'selected' : ''; ?>>
+                                            <?php echo ($product['id_danh_muc'] == $cat['id']) ? 'selected' : ''; ?>>
                                         <?php echo htmlspecialchars($cat['ten_danh_muc']); ?>
                                     </option>
                                     <?php endforeach; ?>
@@ -142,7 +142,7 @@ include __DIR__ . '/../layout/header.php';
                                     <option value="">Chọn thương hiệu</option>
                                     <?php foreach ($brands as $brand): ?>
                                     <option value="<?php echo $brand['id']; ?>"
-                                            <?php echo ($product['thuong_hieu_id'] == $brand['id']) ? 'selected' : ''; ?>>
+                                            <?php echo ($product['id_thuong_hieu'] == $brand['id']) ? 'selected' : ''; ?>>
                                         <?php echo htmlspecialchars($brand['ten_thuong_hieu']); ?>
                                     </option>
                                     <?php endforeach; ?>
@@ -174,9 +174,9 @@ include __DIR__ . '/../layout/header.php';
                             <label class="form-label">Giới tính <span class="text-danger">*</span></label>
                             <select class="form-select" name="gioi_tinh" required>
                                 <option value="">Chọn giới tính</option>
-                                <option value="nam" <?php echo ($product['gioi_tinh'] === 'nam') ? 'selected' : ''; ?>>Nam</option>
-                                <option value="nữ" <?php echo ($product['gioi_tinh'] === 'nữ') ? 'selected' : ''; ?>>Nữ</option>
-                                <option value="unisex" <?php echo ($product['gioi_tinh'] === 'unisex') ? 'selected' : ''; ?>>Unisex</option>
+                                <option value="nam" <?php echo (($product['gioi_tinh_phu_hop'] ?? '') === 'nam') ? 'selected' : ''; ?>>Nam</option>
+                                <option value="nữ" <?php echo (($product['gioi_tinh_phu_hop'] ?? '') === 'nữ') ? 'selected' : ''; ?>>Nữ</option>
+                                <option value="unisex" <?php echo (($product['gioi_tinh_phu_hop'] ?? '') === 'unisex') ? 'selected' : ''; ?>>Unisex</option>
                             </select>
                         </div>
                         

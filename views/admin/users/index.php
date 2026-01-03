@@ -108,12 +108,22 @@ include __DIR__ . '/../layout/header.php';
 
 <script>
 $(document).ready(function() {
-    $('.toggle-status').on('click', function() {
+    console.log('User management page loaded');
+    
+    // Use event delegation for toggle status buttons
+    $(document).on('click', '.toggle-status', function(e) {
+        e.preventDefault();
+        
         const userId = $(this).data('id');
         const currentStatus = $(this).data('status');
         const action = currentStatus == 1 ? 'khóa' : 'mở khóa';
         
+        console.log('Toggle status clicked:', userId, currentStatus);
+        
         if (!confirm(`Bạn có chắc muốn ${action} tài khoản này?`)) return;
+        
+        const $button = $(this);
+        $button.prop('disabled', true);
         
         $.ajax({
             url: 'toggle-status.php',
@@ -121,19 +131,22 @@ $(document).ready(function() {
             data: { id: userId, status: currentStatus },
             dataType: 'json',
             success: function(response) {
+                console.log('Response:', response);
                 if (response.success) {
-                    showNotification('success', response.message);
-                    setTimeout(() => location.reload(), 1000);
+                    alert(response.message);
+                    location.reload();
                 } else {
-                    showNotification('error', response.message);
+                    alert(response.message);
+                    $button.prop('disabled', false);
                 }
             },
-            error: function() {
-                showNotification('error', 'Có lỗi xảy ra!');
+            error: function(xhr, status, error) {
+                console.error('Error:', error);
+                console.log('Response:', xhr.responseText);
+                alert('Có lỗi xảy ra! Lỗi: ' + error);
+                $button.prop('disabled', false);
             }
         });
     });
 });
 </script>
-
-<?php include __DIR__ . '/../layout/footer.php'; ?>

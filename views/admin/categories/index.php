@@ -77,10 +77,16 @@ include __DIR__ . '/../layout/header.php';
 </div>
 
 <script>
-$(document).on('click', '.delete-category', function() {
+$(document).on('click', '.delete-category', function(e) {
+    e.preventDefault();
+    
     if (!confirm('Bạn có chắc muốn xóa danh mục này?')) return;
     
     const categoryId = $(this).data('id');
+    const $button = $(this);
+    
+    // Disable button to prevent double click
+    $button.prop('disabled', true);
     
     $.ajax({
         url: 'delete.php',
@@ -89,11 +95,18 @@ $(document).on('click', '.delete-category', function() {
         dataType: 'json',
         success: function(response) {
             if (response.success) {
-                showNotification('success', response.message);
-                setTimeout(() => location.reload(), 1000);
+                alert(response.message);
+                location.reload();
             } else {
-                showNotification('error', response.message);
+                alert(response.message);
+                $button.prop('disabled', false);
             }
+        },
+        error: function(xhr, status, error) {
+            console.error('Error:', error);
+            console.log('Response:', xhr.responseText);
+            alert('Có lỗi xảy ra khi xóa danh mục!');
+            $button.prop('disabled', false);
         }
     });
 });

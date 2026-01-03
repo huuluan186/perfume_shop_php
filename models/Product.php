@@ -236,16 +236,25 @@ class Product {
                    so_luong_ton, id_danh_muc, id_thuong_hieu) 
                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         
+        // Map field names and provide defaults
+        $dung_tich_ml = $data['dung_tich_ml'] ?? ($data['dung_tich'] ?? '');
+        $gioi_tinh_phu_hop = $data['gioi_tinh_phu_hop'] ?? ($data['gioi_tinh'] ?? '');
+        
         $stmt = $this->conn->prepare($query);
+        $nhom_huomg = $data['nhom_huomg'] ?? '';
+        $phong_cach = $data['phong_cach'] ?? '';
+        $xuat_xu = $data['xuat_xu'] ?? '';
+        $nam_phat_hanh = $data['nam_phat_hanh'] ?? 0;
+        
         $stmt->bind_param("sdisssiisisii", 
             $data['ten_san_pham'],
             $data['gia_ban'],
-            $data['dung_tich_ml'],
-            $data['nhom_huomg'],
-            $data['gioi_tinh_phu_hop'],
-            $data['phong_cach'],
-            $data['xuat_xu'],
-            $data['nam_phat_hanh'],
+            $dung_tich_ml,
+            $nhom_huomg,
+            $gioi_tinh_phu_hop,
+            $phong_cach,
+            $xuat_xu,
+            $nam_phat_hanh,
             $data['mo_ta'],
             $data['duong_dan_hinh_anh'],
             $data['so_luong_ton'],
@@ -268,16 +277,25 @@ class Product {
                   id_danh_muc = ?, id_thuong_hieu = ? 
                   WHERE id = ?";
         
+        // Map field names and provide defaults
+        $dung_tich_ml = $data['dung_tich_ml'] ?? ($data['dung_tich'] ?? '');
+        $gioi_tinh_phu_hop = $data['gioi_tinh_phu_hop'] ?? ($data['gioi_tinh'] ?? '');
+        
         $stmt = $this->conn->prepare($query);
+        $nhom_huomg = $data['nhom_huomg'] ?? '';
+        $phong_cach = $data['phong_cach'] ?? '';
+        $xuat_xu = $data['xuat_xu'] ?? '';
+        $nam_phat_hanh = $data['nam_phat_hanh'] ?? 0;
+        
         $stmt->bind_param("sdisssiisiiiii", 
             $data['ten_san_pham'],
             $data['gia_ban'],
-            $data['dung_tich_ml'],
-            $data['nhom_huomg'],
-            $data['gioi_tinh_phu_hop'],
-            $data['phong_cach'],
-            $data['xuat_xu'],
-            $data['nam_phat_hanh'],
+            $dung_tich_ml,
+            $nhom_huomg,
+            $gioi_tinh_phu_hop,
+            $phong_cach,
+            $xuat_xu,
+            $nam_phat_hanh,
             $data['mo_ta'],
             $data['duong_dan_hinh_anh'],
             $data['so_luong_ton'],
@@ -317,6 +335,120 @@ class Product {
         $stmt->bind_param("ii", $threshold, $limit);
         $stmt->execute();
         return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    }
+    
+    // Lấy tất cả sản phẩm cho admin (bao gồm cả sản phẩm đã xóa)
+    public function getAllForAdmin($filters = [], $limit = PRODUCTS_PER_PAGE, $offset = 0) {
+        $query = "SELECT sp.*, dm.ten_danh_muc, th.ten_thuong_hieu 
+                  FROM {$this->table} sp
+                  LEFT JOIN danh_muc dm ON sp.id_danh_muc = dm.id
+                  LEFT JOIN thuong_hieu th ON sp.id_thuong_hieu = th.id
+                  WHERE 1=1";
+        
+        $params = [];
+        $types = "";
+        
+        // Lọc theo danh mục
+        if (!empty($filters['category_id'])) {
+            $query .= " AND sp.id_danh_muc = ?";
+            $params[] = $filters['category_id'];
+            $types .= "i";
+        }
+        
+        // Lọc theo thương hiệu
+        if (!empty($filters['brand_id'])) {
+            $query .= " AND sp.id_thuong_hieu = ?";
+            $params[] = $filters['brand_id'];
+            $types .= "i";
+        }
+        
+        // Tìm kiếm
+        if (!empty($filters['search'])) {
+            $query .= " AND (sp.ten_san_pham LIKE ? OR sp.mo_ta LIKE ? OR th.ten_thuong_hieu LIKE ?)";
+            $search_param = "%{$filters['search']}%";
+            $params[] = $search_param;
+            $params[] = $search_param;
+            $params[] = $search_param;
+            $types .= "sss";
+        }
+        
+        // Sắp xếp: sản phẩm chưa xóa lên trước, đã xóa xuống cuối
+        $order_by = "CASE WHEN sp.ngay_xoa IS NULL THEN 0 ELSE 1 END, sp.id DESC";
+        
+        if (!empty($filters['sort'])) {
+            switch ($filters['sort']) {
+                case 'price_asc':
+                    $order_by = "CASE WHEN sp.ngay_xoa IS NULL THEN 0 ELSE 1 END, sp.gia_ban ASC";
+                    break;
+                case 'price_desc':
+                    $order_by = "CASE WHEN sp.ngay_xoa IS NULL THEN 0 ELSE 1 END, sp.gia_ban DESC";
+                    break;
+                case 'name_asc':
+                    $order_by = "CASE WHEN sp.ngay_xoa IS NULL THEN 0 ELSE 1 END, sp.ten_san_pham ASC";
+                    break;
+                case 'name_desc':
+                    $order_by = "CASE WHEN sp.ngay_xoa IS NULL THEN 0 ELSE 1 END, sp.ten_san_pham DESC";
+                    break;
+                case 'newest':
+                    $order_by = "CASE WHEN sp.ngay_xoa IS NULL THEN 0 ELSE 1 END, sp.id DESC";
+                    break;
+            }
+        }
+        
+        $query .= " ORDER BY {$order_by} LIMIT ? OFFSET ?";
+        $params[] = $limit;
+        $params[] = $offset;
+        $types .= "ii";
+        
+        $stmt = $this->conn->prepare($query);
+        
+        if (!empty($params)) {
+            $stmt->bind_param($types, ...$params);
+        }
+        
+        $stmt->execute();
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    }
+    
+    // Đếm tổng sản phẩm cho admin (bao gồm cả đã xóa)
+    public function countForAdmin($filters = []) {
+        $query = "SELECT COUNT(*) as total FROM {$this->table} sp
+                  LEFT JOIN thuong_hieu th ON sp.id_thuong_hieu = th.id
+                  WHERE 1=1";
+        
+        $params = [];
+        $types = "";
+        
+        if (!empty($filters['category_id'])) {
+            $query .= " AND sp.id_danh_muc = ?";
+            $params[] = $filters['category_id'];
+            $types .= "i";
+        }
+        
+        if (!empty($filters['brand_id'])) {
+            $query .= " AND sp.id_thuong_hieu = ?";
+            $params[] = $filters['brand_id'];
+            $types .= "i";
+        }
+        
+        if (!empty($filters['search'])) {
+            $query .= " AND (sp.ten_san_pham LIKE ? OR sp.mo_ta LIKE ? OR th.ten_thuong_hieu LIKE ?)";
+            $search_param = "%{$filters['search']}%";
+            $params[] = $search_param;
+            $params[] = $search_param;
+            $params[] = $search_param;
+            $types .= "sss";
+        }
+        
+        $stmt = $this->conn->prepare($query);
+        
+        if (!empty($params)) {
+            $stmt->bind_param($types, ...$params);
+        }
+        
+        $stmt->execute();
+        $result = $stmt->get_result()->fetch_assoc();
+        return $result['total'];
     }
     
     public function __destruct() {

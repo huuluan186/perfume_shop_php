@@ -110,16 +110,20 @@ include __DIR__ . '/../layout/header.php';
                             <td><small><?php echo htmlspecialchars($order['phuong_thuc_thanh_toan'] ?? 'COD'); ?></small></td>
                             <td><?php echo format_date($order['ngay_dat']); ?></td>
                             <td>
-                                <button class="btn btn-sm btn-outline-info view-order" 
+                                <button class="btn btn-sm btn-outline-info view-order me-1" 
                                         data-id="<?php echo $order['id']; ?>"
-                                        data-bs-toggle="modal" data-bs-target="#orderModal">
+                                        title="Xem chi tiết">
                                     <i class="fas fa-eye"></i>
                                 </button>
                                 <?php if ($status !== ORDER_STATUS_CANCELLED && $status !== ORDER_STATUS_COMPLETED): ?>
                                 <button class="btn btn-sm btn-outline-primary update-status" 
                                         data-id="<?php echo $order['id']; ?>"
-                                        data-bs-toggle="modal" data-bs-target="#statusModal">
+                                        title="Cập nhật trạng thái">
                                     <i class="fas fa-edit"></i>
+                                </button>
+                                <?php else: ?>
+                                <button class="btn btn-sm btn-outline-secondary" disabled title="Không thể cập nhật">
+                                    <i class="fas fa-ban"></i>
                                 </button>
                                 <?php endif; ?>
                             </td>
@@ -195,13 +199,11 @@ include __DIR__ . '/../layout/header.php';
                     <div class="mb-3">
                         <label class="form-label">Trạng thái mới</label>
                         <select class="form-select" name="status" required>
-                            <option value="<?php echo ORDER_STATUS_PENDING; ?>">Chờ xác nhận</option>
-                            <option value="<?php echo ORDER_STATUS_CONFIRMED; ?>">Đã xác nhận</option>
-                            <option value="<?php echo ORDER_STATUS_PENDING; ?>">Chưa duyệt</option>
-                            <option value="<?php echo ORDER_STATUS_APPROVED; ?>">Đã duyệt</option>
-                            <option value="<?php echo ORDER_STATUS_SHIPPING; ?>">Đang giao hàng</option>
-                            <option value="<?php echo ORDER_STATUS_COMPLETED; ?>">Hoàn thành</option>
-                            <option value="<?php echo ORDER_STATUS_CANCELLED; ?>">Đã hủy</option>
+                            <option value="0">Chưa duyệt</option>
+                            <option value="1">Đã duyệt</option>
+                            <option value="2">Đang giao hàng</option>
+                            <option value="3">Hoàn thành</option>
+                            <option value="4">Đã hủy</option>
                         </select>
                     </div>
                 </div>
@@ -219,43 +221,78 @@ include __DIR__ . '/../layout/header.php';
 <script>
 $(document).ready(function() {
     // View order details
-    $('.view-order').on('click', function() {
+    $(document).on('click', '.view-order', function(e) {
+        e.preventDefault();
+        
         const orderId = $(this).data('id');
+        console.log('View order:', orderId);
+        
+        // Show modal
+        $('#orderModal').modal('show');
+        
+        // Load content
         $('#orderContent').html('<div class="text-center py-5"><div class="spinner-border text-primary"></div></div>');
         
-        $.get('view-order.php?id=' + orderId, function(data) {
-            $('#orderContent').html(data);
-        }).fail(function() {
-            $('#orderContent').html('<div class="alert alert-danger">Không thể tải chi tiết đơn hàng!</div>');
+        $.ajax({
+            url: 'view-order.php',
+            method: 'GET',
+            data: { id: orderId },
+            success: function(data) {
+                console.log('Order loaded successfully');
+                $('#orderContent').html(data);
+            },
+            error: function(xhr, status, error) {
+                console.error('Error loading order:', error);
+                console.log('Response:', xhr.responseText);
+                $('#orderContent').html('<div class="alert alert-danger">Không thể tải chi tiết đơn hàng! Lỗi: ' + error + '</div>');
+            }
         });
     });
 
     // Update status
-    $('.update-status').on('click', function() {
+    $(document).on('click', '.update-status', function(e) {
+        e.preventDefault();
+        
         const orderId = $(this).data('id');
+        console.log('Update status for order:', orderId);
+        
         $('#order_id').val(orderId);
+        $('#statusModal').modal('show');
     });
 
     // Submit status form
     $('#statusForm').on('submit', function(e) {
         e.preventDefault();
         
+        const $form = $(this);
+        const $submitBtn = $form.find('button[type="submit"]');
+        const originalText = $submitBtn.html();
+        
+        $submitBtn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span>Đang xử lý...');
+        
+        console.log('Submitting form:', $form.serialize());
+        
         $.ajax({
             url: 'update-status.php',
             method: 'POST',
-            data: $(this).serialize(),
+            data: $form.serialize(),
             dataType: 'json',
             success: function(response) {
+                console.log('Response:', response);
                 if (response.success) {
-                    showNotification('success', response.message);
+                    alert(response.message);
                     $('#statusModal').modal('hide');
-                    setTimeout(() => location.reload(), 1000);
+                    location.reload();
                 } else {
-                    showNotification('error', response.message);
+                    alert(response.message);
+                    $submitBtn.prop('disabled', false).html(originalText);
                 }
             },
-            error: function() {
-                showNotification('error', 'Có lỗi xảy ra!');
+            error: function(xhr, status, error) {
+                console.error('Error updating status:', error);
+                console.log('Response:', xhr.responseText);
+                alert('Có lỗi xảy ra khi cập nhật trạng thái! Lỗi: ' + error);
+                $submitBtn.prop('disabled', false).html(originalText);
             }
         });
     });
