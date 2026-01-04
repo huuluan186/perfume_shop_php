@@ -150,21 +150,31 @@ include __DIR__ . '/../layout/header.php';
                             <?php foreach ($items as $item): ?>
                             <tr>
                                 <td>
-                                    <?php if (!empty($item['duong_dan_hinh_anh'])): 
-                                        $image_path = $item['duong_dan_hinh_anh'];
-                                        if (strpos($image_path, '/') === false) {
-                                            $image_path = ASSETS_URL . 'products/' . $image_path;
+                                    <?php 
+                                    $image_path = !empty($item['duong_dan_hinh_anh']) ? $item['duong_dan_hinh_anh'] : '';
+                                    
+                                    // Nếu có đường dẫn hình ảnh
+                                    if ($image_path) {
+                                        // Nếu không phải URL đầy đủ, thêm ASSETS_URL
+                                        if (!preg_match('/^https?:\/\//', $image_path)) {
+                                            // Nếu đã có 'products/' ở đầu thì chỉ cần thêm ASSETS_URL
+                                            if (strpos($image_path, 'products/') === 0) {
+                                                $image_path = ASSETS_URL . $image_path;
+                                            } else {
+                                                $image_path = ASSETS_URL . 'products/' . $image_path;
+                                            }
                                         }
                                     ?>
-                                    <img src="<?php echo htmlspecialchars($image_path); ?>" 
-                                         class="rounded" style="width: 60px; height: 60px; object-fit: cover;"
-                                         onerror="this.src='<?php echo ASSETS_URL; ?>images/placeholder.png'">
-                                    <?php else: ?>
-                                    <div class="bg-light rounded d-flex align-items-center justify-content-center" 
-                                         style="width: 60px; height: 60px;">
-                                        <i class="fas fa-image text-muted"></i>
-                                    </div>
-                                    <?php endif; ?>
+                                        <img src="<?php echo htmlspecialchars($image_path); ?>" 
+                                             class="rounded" style="width: 60px; height: 60px; object-fit: cover;"
+                                             alt="<?php echo htmlspecialchars($item['ten_san_pham']); ?>"
+                                             onerror="this.src='<?php echo ASSETS_URL; ?>images/placeholder.png'">
+                                    <?php } else { ?>
+                                        <div class="bg-light rounded d-flex align-items-center justify-content-center" 
+                                             style="width: 60px; height: 60px;">
+                                            <i class="fas fa-image text-muted"></i>
+                                        </div>
+                                    <?php } ?>
                                 </td>
                                 <td><?php echo htmlspecialchars($item['ten_san_pham']); ?></td>
                                 <td><?php echo format_currency($item['don_gia']); ?></td>

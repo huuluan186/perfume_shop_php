@@ -84,7 +84,7 @@ include __DIR__ . '/../layout/header.php';
                                 <?php endif; ?>
                             </td>
                             <td><?php echo format_date($user['ngay_tao']); ?></td>
-                            <td class="text-center sticky-action" class="text-center sticky-action">
+                            <td class="text-center sticky-action">
                                 <a href="view.php?id=<?php echo $user['id']; ?>" class="btn btn-sm btn-outline-info me-1" title="Xem chi tiết">
                                     <i class="fas fa-eye"></i>
                                 </a>
@@ -205,3 +205,144 @@ $(document).ready(function() {
     });
 });
 </script>
+
+    const roleBadge = user.vai_tro == 1 
+        ? '<span class="badge bg-danger">Admin</span>' 
+        : '<span class="badge bg-primary">Khách hàng</span>';
+    
+    const statusBadge = user.trang_thai == 1 
+        ? '<span class="badge bg-success"><i class="fas fa-check-circle me-1"></i>Hoạt động</span>' 
+        : '<span class="badge bg-secondary"><i class="fas fa-lock me-1"></i>Đã khóa</span>';
+    
+    // Render danh sách đơn hàng
+    let ordersHtml = '';
+    if (orders && orders.length > 0) {
+        orders.forEach(function(o) {
+            let statusClass = '';
+            let statusText = '';
+            switch(o.trang_thai) {
+                case 'cho_xac_nhan':
+                    statusClass = 'warning';
+                    statusText = 'Chờ xác nhận';
+                    break;
+                case 'da_xac_nhan':
+                    statusClass = 'info';
+                    statusText = 'Đã xác nhận';
+                    break;
+                case 'dang_giao':
+                    statusClass = 'primary';
+                    statusText = 'Đang giao';
+                    break;
+                case 'da_giao':
+                    statusClass = 'success';
+                    statusText = 'Đã giao';
+                    break;
+                case 'da_huy':
+                    statusClass = 'danger';
+                    statusText = 'Đã hủy';
+                    break;
+                default:
+                    statusClass = 'secondary';
+                    statusText = o.trang_thai;
+            }
+            
+            ordersHtml += `
+                <tr>
+                    <td class="text-center"><strong>#${o.id}</strong></td>
+                    <td>${o.ngay_dat_formatted}</td>
+                    <td class="text-end"><strong>${o.tong_tien_formatted}</strong></td>
+                    <td class="text-center">
+                        <span class="badge bg-${statusClass}">${statusText}</span>
+                    </td>
+                </tr>
+            `;
+        });
+    } else {
+        ordersHtml = '<tr><td colspan="4" class="text-center text-muted fst-italic py-4">Chưa có đơn hàng nào</td></tr>';
+    }
+    
+    return `
+        <div class="row">
+            <div class="col-12">
+                <h4 class="text-primary mb-4">
+                    ${user.username || 'N/A'}
+                    <span class="badge bg-primary ms-2">${orderCount} đơn hàng</span>
+                </h4>
+                
+                <div class="card border-0 bg-light mb-4">
+                    <div class="card-body">
+                        <h6 class="text-primary mb-3"><i class="fas fa-user me-2"></i>Thông tin cá nhân</h6>
+                        <div class="row mb-2">
+                            <div class="col-md-3"><small class="text-muted">Mã người dùng:</small></div>
+                            <div class="col-md-9"><strong class="text-primary">#${user.id}</strong></div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-md-3"><small class="text-muted">Tên đăng nhập:</small></div>
+                            <div class="col-md-9"><strong>${user.username || 'N/A'}</strong></div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-md-3"><small class="text-muted">Email:</small></div>
+                            <div class="col-md-9">${user.email}</div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-md-3"><small class="text-muted">Số điện thoại:</small></div>
+                            <div class="col-md-9">${user.so_dien_thoai || '<span class="text-muted">Chưa cập nhật</span>'}</div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-md-3"><small class="text-muted">Giới tính:</small></div>
+                            <div class="col-md-9">${user.gioi_tinh ? (user.gioi_tinh.charAt(0).toUpperCase() + user.gioi_tinh.slice(1)) : '<span class="text-muted">Chưa cập nhật</span>'}</div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-md-3"><small class="text-muted">Ngày sinh:</small></div>
+                            <div class="col-md-9">${user.ngay_sinh_formatted || '<span class="text-muted">Chưa cập nhật</span>'}</div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-md-3"><small class="text-muted">Địa chỉ:</small></div>
+                            <div class="col-md-9">${user.dia_chi || '<span class="text-muted">Chưa cập nhật</span>'}</div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-md-3"><small class="text-muted">Vai trò:</small></div>
+                            <div class="col-md-9">${roleBadge}</div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-md-3"><small class="text-muted">Trạng thái:</small></div>
+                            <div class="col-md-9">${statusBadge}</div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-md-3"><small class="text-muted">Ngày tạo:</small></div>
+                            <div class="col-md-9">${user.ngay_tao_formatted}</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3"><small class="text-muted">Tổng chi tiêu:</small></div>
+                            <div class="col-md-9"><strong class="text-success">${totalSpent}</strong></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card border-0">
+                    <div class="card-body">
+                        <h6 class="text-primary mb-3">
+                            <i class="fas fa-shopping-cart me-2"></i>Lịch sử đơn hàng 
+                            <span class="badge bg-primary">${orderCount}</span>
+                        </h6>
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th width="100" class="text-center">Mã ĐH</th>
+                                        <th width="200">Ngày đặt</th>
+                                        <th width="150" class="text-end">Tổng tiền</th>
+                                        <th width="150" class="text-center">Trạng thái</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${ordersHtml}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}

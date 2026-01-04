@@ -114,9 +114,10 @@ include __DIR__ . '/../layout/header.php';
                             <td><small><?php echo htmlspecialchars($order['phuong_thuc_thanh_toan'] ?? 'COD'); ?></small></td>
                             <td><?php echo format_date($order['ngay_dat']); ?></td>
                             <td class="text-center sticky-action">
-                                <a href="view.php?id=<?php echo $order['id']; ?>" class="btn btn-sm btn-outline-info me-1" title="Xem chi tiết">
+                                <button class="btn btn-sm btn-outline-info me-1 view-order" 
+                                        data-id="<?php echo $order['id']; ?>" title="Xem chi tiết">
                                     <i class="fas fa-eye"></i>
-                                </a>
+                                </button>
                                 <?php if (!$order['ngay_xoa']): ?>
                                     <?php 
                                     $status = (int)$order['trang_thai'];
@@ -175,6 +176,26 @@ include __DIR__ . '/../layout/header.php';
     </div>
 </div>
 
+<!-- Order Detail Modal -->
+<div class="modal fade" id="orderDetailModal" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title"><i class="fas fa-receipt me-2"></i>Chi tiết đơn hàng</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="orderDetailContent" style="max-height: 70vh; overflow-y: auto;">
+                <!-- Content will be loaded here -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i>Đóng
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Status Update Modal -->
 <div class="modal fade" id="statusModal" tabindex="-1">
     <div class="modal-dialog">
@@ -209,7 +230,200 @@ include __DIR__ . '/../layout/header.php';
 <?php include __DIR__ . '/../layout/footer.php'; ?>
 
 <script>
+// Lấy ASSETS_URL từ PHP
+const ASSETS_URL = '<?php echo ASSETS_URL; ?>';
+
 $(document).ready(function() {
+    // View order detail
+    $(document).on('click', '.view-order', function(e) {
+        e.preventDefault();
+        const orderId = $(this).data('id');
+        
+        console.log('Opening order detail modal for ID:', orderId);
+        
+        // Khởi tạo và hiển thị modal
+        const modalEl = document.getElementById('orderDetailModal');
+        const modal = new bootstrap.Modal(modalEl);
+        modal.show();
+        
+        $('#orderDetailContent').html('<div class="text-center py-5"><i class="fas fa-spinner fa-spin fa-3x text-primary"></i><p class="mt-3">Đang tải...</p></div>');
+        
+        // Load thông tin đơn hàng
+        $.ajax({
+            url: 'get-detail.php?id=' + orderId,
+            method: 'GET',
+            dataType: 'json',
+            success: function(response) {
+                console.log('Response:', response);
+                if (response.success) {
+                    renderOrderDetail(response);
+                } else {
+                    $('#orderDetailContent').html('<div class="alert alert-danger"><i class="fas fa-exclamation-triangle me-2"></i>' + response.message + '</div>');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('AJAX Error:', status, error);
+                console.log('Response Text:', xhr.responseText);
+                $('#orderDetailContent').html('<div class="alert alert-danger"><i class="fas fa-exclamation-triangle me-2"></i>Có lỗi xảy ra khi tải thông tin!</div>');
+            }
+        });
+    });
+    
+    function renderOrderDetail(data) {
+        const o = data.order;
+        const items = data.items || [];
+        
+        // Xác định trạng thái
+        let statusBadge = '';
+        if (o.ngay_xoa) {
+            statusBadge = '<span class="badge bg-danger"><i class="fas fa-trash me-1"></i>Đã xóa</span>';
+        } else {
+            const statusMap = {
+                '0': {class: 'warning', text: 'Chưa duyệt'},
+                '1': {class: 'info', text: 'Đã duyệt'},
+                '2': {class: 'primary', text: 'Đang giao hàng'},
+                '3': {class: 'success', text: 'Hoàn thành'},
+                '4': {class: 'danger', text: 'Đã hủy'}
+            };
+            const status = statusMap[o.trang_thai] || {class: 'secondary', text: 'Không xác định'};
+            statusBadge = '<span class="badge bg-' + status.class + '">' + status.text + '</span>';
+        }
+        
+        // Tạo bảng sản phẩm
+        let productsHtml = '';
+        if (items.length > 0) {
+            productsHtml = `
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th width="80">Hình ảnh</th>
+                                <th>Sản phẩm</th>
+                                <th width="150">Đơn giá</th>
+                                <th width="100">Số lượng</th>
+                                <th width="150">Thành tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
+            
+            items.forEach(function(item) {
+                let imagePath = item.duong_dan_hinh_anh || '';
+                if (imagePath && !imagePath.startsWith('http')) {
+                    if (imagePath.startsWith('products/')) {
+                        imagePath = ASSETS_URL + imagePath;
+                    } else {
+                        imagePath = ASSETS_URL + 'products/' + imagePath;
+                    }
+                } else if (!imagePath) {
+                    imagePath = ASSETS_URL + 'images/placeholder.png';
+                }
+                
+                productsHtml += `
+                    <tr>
+                        <td>
+                            <img src="${imagePath}" class="rounded" 
+                                 style="width: 60px; height: 60px; object-fit: cover;"
+                                 onerror="this.src='` + ASSETS_URL + `images/placeholder.png'">
+                        </td>
+                        <td>
+                            <div class="fw-bold">${item.ten_san_pham}</div>
+                        </td>
+                        <td>${item.don_gia_formatted}</td>
+                        <td class="text-center">${item.so_luong}</td>
+                        <td><strong>${item.thanh_tien_formatted}</strong></td>
+                    </tr>`;
+            });
+            
+            productsHtml += '</tbody></table></div>';
+        }
+        
+        const html = `
+            <div class="row">
+                <div class="col-md-12 mb-4">
+                    <h4 class="text-primary mb-3">Đơn hàng #${o.id} ${statusBadge}</h4>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card border-0 bg-light mb-3">
+                        <div class="card-body">
+                            <h6 class="text-primary mb-3"><i class="fas fa-info-circle me-2"></i>Thông tin đơn hàng</h6>
+                            <div class="mb-2">
+                                <small class="text-muted">Mã đơn hàng:</small>
+                                <div><strong class="text-primary">#${o.id}</strong></div>
+                            </div>
+                            <div class="mb-2">
+                                <small class="text-muted">Ngày đặt:</small>
+                                <div><strong>${formatDateTime(o.ngay_dat)}</strong></div>
+                            </div>
+                            <div class="mb-2">
+                                <small class="text-muted">Trạng thái:</small>
+                                <div>${statusBadge}</div>
+                            </div>
+                            <div class="mb-2">
+                                <small class="text-muted">Phương thức thanh toán:</small>
+                                <div><span class="badge bg-secondary">COD</span></div>
+                            </div>
+                            ${o.ngay_xoa ? '<div class="mb-2"><small class="text-muted">Ngày xóa:</small><div><strong class="text-danger">' + formatDateTime(o.ngay_xoa) + '</strong></div></div>' : ''}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card border-0 bg-light mb-3">
+                        <div class="card-body">
+                            <h6 class="text-primary mb-3"><i class="fas fa-shipping-fast me-2"></i>Thông tin giao hàng</h6>
+                            <div class="mb-2">
+                                <small class="text-muted">Người nhận:</small>
+                                <div><strong>${o.ho_ten_nguoi_nhan || 'N/A'}</strong></div>
+                            </div>
+                            <div class="mb-2">
+                                <small class="text-muted">Số điện thoại:</small>
+                                <div><strong>${o.so_dien_thoai_nhan || 'N/A'}</strong></div>
+                            </div>
+                            <div class="mb-2">
+                                <small class="text-muted">Email:</small>
+                                <div>${o.email || 'N/A'}</div>
+                            </div>
+                            <div class="mb-2">
+                                <small class="text-muted">Địa chỉ giao hàng:</small>
+                                <div>${o.dia_chi_giao_hang || 'N/A'}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card border-0 bg-light mb-3">
+                <div class="card-body">
+                    <h6 class="text-primary mb-3"><i class="fas fa-box me-2"></i>Sản phẩm (${items.length})</h6>
+                    ${productsHtml}
+                    
+                    <div class="row mt-3">
+                        <div class="col-md-8"></div>
+                        <div class="col-md-4">
+                            <div class="border-top pt-3">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <strong>Tổng cộng:</strong>
+                                    <strong class="text-primary fs-5">${o.tong_tien_formatted}</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        $('#orderDetailContent').html(html);
+    }
+    
+    function formatDateTime(datetime) {
+        if (!datetime) return '';
+        const date = new Date(datetime);
+        return date.toLocaleString('vi-VN');
+    }
+    
     // Update status
     $(document).on('click', '.update-status', function(e) {
         e.preventDefault();

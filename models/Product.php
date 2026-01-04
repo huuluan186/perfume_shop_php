@@ -247,6 +247,21 @@ class Product {
         return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }
     
+    // Lấy sản phẩm theo danh mục
+    public function getByCategory($category_id) {
+        $query = "SELECT sp.*, dm.ten_danh_muc, th.ten_thuong_hieu 
+                  FROM {$this->table} sp
+                  LEFT JOIN danh_muc dm ON sp.id_danh_muc = dm.id
+                  LEFT JOIN thuong_hieu th ON sp.id_thuong_hieu = th.id
+                  WHERE sp.id_danh_muc = ? AND sp.ngay_xoa IS NULL
+                  ORDER BY sp.id DESC";
+        
+        $stmt = $this->conn->prepare($query);
+        $stmt->bind_param("i", $category_id);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    }
+    
     // Thêm sản phẩm mới (admin)
     public function create($data) {
         $query = "INSERT INTO {$this->table} 
