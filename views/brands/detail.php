@@ -46,7 +46,7 @@ include __DIR__ . '/../layout/header.php';
                     <img src="<?php echo htmlspecialchars($brand['duong_dan_logo']); ?>" 
                          alt="<?php echo htmlspecialchars($brand['ten_thuong_hieu']); ?>"
                          class="img-fluid" style="max-height: 150px; object-fit: contain;"
-                         onerror="this.style.display='none'">
+                         onerror="this.src='<?php echo ASSETS_URL; ?>images/placeholder.png'">
                     <?php else: ?>
                     <h2 class="text-muted"><?php echo htmlspecialchars($brand['ten_thuong_hieu']); ?></h2>
                     <?php endif; ?>
@@ -81,9 +81,22 @@ include __DIR__ . '/../layout/header.php';
         <div class="col-lg-3 col-md-4 col-sm-6">
             <div class="product-card card h-100 border-0 shadow-sm">
                 <div class="product-image position-relative overflow-hidden">
-                    <img src="<?php echo ASSETS_URL . urldecode($product['duong_dan_hinh_anh']); ?>" 
+                    <?php 
+                    // Check old vs new image path
+                    $brand_prod_img = '';
+                    if (!empty($product['duong_dan_hinh_anh'])) {
+                        if (strpos($product['duong_dan_hinh_anh'], '/') !== false) {
+                            $brand_prod_img = ASSETS_URL . urldecode($product['duong_dan_hinh_anh']);
+                        } else {
+                            $brand_prod_img = UPLOAD_URL . $product['duong_dan_hinh_anh'];
+                        }
+                    } else {
+                        $brand_prod_img = ASSETS_URL . 'images/placeholder.png';
+                    }
+                    ?>
+                    <img src="<?php echo $brand_prod_img; ?>" 
                          class="card-img-top" alt="<?php echo htmlspecialchars($product['ten_san_pham']); ?>"
-                         onerror="this.src='<?php echo ASSETS_URL; ?>images/placeholder.jpg'">
+                         onerror="this.src='<?php echo ASSETS_URL; ?>images/placeholder.png'">
                     <div class="product-overlay">
                         <a href="<?php echo BASE_URL; ?>views/products/detail.php?id=<?php echo $product['id']; ?>" 
                            class="btn btn-primary btn-sm">

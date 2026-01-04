@@ -13,183 +13,135 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="<?php echo ASSETS_URL; ?>css/admin.css">
-    
-    <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: #f8f9fa;
-        }
-        .sidebar {
-            position: fixed;
-            top: 56px;
-            bottom: 0;
-            left: 0;
-            z-index: 100;
-            padding: 0;
-            box-shadow: 2px 0 5px rgba(0, 0, 0, .05);
-            overflow-y: auto;
-            background: #fff;
-        }
-        .sidebar .nav-link {
-            color: #495057;
-            padding: 14px 24px;
-            border-radius: 0;
-            transition: all 0.3s;
-            font-size: 0.95rem;
-            border-left: 3px solid transparent;
-        }
-        .sidebar .nav-link:hover {
-            background: #f8f9fa;
-            color: #0d6efd;
-            border-left-color: #0d6efd;
-        }
-        .sidebar .nav-link.active {
-            background: linear-gradient(90deg, #e7f1ff 0%, #fff 100%);
-            color: #0d6efd;
-            border-left-color: #0d6efd;
-            font-weight: 500;
-        }
-        .sidebar .nav-link i {
-            width: 24px;
-            text-align: center;
-        }
-        main {
-            margin-left: 16.666667%;
-            padding: 24px;
-            min-height: calc(100vh - 56px);
-        }
-        @media (max-width: 768px) {
-            main {
-                margin-left: 0;
-            }
-            .sidebar {
-                display: none;
-            }
-        }
-        .card {
-            border-radius: 12px;
-            transition: transform 0.2s;
-        }
-        .card:hover {
-            transform: translateY(-5px);
-        }
-        .navbar {
-            box-shadow: 0 2px 4px rgba(0,0,0,.08);
-        }
-    </style>
 </head>
-<body>
-    <!-- Top Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="<?php echo BASE_URL; ?>views/admin/dashboard.php">
-                <i class="fas fa-spray-can me-2"></i>Perfume Shop - Quản Trị
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="adminNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="<?php echo BASE_URL; ?>" target="_blank">
-                            <i class="fas fa-globe me-1"></i>Về trang website
-                        </a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" 
-                           data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fas fa-user-circle me-1"></i>
-                            <span class="d-none d-md-inline">admin</span>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                            <li>
-                                <a class="dropdown-item" href="<?php echo BASE_URL; ?>views/account/profile.php">
-                                    <i class="fas fa-user me-2"></i>Tài khoản
-                                </a>
-                            </li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li>
-                                <a class="dropdown-item text-danger" href="<?php echo BASE_URL; ?>views/auth/logout.php">
-                                    <i class="fas fa-sign-out-alt me-2"></i>Đăng xuất
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-
-    <div class="container-fluid">
-        <div class="row">
-            <!-- Sidebar -->
-            <nav class="col-md-2 d-md-block bg-white sidebar" style="width: 250px;">
-                <div class="position-sticky pt-3">
-                    <ul class="nav flex-column">
+<body class="admin-body">
+    <!-- Top Header -->
+    <header class="admin-header">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="<?php echo BASE_URL; ?>views/admin/dashboard.php">
+                    <i class="fas fa-spray-can me-2"></i>Perfume Shop Admin
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="adminNav">
+                    <ul class="navbar-nav ms-auto">
                         <li class="nav-item">
-                            <a class="nav-link <?php echo strpos($_SERVER['PHP_SELF'], 'dashboard.php') !== false ? 'active' : ''; ?>" 
-                               href="<?php echo BASE_URL; ?>views/admin/dashboard.php">
-                                <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                            <a class="nav-link" href="<?php echo BASE_URL; ?>" target="_blank">
+                                <i class="fas fa-globe me-1"></i>
+                                <span class="d-none d-md-inline">Xem website</span>
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link <?php echo strpos($_SERVER['PHP_SELF'], '/admin/products/') !== false ? 'active' : ''; ?>" 
-                               href="<?php echo BASE_URL; ?>views/admin/products/index.php">
-                                <i class="fas fa-box me-2"></i>Sản phẩm
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" 
+                               data-bs-toggle="dropdown">
+                                <i class="fas fa-user-circle me-1"></i>
+                                <span class="d-none d-md-inline"><?php echo htmlspecialchars($_SESSION['username'] ?? 'Admin'); ?></span>
                             </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link <?php echo strpos($_SERVER['PHP_SELF'], '/admin/orders/') !== false ? 'active' : ''; ?>" 
-                               href="<?php echo BASE_URL; ?>views/admin/orders/index.php">
-                                <i class="fas fa-shopping-cart me-2"></i>Đơn hàng
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link <?php echo strpos($_SERVER['PHP_SELF'], '/admin/categories/') !== false ? 'active' : ''; ?>" 
-                               href="<?php echo BASE_URL; ?>views/admin/categories/index.php">
-                                <i class="fas fa-tags me-2"></i>Danh mục
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link <?php echo strpos($_SERVER['PHP_SELF'], '/admin/brands/') !== false ? 'active' : ''; ?>" 
-                               href="<?php echo BASE_URL; ?>views/admin/brands/index.php">
-                                <i class="fas fa-copyright me-2"></i>Thương hiệu
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link <?php echo strpos($_SERVER['PHP_SELF'], '/admin/users/') !== false ? 'active' : ''; ?>" 
-                               href="<?php echo BASE_URL; ?>views/admin/users/index.php">
-                                <i class="fas fa-users me-2"></i>Người dùng
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link <?php echo strpos($_SERVER['PHP_SELF'], 'contacts.php') !== false ? 'active' : ''; ?>" 
-                               href="<?php echo BASE_URL; ?>views/admin/contacts.php">
-                                <i class="fas fa-envelope me-2"></i>Liên hệ
-                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li>
+                                    <a class="dropdown-item" href="<?php echo BASE_URL; ?>views/account/profile.php">
+                                        <i class="fas fa-user me-2"></i>Tài khoản
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item text-danger" href="<?php echo BASE_URL; ?>views/auth/logout.php">
+                                        <i class="fas fa-sign-out-alt me-2"></i>Đăng xuất
+                                    </a>
+                                </li>
+                            </ul>
                         </li>
                     </ul>
                 </div>
-            </nav>
+            </div>
+        </nav>
+    </header>
 
-            <!-- Main Content -->
-            <main class="col-md-10 ms-sm-auto px-md-4">
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar" id="adminSidebar">
+            <div class="sidebar-content">
+                <div class="sidebar-header">
+                    <h5 class="mb-0">Menu</h5>
+                    <button class="btn btn-sm btn-link text-white p-0" type="button" id="sidebarToggle" title="Thu gọn sidebar">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+                <ul class="nav flex-column sidebar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link <?php echo strpos($_SERVER['PHP_SELF'], 'dashboard.php') !== false ? 'active' : ''; ?>" 
+                           href="<?php echo BASE_URL; ?>views/admin/dashboard.php">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link <?php echo strpos($_SERVER['PHP_SELF'], '/admin/products/') !== false ? 'active' : ''; ?>" 
+                           href="<?php echo BASE_URL; ?>views/admin/products/index.php">
+                            <i class="fas fa-box"></i>
+                            <span>Sản phẩm</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link <?php echo strpos($_SERVER['PHP_SELF'], '/admin/orders/') !== false ? 'active' : ''; ?>" 
+                           href="<?php echo BASE_URL; ?>views/admin/orders/index.php">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span>Đơn hàng</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link <?php echo strpos($_SERVER['PHP_SELF'], '/admin/categories/') !== false ? 'active' : ''; ?>" 
+                           href="<?php echo BASE_URL; ?>views/admin/categories/index.php">
+                            <i class="fas fa-tags"></i>
+                            <span>Danh mục</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link <?php echo strpos($_SERVER['PHP_SELF'], '/admin/brands/') !== false ? 'active' : ''; ?>" 
+                           href="<?php echo BASE_URL; ?>views/admin/brands/index.php">
+                            <i class="fas fa-copyright"></i>
+                            <span>Thương hiệu</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link <?php echo strpos($_SERVER['PHP_SELF'], '/admin/users/') !== false ? 'active' : ''; ?>" 
+                           href="<?php echo BASE_URL; ?>views/admin/users/index.php">
+                            <i class="fas fa-users"></i>
+                            <span>Người dùng</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link <?php echo strpos($_SERVER['PHP_SELF'], 'contacts.php') !== false ? 'active' : ''; ?>" 
+                           href="<?php echo BASE_URL; ?>views/admin/contacts.php">
+                            <i class="fas fa-envelope"></i>
+                            <span>Liên hệ</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <div class="main-content">
                 <?php if (isset($_SESSION['success'])): ?>
-                    <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
                         <i class="fas fa-check-circle me-2"></i><?php echo $_SESSION['success']; unset($_SESSION['success']); ?>
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
                 <?php endif; ?>
                 
                 <?php if (isset($_SESSION['error'])): ?>
-                    <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
                         <i class="fas fa-exclamation-circle me-2"></i><?php echo $_SESSION['error']; unset($_SESSION['error']); ?>
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
                 <?php endif; ?>
                 
                 <?php if (isset($_SESSION['warning'])): ?>
-                    <div class="alert alert-warning alert-dismissible fade show mt-3" role="alert">
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
                         <i class="fas fa-exclamation-triangle me-2"></i><?php echo $_SESSION['warning']; unset($_SESSION['warning']); ?>
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>

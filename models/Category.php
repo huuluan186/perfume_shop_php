@@ -12,7 +12,7 @@ class Category {
     
     // Lấy tất cả danh mục
     public function getAll() {
-        $query = "SELECT * FROM {$this->table} ORDER BY ten_danh_muc ASC";
+        $query = "SELECT * FROM {$this->table} ORDER BY id DESC";
         $result = $this->conn->query($query);
         return $result->fetch_all(MYSQLI_ASSOC);
     }

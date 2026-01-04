@@ -42,9 +42,22 @@ include __DIR__ . '/../layout/header.php';
                                 <?php foreach ($cart as $key => $item): ?>
                                 <tr data-cart-key="<?php echo $key; ?>">
                                     <td>
-                                        <img src="<?php echo ASSETS_URL . urldecode($item['image']); ?>" 
+                                        <?php 
+                                        // Check old vs new image path
+                                        $cart_img_url = '';
+                                        if (!empty($item['image'])) {
+                                            if (strpos($item['image'], '/') !== false) {
+                                                $cart_img_url = ASSETS_URL . urldecode($item['image']);
+                                            } else {
+                                                $cart_img_url = UPLOAD_URL . $item['image'];
+                                            }
+                                        } else {
+                                            $cart_img_url = ASSETS_URL . 'images/placeholder.png';
+                                        }
+                                        ?>
+                                        <img src="<?php echo $cart_img_url; ?>" 
                                              class="img-thumbnail" style="width: 60px; height: 60px; object-fit: cover;"
-                                             onerror="this.src='<?php echo ASSETS_URL; ?>images/placeholder.jpg'">
+                                             onerror="this.src='<?php echo ASSETS_URL; ?>images/placeholder.png'">
                                     </td>
                                     <td>
                                         <h6 class="mb-0"><?php echo htmlspecialchars($item['name']); ?></h6>

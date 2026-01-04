@@ -66,23 +66,23 @@ class Product {
         }
         
         // Sắp xếp
-        $order_by = "sp.id DESC";
+        $order_by = "sp.ngay_xoa IS NULL DESC, sp.id DESC";
         if (!empty($filters['sort'])) {
             switch ($filters['sort']) {
                 case 'price_asc':
-                    $order_by = "sp.gia_ban ASC";
+                    $order_by = "sp.ngay_xoa IS NULL DESC, sp.gia_ban ASC";
                     break;
                 case 'price_desc':
-                    $order_by = "sp.gia_ban DESC";
+                    $order_by = "sp.ngay_xoa IS NULL DESC, sp.gia_ban DESC";
                     break;
                 case 'name_asc':
-                    $order_by = "sp.ten_san_pham ASC";
+                    $order_by = "sp.ngay_xoa IS NULL DESC, sp.ten_san_pham ASC";
                     break;
                 case 'name_desc':
-                    $order_by = "sp.ten_san_pham DESC";
+                    $order_by = "sp.ngay_xoa IS NULL DESC, sp.ten_san_pham DESC";
                     break;
                 case 'newest':
-                    $order_by = "sp.id DESC";
+                    $order_by = "sp.ngay_xoa IS NULL DESC, sp.id DESC";
                     break;
             }
         }
@@ -255,17 +255,24 @@ class Product {
                    so_luong_ton, id_danh_muc, id_thuong_hieu) 
                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         
-        // Map field names and provide defaults
-        $dung_tich_ml = $data['dung_tich_ml'] ?? ($data['dung_tich'] ?? '');
-        $gioi_tinh_phu_hop = $data['gioi_tinh_phu_hop'] ?? ($data['gioi_tinh'] ?? '');
+        // Lấy giá trị từ data array - giữ nguyên NULL nếu đã là NULL
+        $dung_tich_ml = $data['dung_tich_ml'] ?? ($data['dung_tich'] ?? null);
+        $gioi_tinh_phu_hop = $data['gioi_tinh_phu_hop'] ?? ($data['gioi_tinh'] ?? null);
+        $nhom_huong = $data['nhom_huong'] ?? null;
+        $phong_cach = $data['phong_cach'] ?? null;
+        $xuat_xu = $data['xuat_xu'] ?? null;
+        $nam_phat_hanh = $data['nam_phat_hanh'] ?? null;
+        $mo_ta = $data['mo_ta'] ?? null;
+        $duong_dan_hinh_anh = $data['duong_dan_hinh_anh'] ?? null;
+        $id_danh_muc = $data['id_danh_muc'] ?? null;
+        $id_thuong_hieu = $data['id_thuong_hieu'] ?? null;
         
         $stmt = $this->conn->prepare($query);
-        $nhom_huong = $data['nhom_huong'] ?? '';
-        $phong_cach = $data['phong_cach'] ?? '';
-        $xuat_xu = $data['xuat_xu'] ?? '';
-        $nam_phat_hanh = $data['nam_phat_hanh'] ?? 0;
-        
-        $stmt->bind_param("sdisssiisisii", 
+        // Type string: s=string, d=double, i=integer
+        // ten_san_pham(s), gia_ban(d), dung_tich_ml(i), nhom_huong(s), gioi_tinh_phu_hop(s),
+        // phong_cach(s), xuat_xu(s), nam_phat_hanh(i), mo_ta(s), duong_dan_hinh_anh(s),
+        // so_luong_ton(i), id_danh_muc(i), id_thuong_hieu(i)
+        $stmt->bind_param("sdissssissiii", 
             $data['ten_san_pham'],
             $data['gia_ban'],
             $dung_tich_ml,
@@ -274,11 +281,11 @@ class Product {
             $phong_cach,
             $xuat_xu,
             $nam_phat_hanh,
-            $data['mo_ta'],
-            $data['duong_dan_hinh_anh'],
+            $mo_ta,
+            $duong_dan_hinh_anh,
             $data['so_luong_ton'],
-            $data['id_danh_muc'],
-            $data['id_thuong_hieu']
+            $id_danh_muc,
+            $id_thuong_hieu
         );
         
         if ($stmt->execute()) {
@@ -296,17 +303,24 @@ class Product {
                   id_danh_muc = ?, id_thuong_hieu = ? 
                   WHERE id = ?";
         
-        // Map field names and provide defaults
-        $dung_tich_ml = $data['dung_tich_ml'] ?? ($data['dung_tich'] ?? '');
-        $gioi_tinh_phu_hop = $data['gioi_tinh_phu_hop'] ?? ($data['gioi_tinh'] ?? '');
+        // Lấy giá trị từ data array - giữ nguyên NULL nếu đã là NULL
+        $dung_tich_ml = $data['dung_tich_ml'] ?? ($data['dung_tich'] ?? null);
+        $gioi_tinh_phu_hop = $data['gioi_tinh_phu_hop'] ?? ($data['gioi_tinh'] ?? null);
+        $nhom_huong = $data['nhom_huong'] ?? null;
+        $phong_cach = $data['phong_cach'] ?? null;
+        $xuat_xu = $data['xuat_xu'] ?? null;
+        $nam_phat_hanh = $data['nam_phat_hanh'] ?? null;
+        $mo_ta = $data['mo_ta'] ?? null;
+        $duong_dan_hinh_anh = $data['duong_dan_hinh_anh'] ?? null;
+        $id_danh_muc = $data['id_danh_muc'] ?? null;
+        $id_thuong_hieu = $data['id_thuong_hieu'] ?? null;
         
         $stmt = $this->conn->prepare($query);
-        $nhom_huong = $data['nhom_huong'] ?? '';
-        $phong_cach = $data['phong_cach'] ?? '';
-        $xuat_xu = $data['xuat_xu'] ?? '';
-        $nam_phat_hanh = $data['nam_phat_hanh'] ?? 0;
-        
-        $stmt->bind_param("sdisssiisiiiii", 
+        // Type string: s=string, d=double, i=integer
+        // ten_san_pham(s), gia_ban(d), dung_tich_ml(i), nhom_huong(s), gioi_tinh_phu_hop(s),
+        // phong_cach(s), xuat_xu(s), nam_phat_hanh(i), mo_ta(s), duong_dan_hinh_anh(s),
+        // so_luong_ton(i), id_danh_muc(i), id_thuong_hieu(i), id(i)
+        $stmt->bind_param("sdissssissiiii", 
             $data['ten_san_pham'],
             $data['gia_ban'],
             $dung_tich_ml,
@@ -315,11 +329,11 @@ class Product {
             $phong_cach,
             $xuat_xu,
             $nam_phat_hanh,
-            $data['mo_ta'],
-            $data['duong_dan_hinh_anh'],
+            $mo_ta,
+            $duong_dan_hinh_anh,
             $data['so_luong_ton'],
-            $data['id_danh_muc'],
-            $data['id_thuong_hieu'],
+            $id_danh_muc,
+            $id_thuong_hieu,
             $id
         );
         

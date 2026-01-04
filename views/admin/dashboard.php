@@ -44,17 +44,16 @@ $page_title = "Admin Dashboard";
 include __DIR__ . '/layout/header.php';
 ?>
 
-<div class="container-fluid my-4">
-    <!-- Admin Header -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <h2 class="fw-bold"><i class="fas fa-tachometer-alt me-2"></i>Dashboard Quản Trị</h2>
-            <p class="text-muted">Xin chào, <?php echo htmlspecialchars($_SESSION['username']); ?>!</p>
-        </div>
+<!-- Admin Header -->
+<div class="row mb-4">
+    <div class="col-12">
+        <h2 class="fw-bold"><i class="fas fa-tachometer-alt me-2"></i>Dashboard Quản Trị</h2>
+        <p class="text-muted">Xin chào, <?php echo htmlspecialchars($_SESSION['username']); ?>!</p>
     </div>
-    
-    <!-- Statistics Cards -->
-    <div class="row g-4 mb-4">
+</div>
+
+<!-- Statistics Cards -->
+<div class="row g-4 mb-4">
         <div class="col-xl-3 col-md-6">
             <div class="card border-0 shadow-sm bg-primary text-white">
                 <div class="card-body">
@@ -257,6 +256,5 @@ include __DIR__ . '/layout/header.php';
             </div>
         </div>
     </div>
-</div>
 
 <?php include __DIR__ . '/layout/footer.php'; ?>

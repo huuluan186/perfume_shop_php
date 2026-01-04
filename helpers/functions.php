@@ -287,12 +287,12 @@ function render_pagination($total_pages, $current_page, $base_url, $params = [])
 function upload_product_image($file, $product_name = '') {
     // Kiểm tra có file được upload
     if (!isset($file) || $file['error'] === UPLOAD_ERR_NO_FILE) {
-        return null;
+        return ['success' => false, 'message' => 'Chưa chọn file'];
     }
     
     // Kiểm tra lỗi upload
     if ($file['error'] !== UPLOAD_ERR_OK) {
-        throw new Exception('Lỗi khi upload file: ' . $file['error']);
+        return ['success' => false, 'message' => 'Lỗi khi upload file: ' . $file['error']];
     }
     
     // Kiểm tra loại file
@@ -300,20 +300,20 @@ function upload_product_image($file, $product_name = '') {
     $file_type = mime_content_type($file['tmp_name']);
     
     if (!in_array($file_type, $allowed_types)) {
-        throw new Exception('Chỉ chấp nhận file ảnh (JPG, PNG, GIF, WEBP)');
+        return ['success' => false, 'message' => 'Chỉ chấp nhận file ảnh (JPG, PNG, GIF, WEBP)'];
     }
     
     // Kiểm tra kích thước file (tối đa 5MB)
     $max_size = 5 * 1024 * 1024; // 5MB
     if ($file['size'] > $max_size) {
-        throw new Exception('Kích thước file không được vượt quá 5MB');
+        return ['success' => false, 'message' => 'Kích thước file không được vượt quá 5MB'];
     }
     
     // Tạo tên file duy nhất
     $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
     $filename = uniqid('product_' . date('Ymd') . '_') . '.' . $extension;
     
-    // Đường dẫn lưu file
+    // Đường dẫn lưu file - lưu vào thư mục uploads
     $upload_dir = UPLOAD_PATH;
     
     // Tạo thư mục nếu chưa tồn tại
@@ -325,11 +325,11 @@ function upload_product_image($file, $product_name = '') {
     
     // Di chuyển file
     if (!move_uploaded_file($file['tmp_name'], $upload_path)) {
-        throw new Exception('Không thể lưu file');
+        return ['success' => false, 'message' => 'Không thể lưu file'];
     }
     
-    // Trả về tên file
-    return $filename;
+    // Trả về tên file để lưu vào database
+    return ['success' => true, 'path' => $filename];
 }
 
 // Xóa hình ảnh sản phẩm

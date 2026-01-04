@@ -34,22 +34,24 @@ $success = false;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $ten_san_pham = clean_input($_POST['ten_san_pham'] ?? '');
-    $danh_muc_id = intval($_POST['danh_muc_id'] ?? 0);
-    $thuong_hieu_id = intval($_POST['thuong_hieu_id'] ?? 0);
-    $dung_tich = clean_input($_POST['dung_tich'] ?? '');
+    $danh_muc_id = !empty($_POST['danh_muc_id']) ? intval($_POST['danh_muc_id']) : null;
+    $thuong_hieu_id = !empty($_POST['thuong_hieu_id']) ? intval($_POST['thuong_hieu_id']) : null;
+    $dung_tich = !empty($_POST['dung_tich']) ? intval($_POST['dung_tich']) : null;
     $gia_ban = floatval($_POST['gia_ban'] ?? 0);
-    $so_luong_ton = intval($_POST['so_luong_ton'] ?? 0);
-    $gioi_tinh = clean_input($_POST['gioi_tinh'] ?? '');
-    $mo_ta = clean_input($_POST['mo_ta'] ?? '');
+    $so_luong_ton = isset($_POST['so_luong_ton']) && $_POST['so_luong_ton'] !== '' ? intval($_POST['so_luong_ton']) : 0;
     
-    // Validation
+    // Xử lý các trường text - kiểm tra trước khi clean
+    $gioi_tinh = (isset($_POST['gioi_tinh']) && $_POST['gioi_tinh'] !== '') ? clean_input($_POST['gioi_tinh']) : null;
+    $nhom_huong = (isset($_POST['nhom_huong']) && trim($_POST['nhom_huong']) !== '') ? clean_input($_POST['nhom_huong']) : null;
+    $phong_cach = (isset($_POST['phong_cach']) && trim($_POST['phong_cach']) !== '') ? clean_input($_POST['phong_cach']) : null;
+    $xuat_xu = (isset($_POST['xuat_xu']) && trim($_POST['xuat_xu']) !== '') ? clean_input($_POST['xuat_xu']) : null;
+    $nam_phat_hanh = (isset($_POST['nam_phat_hanh']) && $_POST['nam_phat_hanh'] !== '' && $_POST['nam_phat_hanh'] > 0) ? intval($_POST['nam_phat_hanh']) : null;
+    $mo_ta = (isset($_POST['mo_ta']) && trim($_POST['mo_ta']) !== '') ? clean_input($_POST['mo_ta']) : null;
+    
+    // Validation - chỉ validate tên và giá (NOT NULL trong DB)
     if (empty($ten_san_pham)) $errors[] = 'Vui lòng nhập tên sản phẩm!';
-    if ($danh_muc_id <= 0) $errors[] = 'Vui lòng chọn danh mục!';
-    if ($thuong_hieu_id <= 0) $errors[] = 'Vui lòng chọn thương hiệu!';
-    if (empty($dung_tich)) $errors[] = 'Vui lòng nhập dung tích!';
     if ($gia_ban <= 0) $errors[] = 'Giá bán phải lớn hơn 0!';
     if ($so_luong_ton < 0) $errors[] = 'Số lượng tồn không hợp lệ!';
-    if (empty($gioi_tinh)) $errors[] = 'Vui lòng chọn giới tính!';
     
     // Upload image if new file selected
     $image_path = $product['duong_dan_hinh_anh'];
@@ -67,10 +69,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'ten_san_pham' => $ten_san_pham,
             'id_danh_muc' => $danh_muc_id,
             'id_thuong_hieu' => $thuong_hieu_id,
-            'dung_tich' => $dung_tich,
+            'dung_tich_ml' => $dung_tich,
             'gia_ban' => $gia_ban,
             'so_luong_ton' => $so_luong_ton,
-            'gioi_tinh' => $gioi_tinh,
+            'gioi_tinh_phu_hop' => $gioi_tinh,
+            'nhom_huong' => $nhom_huong,
+            'phong_cach' => $phong_cach,
+            'xuat_xu' => $xuat_xu,
+            'nam_phat_hanh' => $nam_phat_hanh,
             'mo_ta' => $mo_ta,
             'duong_dan_hinh_anh' => $image_path
         ];
@@ -124,8 +130,8 @@ include __DIR__ . '/../layout/header.php';
                         
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Danh mục <span class="text-danger">*</span></label>
-                                <select class="form-select" name="danh_muc_id" required>
+                                <label class="form-label">Danh mục</label>
+                                <select class="form-select" name="danh_muc_id">
                                     <option value="">Chọn danh mục</option>
                                     <?php foreach ($categories as $cat): ?>
                                     <option value="<?php echo $cat['id']; ?>" 
@@ -137,8 +143,8 @@ include __DIR__ . '/../layout/header.php';
                             </div>
                             
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Thương hiệu <span class="text-danger">*</span></label>
-                                <select class="form-select" name="thuong_hieu_id" required>
+                                <label class="form-label">Thương hiệu</label>
+                                <select class="form-select" name="thuong_hieu_id">
                                     <option value="">Chọn thương hiệu</option>
                                     <?php foreach ($brands as $brand): ?>
                                     <option value="<?php echo $brand['id']; ?>"
@@ -152,32 +158,62 @@ include __DIR__ . '/../layout/header.php';
                         
                         <div class="row">
                             <div class="col-md-4 mb-3">
-                                <label class="form-label">Dung tích <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" name="dung_tich" 
-                                       value="<?php echo htmlspecialchars($product['dung_tich'] ?? ''); ?>" required>
+                                <label class="form-label">Dung tích (ml)</label>
+                                <input type="number" class="form-control" name="dung_tich" min="1"
+                                       value="<?php echo htmlspecialchars($product['dung_tich_ml'] ?? ''); ?>">
                             </div>
                             
                             <div class="col-md-4 mb-3">
                                 <label class="form-label">Giá bán (VNĐ) <span class="text-danger">*</span></label>
-                                <input type="number" class="form-control" name="gia_ban" min="0" step="1000"
+                                <input type="number" class="form-control" name="gia_ban" min="0" step="1000" max="999999999"
                                        value="<?php echo $product['gia_ban']; ?>" required>
                             </div>
                             
                             <div class="col-md-4 mb-3">
-                                <label class="form-label">Số lượng tồn <span class="text-danger">*</span></label>
+                                <label class="form-label">Số lượng tồn</label>
                                 <input type="number" class="form-control" name="so_luong_ton" min="0"
-                                       value="<?php echo $product['so_luong_ton']; ?>" required>
+                                       value="<?php echo $product['so_luong_ton']; ?>">
                             </div>
                         </div>
                         
                         <div class="mb-3">
-                            <label class="form-label">Giới tính <span class="text-danger">*</span></label>
-                            <select class="form-select" name="gioi_tinh" required>
+                            <label class="form-label">Giới tính</label>
+                            <select class="form-select" name="gioi_tinh">
                                 <option value="">Chọn giới tính</option>
                                 <option value="nam" <?php echo (($product['gioi_tinh_phu_hop'] ?? '') === 'nam') ? 'selected' : ''; ?>>Nam</option>
                                 <option value="nữ" <?php echo (($product['gioi_tinh_phu_hop'] ?? '') === 'nữ') ? 'selected' : ''; ?>>Nữ</option>
                                 <option value="unisex" <?php echo (($product['gioi_tinh_phu_hop'] ?? '') === 'unisex') ? 'selected' : ''; ?>>Unisex</option>
                             </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Nhóm hương</label>
+                            <input type="text" class="form-control" name="nhom_huong" 
+                                   placeholder="VD: Hương gỗ, Hương hoa cỏ..."
+                                   value="<?php echo htmlspecialchars($product['nhom_huong'] ?? ''); ?>">
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Phong cách</label>
+                                <input type="text" class="form-control" name="phong_cach" 
+                                       placeholder="VD: Sang trọng, Năng động..."
+                                       value="<?php echo htmlspecialchars($product['phong_cach'] ?? ''); ?>">
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Xuất xứ</label>
+                                <input type="text" class="form-control" name="xuat_xu" 
+                                       placeholder="VD: Pháp, Ý..."
+                                       value="<?php echo htmlspecialchars($product['xuat_xu'] ?? ''); ?>">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Năm phát hành</label>
+                            <input type="number" class="form-control" name="nam_phat_hanh" 
+                                   min="1900" max="2100" placeholder="VD: 2024"
+                                   value="<?php echo htmlspecialchars($product['nam_phat_hanh'] ?? ''); ?>">
                         </div>
                         
                         <div class="mb-3">
@@ -194,9 +230,23 @@ include __DIR__ . '/../layout/header.php';
                             <small class="text-muted">Để trống nếu không thay đổi</small>
                         </div>
                         <div class="text-center">
-                            <img id="imagePreview" src="<?php echo ASSETS_URL . urldecode($product['duong_dan_hinh_anh']); ?>" 
+                            <?php 
+                            // Check old vs new image path
+                            $current_image_url = '';
+                            if (!empty($product['duong_dan_hinh_anh'])) {
+                                if (strpos($product['duong_dan_hinh_anh'], '/') !== false) {
+                                    // Old path format: products/Brand/Product/image.jpg
+                                    $current_image_url = ASSETS_URL . urldecode($product['duong_dan_hinh_anh']);
+                                } else {
+                                    // New path format: product_20240101_abc123.jpg (in uploads/)
+                                    $current_image_url = UPLOAD_URL . $product['duong_dan_hinh_anh'];
+                                }
+                            }
+                            ?>
+                            <img id="imagePreview" 
+                                 src="<?php echo $current_image_url ?: (ASSETS_URL . 'images/placeholder.png'); ?>" 
                                  class="img-fluid rounded shadow-sm" style="max-height: 300px;"
-                                 onerror="this.src='<?php echo ASSETS_URL; ?>images/placeholder.jpg'">
+                                 onerror="this.src='<?php echo ASSETS_URL; ?>images/placeholder.png'">
                         </div>
                     </div>
                 </div>

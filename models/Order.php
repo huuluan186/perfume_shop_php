@@ -35,6 +35,17 @@ class Order {
             $stmt_detail = $this->conn->prepare($query_detail);
             
             foreach ($cart_items as $item) {
+                // Kiểm tra tồn kho trước khi insert
+                $query_check = "SELECT so_luong_ton FROM san_pham WHERE id = ?";
+                $stmt_check = $this->conn->prepare($query_check);
+                $stmt_check->bind_param("i", $item['product_id']);
+                $stmt_check->execute();
+                $result = $stmt_check->get_result()->fetch_assoc();
+                
+                if (!$result || $result['so_luong_ton'] < $item['quantity']) {
+                    throw new Exception('Sản phẩm không đủ số lượng trong kho!');
+                }
+                
                 $stmt_detail->bind_param("iiid", 
                     $order_id, 
                     $item['product_id'], 
@@ -43,11 +54,16 @@ class Order {
                 );
                 $stmt_detail->execute();
                 
-                // Cập nhật số lượng tồn kho
-                $query_stock = "UPDATE san_pham SET so_luong_ton = so_luong_ton - ? WHERE id = ?";
+                // Cập nhật số lượng tồn kho (chỉ trừ nếu đủ số lượng)
+                $query_stock = "UPDATE san_pham SET so_luong_ton = so_luong_ton - ? WHERE id = ? AND so_luong_ton >= ?";
                 $stmt_stock = $this->conn->prepare($query_stock);
-                $stmt_stock->bind_param("ii", $item['quantity'], $item['product_id']);
+                $stmt_stock->bind_param("iii", $item['quantity'], $item['product_id'], $item['quantity']);
                 $stmt_stock->execute();
+                
+                // Kiểm tra xem có update được không
+                if ($stmt_stock->affected_rows === 0) {
+                    throw new Exception('Không thể cập nhật số lượng tồn kho!');
+                }
             }
             
             $this->conn->commit();
@@ -131,7 +147,7 @@ class Order {
         $query = "SELECT dh.*, nd.username, nd.email 
                   FROM {$this->table} dh
                   LEFT JOIN nguoi_dung nd ON dh.id_nguoi_dung = nd.id
-                  WHERE dh.ngay_xoa IS NULL";
+                  WHERE 1=1";
         
         $params = [];
         $types = "";
@@ -151,7 +167,11 @@ class Order {
             $types .= "sss";
         }
         
-        $query .= " ORDER BY dh.ngay_dat DESC LIMIT ? OFFSET ?";
+        $query .= " ORDER BY 
+                    CASE WHEN dh.ngay_xoa IS NULL THEN 0 ELSE 1 END,
+                    COALESCE(dh.ngay_dat, FROM_UNIXTIME(0)) DESC,
+                    dh.id DESC 
+                    LIMIT ? OFFSET ?";
         $params[] = $limit;
         $params[] = $offset;
         $types .= "ii";
@@ -170,7 +190,7 @@ class Order {
     public function count($filters = []) {
         $query = "SELECT COUNT(*) as total FROM {$this->table} dh
                   LEFT JOIN nguoi_dung nd ON dh.id_nguoi_dung = nd.id
-                  WHERE dh.ngay_xoa IS NULL";
+                  WHERE 1=1";
         
         $params = [];
         $types = "";
@@ -252,6 +272,32 @@ class Order {
         $stmt = $this->conn->prepare($query);
         $stmt->bind_param("i", $id);
         return $stmt->execute();
+    }
+    
+    // Lấy đơn hàng theo ID kể cả đã xóa (dùng cho admin)
+    public function getByIdWithDeleted($id) {
+        $query = "SELECT dh.*, nd.username, nd.email 
+                  FROM {$this->table} dh
+                  LEFT JOIN nguoi_dung nd ON dh.id_nguoi_dung = nd.id
+                  WHERE dh.id = ?";
+        
+        $stmt = $this->conn->prepare($query);
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        if ($result->num_rows > 0) {
+            return $result->fetch_assoc();
+        }
+        return false;
+    }
+    
+    // Đếm tổng đơn hàng cho admin (bao gồm cả đã xóa)
+    public function countForAdmin() {
+        $query = "SELECT COUNT(*) as total FROM {$this->table}";
+        $result = $this->conn->query($query);
+        $row = $result->fetch_assoc();
+        return $row['total'];
     }
     
     // Thống kê doanh thu

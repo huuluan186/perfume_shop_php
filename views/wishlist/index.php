@@ -40,9 +40,22 @@ include __DIR__ . '/../layout/header.php';
                     </button>
                 </div>
                 <div class="product-image position-relative overflow-hidden">
-                    <img src="<?php echo ASSETS_URL . urldecode($item['duong_dan_hinh_anh']); ?>" 
+                    <?php 
+                    // Check old vs new image path
+                    $wish_img_url = '';
+                    if (!empty($item['duong_dan_hinh_anh'])) {
+                        if (strpos($item['duong_dan_hinh_anh'], '/') !== false) {
+                            $wish_img_url = ASSETS_URL . urldecode($item['duong_dan_hinh_anh']);
+                        } else {
+                            $wish_img_url = UPLOAD_URL . $item['duong_dan_hinh_anh'];
+                        }
+                    } else {
+                        $wish_img_url = ASSETS_URL . 'images/placeholder.png';
+                    }
+                    ?>
+                    <img src="<?php echo $wish_img_url; ?>" 
                          class="card-img-top" alt="<?php echo htmlspecialchars($item['ten_san_pham']); ?>"
-                         onerror="this.src='<?php echo ASSETS_URL; ?>images/placeholder.jpg'">
+                         onerror="this.src='<?php echo ASSETS_URL; ?>images/placeholder.png'">
                     <div class="product-overlay">
                         <a href="<?php echo BASE_URL; ?>views/products/detail.php?id=<?php echo $item['id']; ?>" 
                            class="btn btn-primary btn-sm">

@@ -16,9 +16,8 @@ class Brand {
                   COALESCE(COUNT(sp.id), 0) as product_count
                   FROM {$this->table} th
                   LEFT JOIN san_pham sp ON th.id = sp.id_thuong_hieu AND sp.ngay_xoa IS NULL
-                  WHERE th.ngay_xoa IS NULL
                   GROUP BY th.id
-                  ORDER BY th.ten_thuong_hieu ASC";
+                  ORDER BY th.id DESC";
         
         if ($limit) {
             $query .= " LIMIT ? OFFSET ?";
@@ -34,7 +33,7 @@ class Brand {
     
     // Đếm tổng thương hiệu
     public function count() {
-        $query = "SELECT COUNT(*) as total FROM {$this->table} WHERE ngay_xoa IS NULL";
+        $query = "SELECT COUNT(*) as total FROM {$this->table}";
         $result = $this->conn->query($query);
         $row = $result->fetch_assoc();
         return $row['total'];

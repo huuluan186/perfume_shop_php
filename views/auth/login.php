@@ -3,9 +3,13 @@ require_once __DIR__ . '/../../config/config.php';
 require_once __DIR__ . '/../../helpers/functions.php';
 require_once __DIR__ . '/../../models/User.php';
 
-// Nếu đã đăng nhập thì chuyển về trang chủ
+// Nếu đã đăng nhập thì chuyển về trang tương ứng
 if (is_logged_in()) {
-    redirect('index.php');
+    if (is_admin()) {
+        redirect('views/admin/dashboard.php');
+    } else {
+        redirect('index.php');
+    }
 }
 
 $errors = [];
@@ -35,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['success'] = 'Đăng nhập thành công!';
             
             // Nếu là admin thì redirect về admin dashboard, ngược lại về trang chủ
-            if ($user['vai_tro'] === 'admin') {
+            if ($user['vai_tro'] === ROLE_ADMIN) {
                 redirect('views/admin/dashboard.php');
             } else {
                 $redirect = $_GET['redirect'] ?? 'index.php';

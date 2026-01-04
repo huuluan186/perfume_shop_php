@@ -34,6 +34,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($dia_chi_giao_hang)) $errors[] = 'Vui lòng nhập địa chỉ giao hàng!';
     if (empty($phuong_thuc_thanh_toan)) $errors[] = 'Vui lòng chọn phương thức thanh toán!';
     
+    // Kiểm tra tồn kho trước khi đặt hàng
+    if (empty($errors)) {
+        require_once __DIR__ . '/../../models/Product.php';
+        $productModel = new Product();
+        
+        foreach ($cart as $item) {
+            $product = $productModel->getById($item['product_id']);
+            if (!$product) {
+                $errors[] = 'Sản phẩm "' . htmlspecialchars($item['name']) . '" không tồn tại!';
+            } elseif ($product['so_luong_ton'] < $item['quantity']) {
+                $errors[] = 'Sản phẩm "' . htmlspecialchars($item['name']) . '" chỉ còn ' . $product['so_luong_ton'] . ' sản phẩm trong kho!';
+            }
+        }
+    }
+    
     if (empty($errors)) {
         $orderModel = new Order();
         $order_id = $orderModel->create(
@@ -124,9 +139,22 @@ include __DIR__ . '/../layout/header.php';
                         <div class="order-items mb-3" style="max-height: 200px; overflow-y: auto;">
                             <?php foreach ($cart as $item): ?>
                             <div class="d-flex mb-2 pb-2 border-bottom">
-                                <img src="<?php echo ASSETS_URL . urldecode($item['image']); ?>" 
+                                <?php 
+                                // Check old vs new image path
+                                $checkout_img = '';
+                                if (!empty($item['image'])) {
+                                    if (strpos($item['image'], '/') !== false) {
+                                        $checkout_img = ASSETS_URL . urldecode($item['image']);
+                                    } else {
+                                        $checkout_img = UPLOAD_URL . $item['image'];
+                                    }
+                                } else {
+                                    $checkout_img = ASSETS_URL . 'images/placeholder.png';
+                                }
+                                ?>
+                                <img src="<?php echo $checkout_img; ?>" 
                                      style="width: 50px; height: 50px; object-fit: cover;" class="rounded me-2"
-                                     onerror="this.src='<?php echo ASSETS_URL; ?>images/placeholder.jpg'">
+                                     onerror="this.src='<?php echo ASSETS_URL; ?>images/placeholder.png'">
                                 <div class="flex-grow-1">
                                     <h6 class="mb-0 small"><?php echo htmlspecialchars($item['name']); ?></h6>
                                     <small class="text-muted">SL: <?php echo $item['quantity']; ?></small>

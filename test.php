@@ -23,7 +23,7 @@ foreach ($products as $product) {
     echo "<td>{$product['id']}</td>";
     echo "<td>{$product['ten_san_pham']}</td>";
     echo "<td>{$product['duong_dan_hinh_anh']}</td>";
-    echo "<td><img src='{$image_path}' width='50' onerror='this.src=\"" . ASSETS_URL . "images/placeholder.jpg\"'></td>";
+    echo "<td><img src='{$image_path}' width='50' onerror='this.src=\"" . ASSETS_URL . "images/placeholder.png\"'></td>";
     echo "<td>{$exists}</td>";
     echo "</tr>";
 }

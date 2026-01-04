@@ -116,12 +116,19 @@ switch($status) {
                 <td class="text-center"><?php echo $stt++; ?></td>
                 <td>
                     <div class="d-flex align-items-center">
-                        <?php if (!empty($detail['duong_dan_hinh_anh'])): ?>
-                        <img src="<?php echo BASE_URL . 'assets/products/' . htmlspecialchars($detail['duong_dan_hinh_anh']); ?>" 
+                        <?php if (!empty($detail['duong_dan_hinh_anh'])): 
+                            // Check old vs new path
+                            if (strpos($detail['duong_dan_hinh_anh'], '/') !== false) {
+                                $detail_img_url = ASSETS_URL . urldecode($detail['duong_dan_hinh_anh']);
+                            } else {
+                                $detail_img_url = UPLOAD_URL . $detail['duong_dan_hinh_anh'];
+                            }
+                        ?>
+                        <img src="<?php echo htmlspecialchars($detail_img_url); ?>" 
                              alt="<?php echo htmlspecialchars($detail['ten_san_pham']); ?>" 
                              class="me-3 rounded" 
                              style="width: 60px; height: 60px; object-fit: cover;"
-                             onerror="this.src='<?php echo BASE_URL; ?>assets/images/no-image.png'">
+                             onerror="this.src='<?php echo ASSETS_URL; ?>images/placeholder.png'">
                         <?php else: ?>
                         <div class="me-3 bg-light rounded d-flex align-items-center justify-content-center" 
                              style="width: 60px; height: 60px;">

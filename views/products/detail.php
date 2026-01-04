@@ -44,10 +44,25 @@ include __DIR__ . '/../layout/header.php';
         <div class="col-lg-5">
             <div class="product-image-gallery">
                 <div class="main-image mb-3">
-                    <img src="<?php echo ASSETS_URL . urldecode($product['duong_dan_hinh_anh']); ?>" 
+                    <?php 
+                    // Check old vs new image path
+                    $image_url = '';
+                    if (!empty($product['duong_dan_hinh_anh'])) {
+                        if (strpos($product['duong_dan_hinh_anh'], '/') !== false) {
+                            // Old path: products/Brand/Product/image.jpg
+                            $image_url = ASSETS_URL . urldecode($product['duong_dan_hinh_anh']);
+                        } else {
+                            // New path: product_20260104_xxx.png (in uploads/)
+                            $image_url = UPLOAD_URL . $product['duong_dan_hinh_anh'];
+                        }
+                    } else {
+                        $image_url = ASSETS_URL . 'images/placeholder.png';
+                    }
+                    ?>
+                    <img src="<?php echo $image_url; ?>" 
                          class="img-fluid rounded shadow" id="mainProductImage"
                          alt="<?php echo htmlspecialchars($product['ten_san_pham']); ?>"
-                         onerror="this.src='<?php echo ASSETS_URL; ?>images/placeholder.jpg'"
+                         onerror="this.src='<?php echo ASSETS_URL; ?>images/placeholder.png'"
                          style="width: 100%; height: auto; max-height: 500px; object-fit: cover;">
                 </div>
             </div>
@@ -101,13 +116,13 @@ include __DIR__ . '/../layout/header.php';
                         <?php if (isset($product['phong_cach']) && !empty($product['phong_cach'])): ?>
                         <tr>
                             <td style="white-space: nowrap;"><strong>Phong cách:</strong></td>
-                            <td><?php echo htmlspecialchars($product['phong_cach']); ?></td>
+                            <td><?php echo ucwords(mb_strtolower(htmlspecialchars($product['phong_cach']), 'UTF-8'), " \t\r\n\f\v,"); ?></td>
                         </tr>
                         <?php endif; ?>
                         <?php if (isset($product['xuat_xu']) && !empty($product['xuat_xu'])): ?>
                         <tr>
                             <td style="white-space: nowrap;"><strong>Xuất xứ:</strong></td>
-                            <td><?php echo htmlspecialchars($product['xuat_xu']); ?></td>
+                            <td><?php echo ucfirst(mb_strtolower(htmlspecialchars($product['xuat_xu']), 'UTF-8')); ?></td>
                         </tr>
                         <?php endif; ?>
                         <?php if (isset($product['nam_phat_hanh']) && !empty($product['nam_phat_hanh'])): ?>
@@ -178,7 +193,7 @@ include __DIR__ . '/../layout/header.php';
                     <div class="product-image position-relative overflow-hidden">
                         <img src="<?php echo ASSETS_URL . urldecode($rp['duong_dan_hinh_anh']); ?>" 
                              class="card-img-top" alt="<?php echo htmlspecialchars($rp['ten_san_pham']); ?>"
-                             onerror="this.src='<?php echo ASSETS_URL; ?>images/placeholder.jpg'">
+                             onerror="this.src='<?php echo ASSETS_URL; ?>images/placeholder.png'">
                         <div class="product-overlay">
                             <a href="detail.php?id=<?php echo $rp['id']; ?>" class="btn btn-primary btn-sm">
                                 <i class="fas fa-eye"></i> Xem chi tiết

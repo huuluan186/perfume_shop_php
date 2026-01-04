@@ -129,15 +129,19 @@ class User {
     
     // Lấy tất cả users (admin)
     public function getAllUsers($limit = 20, $offset = 0, $search = '') {
-        $query = "SELECT id, username, email, gioi_tinh, ngay_sinh, vai_tro, trang_thai, ngay_tao 
+        $query = "SELECT id, username, email, gioi_tinh, ngay_sinh, vai_tro, trang_thai, ngay_tao, ngay_xoa 
                   FROM {$this->table} 
-                  WHERE ngay_xoa IS NULL";
+                  WHERE 1=1";
         
         if ($search) {
             $query .= " AND (username LIKE ? OR email LIKE ?)";
         }
         
-        $query .= " ORDER BY ngay_tao DESC LIMIT ? OFFSET ?";
+        $query .= " ORDER BY 
+                    CASE WHEN ngay_xoa IS NULL THEN 0 ELSE 1 END,
+                    COALESCE(ngay_tao, FROM_UNIXTIME(0)) DESC,
+                    id DESC 
+                    LIMIT ? OFFSET ?";
         
         $stmt = $this->conn->prepare($query);
         
@@ -191,6 +195,76 @@ class User {
         $stmt = $this->conn->prepare($query);
         $stmt->bind_param("i", $id);
         return $stmt->execute();
+    }
+    
+    // Lấy user theo ID kể cả đã xóa (dùng cho admin)
+    public function getUserByIdWithDeleted($id) {
+        $query = "SELECT id, username, email, password as mat_khau, gioi_tinh, ngay_sinh, vai_tro, trang_thai, ngay_tao, ngay_xoa 
+                  FROM {$this->table} 
+                  WHERE id = ?";
+        
+        $stmt = $this->conn->prepare($query);
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        if ($result->num_rows > 0) {
+            return $result->fetch_assoc();
+        }
+        return false;
+    }
+    
+    // Tạo user mới (admin)
+    public function createUser($username, $email, $password, $gioi_tinh, $ngay_sinh, $vai_tro) {
+        // Kiểm tra email đã tồn tại
+        if ($this->emailExists($email)) {
+            return false;
+        }
+        
+        $hashed_password = md5($password);
+        
+        // Handle NULL for optional fields
+        $gioi_tinh = !empty($gioi_tinh) ? $gioi_tinh : null;
+        $ngay_sinh = !empty($ngay_sinh) ? $ngay_sinh : null;
+        
+        $query = "INSERT INTO {$this->table} (username, email, password, gioi_tinh, ngay_sinh, vai_tro, trang_thai) 
+                  VALUES (?, ?, ?, ?, ?, ?, 1)";
+        
+        $stmt = $this->conn->prepare($query);
+        $stmt->bind_param("ssssss", $username, $email, $hashed_password, $gioi_tinh, $ngay_sinh, $vai_tro);
+        
+        if ($stmt->execute()) {
+            return $this->conn->insert_id;
+        }
+        return false;
+    }
+    
+    // Cập nhật user (admin) - không thay đổi password
+    public function updateUser($id, $username, $email, $gioi_tinh, $ngay_sinh, $vai_tro) {
+        // Kiểm tra email đã tồn tại (trừ user hiện tại)
+        if ($this->emailExists($email, $id)) {
+            return false;
+        }
+        
+        // Handle NULL for optional fields
+        $gioi_tinh = !empty($gioi_tinh) ? $gioi_tinh : null;
+        $ngay_sinh = !empty($ngay_sinh) ? $ngay_sinh : null;
+        
+        $query = "UPDATE {$this->table} 
+                  SET username = ?, email = ?, gioi_tinh = ?, ngay_sinh = ?, vai_tro = ? 
+                  WHERE id = ?";
+        
+        $stmt = $this->conn->prepare($query);
+        $stmt->bind_param("sssssi", $username, $email, $gioi_tinh, $ngay_sinh, $vai_tro, $id);
+        return $stmt->execute();
+    }
+    
+    // Đếm tổng users cho admin (bao gồm cả đã xóa)
+    public function countForAdmin() {
+        $query = "SELECT COUNT(*) as total FROM {$this->table}";
+        $result = $this->conn->query($query);
+        $row = $result->fetch_assoc();
+        return $row['total'];
     }
     
     public function __destruct() {

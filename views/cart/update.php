@@ -18,6 +18,16 @@ if (empty($cart_key) || !isset($_SESSION['cart'][$cart_key])) {
 }
 
 if ($action === 'increase') {
+    // Kiểm tra tồn kho trước khi tăng
+    require_once __DIR__ . '/../../models/Product.php';
+    $productModel = new Product();
+    $product = $productModel->getById($_SESSION['cart'][$cart_key]['product_id']);
+    
+    if (!$product || $product['so_luong_ton'] < ($_SESSION['cart'][$cart_key]['quantity'] + 1)) {
+        echo json_encode(['success' => false, 'message' => 'Sản phẩm không đủ số lượng trong kho!']);
+        exit;
+    }
+    
     $_SESSION['cart'][$cart_key]['quantity']++;
 } elseif ($action === 'decrease') {
     if ($_SESSION['cart'][$cart_key]['quantity'] > 1) {

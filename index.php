@@ -103,9 +103,22 @@ include __DIR__ . '/views/layout/header.php';
             <div class="col-lg-3 col-md-4 col-sm-6">
                 <div class="product-card card h-100 border-0 shadow-sm">
                     <div class="product-image position-relative overflow-hidden">
-                        <img src="<?php echo ASSETS_URL . urldecode($product['duong_dan_hinh_anh']); ?>" 
+                        <?php 
+                        // Check old vs new image path
+                        $new_prod_img = '';
+                        if (!empty($product['duong_dan_hinh_anh'])) {
+                            if (strpos($product['duong_dan_hinh_anh'], '/') !== false) {
+                                $new_prod_img = ASSETS_URL . urldecode($product['duong_dan_hinh_anh']);
+                            } else {
+                                $new_prod_img = UPLOAD_URL . $product['duong_dan_hinh_anh'];
+                            }
+                        } else {
+                            $new_prod_img = ASSETS_URL . 'images/placeholder.png';
+                        }
+                        ?>
+                        <img src="<?php echo $new_prod_img; ?>" 
                              class="card-img-top" alt="<?php echo htmlspecialchars($product['ten_san_pham']); ?>"
-                             onerror="this.src='<?php echo ASSETS_URL; ?>images/placeholder.jpg'">
+                             onerror="this.src='<?php echo ASSETS_URL; ?>images/placeholder.png'">
                         <div class="product-overlay">
                             <a href="<?php echo BASE_URL; ?>views/products/detail.php?id=<?php echo $product['id']; ?>" 
                                class="btn btn-primary btn-sm">
@@ -154,9 +167,22 @@ include __DIR__ . '/views/layout/header.php';
             <div class="col-lg-3 col-md-4 col-sm-6">
                 <div class="product-card card h-100 border-0 shadow-sm">
                     <div class="product-image position-relative overflow-hidden">
-                        <img src="<?php echo ASSETS_URL . urldecode($product['duong_dan_hinh_anh']); ?>" 
+                        <?php 
+                        // Check old vs new image path
+                        $best_prod_img = '';
+                        if (!empty($product['duong_dan_hinh_anh'])) {
+                            if (strpos($product['duong_dan_hinh_anh'], '/') !== false) {
+                                $best_prod_img = ASSETS_URL . urldecode($product['duong_dan_hinh_anh']);
+                            } else {
+                                $best_prod_img = UPLOAD_URL . $product['duong_dan_hinh_anh'];
+                            }
+                        } else {
+                            $best_prod_img = ASSETS_URL . 'images/placeholder.png';
+                        }
+                        ?>
+                        <img src="<?php echo $best_prod_img; ?>" 
                              class="card-img-top" alt="<?php echo htmlspecialchars($product['ten_san_pham']); ?>"
-                             onerror="this.src='<?php echo ASSETS_URL; ?>images/placeholder.jpg'">
+                             onerror="this.src='<?php echo ASSETS_URL; ?>images/placeholder.png'">
                         <div class="product-overlay">
                             <a href="<?php echo BASE_URL; ?>views/products/detail.php?id=<?php echo $product['id']; ?>" 
                                class="btn btn-primary btn-sm">
@@ -207,7 +233,7 @@ include __DIR__ . '/views/layout/header.php';
                                  alt="<?php echo htmlspecialchars($brand['ten_thuong_hieu']); ?>"
                                  class="img-fluid" 
                                  style="max-height: 60px; max-width: 100%; object-fit: contain;"
-                                 onerror="this.style.display='none'; this.parentElement.parentElement.querySelector('.brand-name').style.display='block';">
+                                 onerror="this.src='<?php echo ASSETS_URL; ?>images/placeholder.png';">
                         <?php else: ?>
                             <i class="fas fa-copyright fa-2x text-muted"></i>
                         <?php endif; ?>

@@ -82,49 +82,56 @@ include __DIR__ . '/../layout/header.php';
                             <th>Trạng thái</th>
                             <th>Thanh toán</th>
                             <th>Ngày đặt</th>
-                            <th width="200">Thao tác</th>
+                            <th class="text-center sticky-action">Thao tác</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php foreach ($orders as $order): ?>
-                        <tr>
+                        <tr <?php echo $order['ngay_xoa'] ? 'class="table-secondary" style="opacity: 0.6;"' : ''; ?>>
                             <td><strong>#<?php echo $order['id']; ?></strong></td>
                             <td><?php echo htmlspecialchars($order['ho_ten_nguoi_nhan'] ?? ''); ?></td>
                             <td><?php echo htmlspecialchars($order['so_dien_thoai_nhan'] ?? ''); ?></td>
                             <td><strong class="text-primary"><?php echo format_currency($order['tong_tien']); ?></strong></td>
                             <td>
                                 <?php
-                                $status = (int)$order['trang_thai'];
-                                $badge = 'secondary';
-                                $text = 'Không xác định';
-                                switch($status) {
-                                    case ORDER_STATUS_PENDING: $badge = 'warning'; $text = 'Chưa duyệt'; break;
-                                    case ORDER_STATUS_APPROVED: $badge = 'info'; $text = 'Đã duyệt'; break;
-                                    case ORDER_STATUS_SHIPPING: $badge = 'primary'; $text = 'Đang giao hàng'; break;
-                                    case ORDER_STATUS_COMPLETED: $badge = 'success'; $text = 'Hoàn thành'; break;
-                                    case ORDER_STATUS_CANCELLED: $badge = 'danger'; $text = 'Đã hủy'; break;
+                                if ($order['ngay_xoa']) {
+                                    echo '<span class="badge bg-danger"><i class="fas fa-trash me-1"></i>Đã xóa</span>';
+                                } else {
+                                    $status = (int)$order['trang_thai'];
+                                    $badge = 'secondary';
+                                    $text = 'Không xác định';
+                                    switch($status) {
+                                        case ORDER_STATUS_PENDING: $badge = 'warning'; $text = 'Chưa duyệt'; break;
+                                        case ORDER_STATUS_APPROVED: $badge = 'info'; $text = 'Đã duyệt'; break;
+                                        case ORDER_STATUS_SHIPPING: $badge = 'primary'; $text = 'Đang giao hàng'; break;
+                                        case ORDER_STATUS_COMPLETED: $badge = 'success'; $text = 'Hoàn thành'; break;
+                                        case ORDER_STATUS_CANCELLED: $badge = 'danger'; $text = 'Đã hủy'; break;
+                                    }
+                                    echo '<span class="badge bg-' . $badge . '">' . $text . '</span>';
                                 }
                                 ?>
-                                <span class="badge bg-<?php echo $badge; ?>"><?php echo $text; ?></span>
                             </td>
                             <td><small><?php echo htmlspecialchars($order['phuong_thuc_thanh_toan'] ?? 'COD'); ?></small></td>
                             <td><?php echo format_date($order['ngay_dat']); ?></td>
-                            <td>
-                                <button class="btn btn-sm btn-outline-info view-order me-1" 
-                                        data-id="<?php echo $order['id']; ?>"
-                                        title="Xem chi tiết">
+                            <td class="text-center sticky-action">
+                                <a href="view.php?id=<?php echo $order['id']; ?>" class="btn btn-sm btn-outline-info me-1" title="Xem chi tiết">
                                     <i class="fas fa-eye"></i>
-                                </button>
-                                <?php if ($status !== ORDER_STATUS_CANCELLED && $status !== ORDER_STATUS_COMPLETED): ?>
-                                <button class="btn btn-sm btn-outline-primary update-status" 
-                                        data-id="<?php echo $order['id']; ?>"
-                                        title="Cập nhật trạng thái">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <?php else: ?>
-                                <button class="btn btn-sm btn-outline-secondary" disabled title="Không thể cập nhật">
-                                    <i class="fas fa-ban"></i>
-                                </button>
+                                </a>
+                                <?php if (!$order['ngay_xoa']): ?>
+                                    <?php 
+                                    $status = (int)$order['trang_thai'];
+                                    if ($status !== ORDER_STATUS_CANCELLED && $status !== ORDER_STATUS_COMPLETED): 
+                                    ?>
+                                    <button class="btn btn-sm btn-outline-primary me-1 update-status" 
+                                            data-id="<?php echo $order['id']; ?>"
+                                            title="Cập nhật trạng thái">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <?php endif; ?>
+                                    <button class="btn btn-sm btn-outline-danger delete-order" 
+                                            data-id="<?php echo $order['id']; ?>" title="Xóa">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
                                 <?php endif; ?>
                             </td>
                         </tr>
@@ -168,23 +175,6 @@ include __DIR__ . '/../layout/header.php';
     </div>
 </div>
 
-<!-- Order Detail Modal -->
-<div class="modal fade" id="orderModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Chi tiết đơn hàng</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body" id="orderContent">
-                <div class="text-center py-5">
-                    <div class="spinner-border text-primary"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
 <!-- Status Update Modal -->
 <div class="modal fade" id="statusModal" tabindex="-1">
     <div class="modal-dialog">
@@ -220,42 +210,11 @@ include __DIR__ . '/../layout/header.php';
 
 <script>
 $(document).ready(function() {
-    // View order details
-    $(document).on('click', '.view-order', function(e) {
-        e.preventDefault();
-        
-        const orderId = $(this).data('id');
-        console.log('View order:', orderId);
-        
-        // Show modal
-        $('#orderModal').modal('show');
-        
-        // Load content
-        $('#orderContent').html('<div class="text-center py-5"><div class="spinner-border text-primary"></div></div>');
-        
-        $.ajax({
-            url: 'view-order.php',
-            method: 'GET',
-            data: { id: orderId },
-            success: function(data) {
-                console.log('Order loaded successfully');
-                $('#orderContent').html(data);
-            },
-            error: function(xhr, status, error) {
-                console.error('Error loading order:', error);
-                console.log('Response:', xhr.responseText);
-                $('#orderContent').html('<div class="alert alert-danger">Không thể tải chi tiết đơn hàng! Lỗi: ' + error + '</div>');
-            }
-        });
-    });
-
     // Update status
     $(document).on('click', '.update-status', function(e) {
         e.preventDefault();
         
         const orderId = $(this).data('id');
-        console.log('Update status for order:', orderId);
-        
         $('#order_id').val(orderId);
         $('#statusModal').modal('show');
     });
@@ -270,15 +229,12 @@ $(document).ready(function() {
         
         $submitBtn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span>Đang xử lý...');
         
-        console.log('Submitting form:', $form.serialize());
-        
         $.ajax({
             url: 'update-status.php',
             method: 'POST',
             data: $form.serialize(),
             dataType: 'json',
             success: function(response) {
-                console.log('Response:', response);
                 if (response.success) {
                     alert(response.message);
                     $('#statusModal').modal('hide');
@@ -289,10 +245,43 @@ $(document).ready(function() {
                 }
             },
             error: function(xhr, status, error) {
-                console.error('Error updating status:', error);
+                console.error('Error:', error);
                 console.log('Response:', xhr.responseText);
-                alert('Có lỗi xảy ra khi cập nhật trạng thái! Lỗi: ' + error);
+                alert('Có lỗi xảy ra khi cập nhật trạng thái!');
                 $submitBtn.prop('disabled', false).html(originalText);
+            }
+        });
+    });
+    
+    // Delete order
+    $(document).on('click', '.delete-order', function(e) {
+        e.preventDefault();
+        
+        if (!confirm('Bạn có chắc muốn xóa đơn hàng này?')) return;
+        
+        const orderId = $(this).data('id');
+        const $button = $(this);
+        $button.prop('disabled', true);
+        
+        $.ajax({
+            url: 'delete.php',
+            method: 'POST',
+            data: { id: orderId },
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    alert(response.message);
+                    location.reload();
+                } else {
+                    alert(response.message);
+                    $button.prop('disabled', false);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error:', error);
+                console.log('Response:', xhr.responseText);
+                alert('Có lỗi xảy ra khi xóa đơn hàng!');
+                $button.prop('disabled', false);
             }
         });
     });

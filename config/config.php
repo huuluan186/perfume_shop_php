@@ -7,12 +7,12 @@ if (session_status() == PHP_SESSION_NONE) {
 // Định nghĩa các đường dẫn
 define('BASE_URL', 'http://localhost/perfume_shop_php/');
 define('ASSETS_URL', BASE_URL . 'assets/');
-define('UPLOAD_PATH', __DIR__ . '/../assets/products/');
-define('UPLOAD_URL', ASSETS_URL . 'products/');
+define('UPLOAD_PATH', __DIR__ . '/../uploads/');
+define('UPLOAD_URL', BASE_URL . 'uploads/');
 
 // Số sản phẩm trên mỗi trang
-define('PRODUCTS_PER_PAGE', 9);
-define('ORDERS_PER_PAGE', 10);
+define('PRODUCTS_PER_PAGE', 8);
+define('ORDERS_PER_PAGE', 8);
 
 // Múi giờ
 date_default_timezone_set('Asia/Ho_Chi_Minh');

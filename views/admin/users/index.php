@@ -11,7 +11,7 @@ if (!is_admin()) {
 $userModel = new User();
 
 $page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
-$limit = 20;
+$limit = 8;
 $offset = ($page - 1) * $limit;
 
 $users = $userModel->getAllUsers($limit, $offset);
@@ -25,6 +25,9 @@ include __DIR__ . '/../layout/header.php';
 <div class="container-fluid my-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="fw-bold"><i class="fas fa-users me-2"></i>Quản lý người dùng</h2>
+        <a href="create.php" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>Thêm người dùng
+        </a>
     </div>
     
     <div class="card border-0 shadow-sm">
@@ -36,7 +39,7 @@ include __DIR__ . '/../layout/header.php';
             </div>
             <?php else: ?>
             <div class="table-responsive">
-                <table class="table table-hover align-middle">
+                <table class="table table-hover align-middle table-sticky-action">
                     <thead class="table-light">
                         <tr>
                             <th>ID</th>
@@ -47,12 +50,12 @@ include __DIR__ . '/../layout/header.php';
                             <th>Vai trò</th>
                             <th>Trạng thái</th>
                             <th>Ngày tạo</th>
-                            <th width="150">Thao tác</th>
+                            <th class="text-center sticky-action">Thao tác</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php foreach ($users as $user): ?>
-                        <tr>
+                        <tr <?php echo $user['ngay_xoa'] ? 'class="table-secondary" style="opacity: 0.6;"' : ''; ?>>
                             <td><strong>#<?php echo $user['id']; ?></strong></td>
                             <td><?php echo htmlspecialchars($user['username'] ?? ''); ?></td>
                             <td><?php echo htmlspecialchars($user['email']); ?></td>
@@ -66,19 +69,38 @@ include __DIR__ . '/../layout/header.php';
                                 <?php endif; ?>
                             </td>
                             <td>
-                                <?php if ($user['trang_thai'] == 1): ?>
-                                    <span class="badge bg-success">Hoạt động</span>
+                                <?php if ($user['ngay_xoa']): ?>
+                                    <span class="badge bg-danger">
+                                        <i class="fas fa-trash me-1"></i>Đã xóa
+                                    </span>
+                                <?php elseif ($user['trang_thai'] == 1): ?>
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-check-circle me-1"></i>Hoạt động
+                                    </span>
                                 <?php else: ?>
-                                    <span class="badge bg-secondary">Đã khóa</span>
+                                    <span class="badge bg-secondary">
+                                        <i class="fas fa-lock me-1"></i>Đã khóa
+                                    </span>
                                 <?php endif; ?>
                             </td>
                             <td><?php echo format_date($user['ngay_tao']); ?></td>
-                            <td>
-                                <?php if ($user['id'] !== $_SESSION['user_id']): ?>
-                                    <button class="btn btn-sm btn-outline-<?php echo $user['trang_thai'] == 1 ? 'warning' : 'success'; ?> toggle-status" 
+                            <td class="text-center sticky-action" class="text-center sticky-action">
+                                <a href="view.php?id=<?php echo $user['id']; ?>" class="btn btn-sm btn-outline-info me-1" title="Xem chi tiết">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <?php if (!$user['ngay_xoa'] && $user['id'] !== $_SESSION['user_id']): ?>
+                                    <a href="edit.php?id=<?php echo $user['id']; ?>" class="btn btn-sm btn-outline-primary me-1" title="Sửa">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <button class="btn btn-sm btn-outline-<?php echo $user['trang_thai'] == 1 ? 'warning' : 'success'; ?> me-1 toggle-status" 
                                             data-id="<?php echo $user['id']; ?>"
-                                            data-status="<?php echo $user['trang_thai']; ?>">
+                                            data-status="<?php echo $user['trang_thai']; ?>"
+                                            title="<?php echo $user['trang_thai'] == 1 ? 'Khóa' : 'Mở khóa'; ?>">
                                         <i class="fas fa-<?php echo $user['trang_thai'] == 1 ? 'lock' : 'unlock'; ?>"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger delete-user" 
+                                            data-id="<?php echo $user['id']; ?>" title="Xóa">
+                                        <i class="fas fa-trash"></i>
                                     </button>
                                 <?php endif; ?>
                             </td>
@@ -144,6 +166,39 @@ $(document).ready(function() {
                 console.error('Error:', error);
                 console.log('Response:', xhr.responseText);
                 alert('Có lỗi xảy ra! Lỗi: ' + error);
+                $button.prop('disabled', false);
+            }
+        });
+    });
+    
+    // Delete user
+    $(document).on('click', '.delete-user', function(e) {
+        e.preventDefault();
+        
+        if (!confirm('Bạn có chắc muốn xóa người dùng này?')) return;
+        
+        const userId = $(this).data('id');
+        const $button = $(this);
+        $button.prop('disabled', true);
+        
+        $.ajax({
+            url: 'delete.php',
+            method: 'POST',
+            data: { id: userId },
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    alert(response.message);
+                    location.reload();
+                } else {
+                    alert(response.message);
+                    $button.prop('disabled', false);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error:', error);
+                console.log('Response:', xhr.responseText);
+                alert('Có lỗi xảy ra khi xóa người dùng!');
                 $button.prop('disabled', false);
             }
         });

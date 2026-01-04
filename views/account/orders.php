@@ -181,18 +181,19 @@ include __DIR__ . '/../layout/header.php';
                                                             <?php 
                                                             $image_path = $detail['duong_dan_hinh_anh'] ?? '';
                                                             if (!empty($image_path)): 
-                                                                // Dữ liệu đã có 'products/' rồi, dùng ASSETS_URL thay vì UPLOAD_URL
-                                                                $full_image_url = ASSETS_URL . urldecode($image_path);
+                                                                // Check old vs new path
+                                                                if (strpos($image_path, '/') !== false) {
+                                                                    $full_image_url = ASSETS_URL . urldecode($image_path);
+                                                                } else {
+                                                                    $full_image_url = UPLOAD_URL . $image_path;
+                                                                }
                                                             ?>
                                                             <img src="<?php echo htmlspecialchars($full_image_url); ?>" 
                                                                  alt="<?php echo htmlspecialchars($detail['ten_san_pham'] ?? ''); ?>" 
                                                                  class="me-3 rounded" 
                                                                  style="width: 60px; height: 60px; object-fit: cover;"
-                                                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                                            <div class="me-3 bg-light rounded align-items-center justify-content-center" 
-                                                                 style="width: 60px; height: 60px; display: none;">
-                                                                <i class="fas fa-image text-muted"></i>
-                                                            </div>
+                                                                 onerror="this.src='<?php echo ASSETS_URL; ?>images/placeholder.png';">
+                                                            
                                                             <?php else: ?>
                                                             <div class="me-3 bg-light rounded d-flex align-items-center justify-content-center" 
                                                                  style="width: 60px; height: 60px;">

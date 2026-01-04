@@ -21,6 +21,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($ten_thuong_hieu)) $errors[] = 'Vui lòng nhập tên thương hiệu!';
     
     if (empty($errors)) {
+        // Handle NULL for optional fields
+        $quoc_gia = !empty($quoc_gia) ? $quoc_gia : null;
+        $mo_ta = !empty($mo_ta) ? $mo_ta : null;
+        $logo = !empty($logo) ? $logo : null;
+        
         $data = [
             'ten_thuong_hieu' => $ten_thuong_hieu,
             'quoc_gia' => $quoc_gia,
@@ -62,28 +67,30 @@ include __DIR__ . '/../layout/header.php';
     
     <div class="card border-0 shadow-sm">
         <div class="card-body">
-            <form method="POST">
+            <form method="POST" id="brandForm">
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-8">
                         <div class="mb-3">
                             <label class="form-label">Tên thương hiệu <span class="text-danger">*</span></label>
                             <input type="text" class="form-control" name="ten_thuong_hieu" 
                                    value="<?php echo htmlspecialchars($_POST['ten_thuong_hieu'] ?? ''); ?>" required>
                         </div>
                         
-                        <div class="mb-3">
-                            <label class="form-label">Quốc gia</label>
-                            <input type="text" class="form-control" name="quoc_gia" 
-                                   placeholder="VD: Pháp, Ý, Mỹ..."
-                                   value="<?php echo htmlspecialchars($_POST['quoc_gia'] ?? ''); ?>">
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label class="form-label">URL Logo</label>
-                            <input type="url" class="form-control" name="logo" 
-                                   placeholder="https://example.com/logo.png"
-                                   value="<?php echo htmlspecialchars($_POST['logo'] ?? ''); ?>">
-                            <small class="text-muted">Nhập link URL của logo thương hiệu</small>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Quốc gia</label>
+                                <input type="text" class="form-control" name="quoc_gia" 
+                                       placeholder="VD: Pháp, Ý, Mỹ..."
+                                       value="<?php echo htmlspecialchars($_POST['quoc_gia'] ?? ''); ?>">
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">URL Logo</label>
+                                <input type="url" class="form-control" name="logo" 
+                                       placeholder="https://example.com/logo.png"
+                                       value="<?php echo htmlspecialchars($_POST['logo'] ?? ''); ?>">
+                                <small class="text-muted">Nhập link URL của logo</small>
+                            </div>
                         </div>
                         
                         <div class="mb-3">
@@ -96,14 +103,65 @@ include __DIR__ . '/../layout/header.php';
                 <hr>
                 
                 <div class="text-end">
-                    <a href="index.php" class="btn btn-secondary px-4">Hủy</a>
+                    <a href="index.php" class="btn btn-secondary px-4">
+                        <i class="fas fa-times me-2"></i>Hủy
+                    </a>
                     <button type="submit" class="btn btn-primary px-4">
-                        <i class="fas fa-save me-2"></i>Lưu
+                        <i class="fas fa-save me-2"></i>Lưu thương hiệu
                     </button>
                 </div>
             </form>
         </div>
     </div>
 </div>
+
+<script>
+// Validation form
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('brandForm');
+    
+    form.addEventListener('submit', function(e) {
+        let isValid = true;
+        let errorMsg = [];
+        
+        // 1. Tên thương hiệu - NOT NULL trong DB
+        const tenThuongHieu = form.querySelector('[name="ten_thuong_hieu"]');
+        if (!tenThuongHieu.value.trim()) {
+            errorMsg.push('Tên thương hiệu không được để trống!');
+            tenThuongHieu.classList.add('is-invalid');
+            isValid = false;
+        } else {
+            tenThuongHieu.classList.remove('is-invalid');
+        }
+        
+        // 2. URL Logo - Nếu nhập thì phải đúng format
+        const logo = form.querySelector('[name="logo"]');
+        if (logo.value && !isValidUrl(logo.value)) {
+            errorMsg.push('URL logo không hợp lệ!');
+            logo.classList.add('is-invalid');
+            isValid = false;
+        } else {
+            logo.classList.remove('is-invalid');
+        }
+        
+        if (!isValid) {
+            e.preventDefault();
+            alert('Vui lòng kiểm tra lại:\n\n' + errorMsg.join('\n'));
+            return false;
+        }
+        
+        return true;
+    });
+    
+    function isValidUrl(string) {
+        try {
+            new URL(string);
+            return true;
+        } catch (_) {
+            return false;
+        }
+    }
+});
+</script>
 
 <?php include __DIR__ . '/../layout/footer.php'; ?>

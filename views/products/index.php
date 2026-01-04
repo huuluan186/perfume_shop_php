@@ -143,9 +143,22 @@ include __DIR__ . '/../layout/header.php';
                 <div class="col-lg-4 col-md-6">
                     <div class="product-card card h-100 border-0 shadow-sm">
                         <div class="product-image position-relative overflow-hidden">
-                            <img src="<?php echo ASSETS_URL . urldecode($product['duong_dan_hinh_anh']); ?>" 
+                            <?php 
+                            // Check old vs new image path
+                            $img_url = '';
+                            if (!empty($product['duong_dan_hinh_anh'])) {
+                                if (strpos($product['duong_dan_hinh_anh'], '/') !== false) {
+                                    $img_url = ASSETS_URL . urldecode($product['duong_dan_hinh_anh']);
+                                } else {
+                                    $img_url = UPLOAD_URL . $product['duong_dan_hinh_anh'];
+                                }
+                            } else {
+                                $img_url = ASSETS_URL . 'images/placeholder.png';
+                            }
+                            ?>
+                            <img src="<?php echo $img_url; ?>" 
                                  class="card-img-top" alt="<?php echo htmlspecialchars($product['ten_san_pham']); ?>"
-                                 onerror="this.src='<?php echo ASSETS_URL; ?>images/placeholder.jpg'">
+                                 onerror="this.src='<?php echo ASSETS_URL; ?>images/placeholder.png'">
                             <?php if ($product['so_luong_ton'] <= 0): ?>
                             <div class="position-absolute top-0 end-0 m-2">
                                 <span class="badge bg-danger">Hết hàng</span>

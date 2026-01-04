@@ -33,6 +33,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($ten_thuong_hieu)) $errors[] = 'Vui lòng nhập tên thương hiệu!';
     
     if (empty($errors)) {
+        // Handle NULL for optional fields
+        $quoc_gia = !empty($quoc_gia) ? $quoc_gia : null;
+        $mo_ta = !empty($mo_ta) ? $mo_ta : null;
+        $logo = !empty($logo) ? $logo : null;
+        
         $data = [
             'ten_thuong_hieu' => $ten_thuong_hieu,
             'quoc_gia' => $quoc_gia,
@@ -108,7 +113,7 @@ include __DIR__ . '/../layout/header.php';
                         <div class="border rounded p-3 text-center">
                             <img src="<?php echo htmlspecialchars($brand['logo']); ?>" 
                                  class="img-fluid" style="max-height: 200px;"
-                                 onerror="this.src='<?php echo ASSETS_URL; ?>images/brand-placeholder.jpg'">
+                                 onerror="this.src='<?php echo ASSETS_URL; ?>images/placeholder.png'">
                         </div>
                     </div>
                     <?php endif; ?>

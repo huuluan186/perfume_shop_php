@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th1 02, 2026 lúc 11:53 AM
+-- Thời gian đã tạo: Th1 04, 2026 lúc 05:44 AM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -43,7 +43,10 @@ INSERT INTO `chi_tiet_don_hang` (`id`, `id_don_hang`, `id_san_pham`, `so_luong`,
 (1, 1, 2, 1, 385000.00),
 (2, 2, 15, 2, 1500000.00),
 (3, 2, 51, 1, 3050000.00),
-(4, 2, 49, 1, 4250000.00);
+(4, 2, 49, 1, 4250000.00),
+(5, 3, 60, 4, 1000000.00),
+(6, 3, 50, 1, 3980000.00),
+(7, 4, 60, 1, 1000000.00);
 
 -- --------------------------------------------------------
 
@@ -124,7 +127,9 @@ CREATE TABLE `don_hang` (
 
 INSERT INTO `don_hang` (`id`, `id_nguoi_dung`, `ho_ten_nguoi_nhan`, `so_dien_thoai_nhan`, `dia_chi_giao_hang`, `tong_tien`, `trang_thai`, `ngay_dat`, `ngay_xoa`) VALUES
 (1, 1, 'Hữu Luân', '0386291762', 'aps do tRà vinh', 415000.00, 0, '2026-01-02 16:41:28', NULL),
-(2, 1, 'Hữu Luân', '0386291762', 'asaadsf gfgf', 10300000.00, 4, '2026-01-02 17:17:14', NULL);
+(2, 1, 'Hữu Luân', '0386291762', 'asaadsf gfgf', 10300000.00, 4, '2026-01-02 17:17:14', NULL),
+(3, 2, 'Hữu Luân', '0386291762', 'sdssds', 7980000.00, 4, '2026-01-04 11:37:01', NULL),
+(4, 2, 'Hữu Luân', '0386291762', 'dfdfhytygr', 1000000.00, 4, '2026-01-04 11:40:12', NULL);
 
 -- --------------------------------------------------------
 
@@ -245,7 +250,8 @@ INSERT INTO `san_pham` (`id`, `ten_san_pham`, `gia_ban`, `dung_tich_ml`, `nhom_h
 (48, 'Tom Ford Ombré Leather', 4500000.00, 100, 'Hương da thuộc', 'unisex', 'Sang trọng, Ấm áp, Cổ điển', 'Mỹ', 2018, 'Nước hoa Tom Ford Ombré Leather không phải là một mùi hương dễ ngửi, nhưng càng ngửi thì bạn sẽ càng yêu thích. Mùi hương đâu đó là dư âm của sự cổ điển, tươi mát và cũng chính sự cá tính này đã tạo nên sự không giới hạn để cả chàng và nàng đều có thể thưởng thức.', 'products/Tom%20Ford/Tom%20Ford%20Ombré%20Leather/tom-ford-ombre-leather-100ml.jpg', 15, 3, 8, NULL),
 (49, 'Tom Ford Ombre Leather Parfum', 4250000.00, 100, 'Da thuộc, Lá hoa violet, Hoa nhài Sambac', 'unisex', 'Sang trọng, Thanh lịch, Quyến rũ, Gây nghiện', 'Mỹ, Thụy Sĩ', 2021, 'Sự xuất hiện của siêu phẩm Tom Ford Ombre Leather vào năm 2018 đã tạo ra một làn sóng dữ dội bởi mùi hương Da Thuộc chủ đạo vô cùng nam tính.<br>Sau 3 năm, tức là năm 2021, một phiên bản mới nhất được ra mắt - Tom Ford Ombre Leather Parfum cùng những hình thái mới của một gã đàn ông được mô phỏng từ một khía cạnh khác biệt và vô cùng đặc biệt.<br>Tầng hương đầu xuất hiện cùng với mùi hương Gỗ Tuyết Tùng và Lá Violet đã mang đến một hỗn hợp cân bằng đầy tinh tế, mùi hương thanh ngọt hòa cùng hương trầm ấm của gỗ là một điều vô cùng táo bạo để mang lại một sự khác biệt đầy cá tính.<br>Phía tầng hương sau là sự xuất hiện của Hoa Nhài Sambac, có lẽ ở phiên bản Parfum dù được nâng cấp ở phần nồng độ tinh dầu để mùi hương trở nên mạnh mẽ hơn thì phần xuất hiện của Hoa Nhài Sambac lại đi ngược lại hoàn toàn với định hướng mùi hương của Ombre Leather, phần hoa Nhài có phần dày mùi hương thanh tươi hơn như 1 cách để nhìn vào gã đàn ông bụi bặm phong trần kia bằng một khía cạnh sâu sắc hơn với tâm hồn cũng yếu đuối cũng muốn được đồng cảm.<br>Ombre Leather Parfum là nguồn cảm hứng bất tận đến từ khu vực miền Tây Nước Mỹ, nơi mà sự bụi bặm và phong trần của những gã cao bồi với chiếc áo da đang trầm ngâm với những điếu thuốc dang dở.<br>Mùi hương của Da Thuộc được khai thác rõ rệt và mạnh mẽ hơn để tạo ra những dấu ấn đúng tinh thần như cái tên đã được sinh ra - Ombre Leather Parfum. Ngoài ra, sự kết hợp với thuốc lá đã thực sự khiến Ombre Leather một lần nữa lại ghi dấu ấn trong lòng giới mộ điệu mùi hương.', 'products/Tom%20Ford/Tom%20Ford%20Ombre%20Leather%20Parfum/ombre-leather-parfum-tom-ford.jpg', 8, 3, 8, NULL),
 (50, 'Valentino Donna Born In Roma Green Stravaganza', 3980000.00, 100, 'Hương Trà Đen Lapsang Souchong, Hoa Nhài, Vanila', 'nữ', 'Ngọt Ngào, Tươi Mới, Quyến Rũ', 'Pháp', 2024, 'Ra mắt vào năm 2024, Valentino Donna Born in Roma Green Stravaganza là lời thì thầm đầy sức sống đến từ kinh đô hoa lệ, nơi những khu vườn thanh mát của Rome được tái hiện qua từng tầng hương. Với thiết kế chai màu xanh lục bắt mắt, cùng họa tiết Rockstud đặc trưng, đây không chỉ là một chai nước hoa, mà là một tuyên ngôn phong cách cho người phụ nữ hiện đại, biết tận hưởng cuộc sống theo cách riêng.<br>Mùi hương mở đầu bằng trà Lapsang Souchong, nhẹ nhàng, có chút khói quyện đầy thư giãn, như một buổi chiều thảnh thơi giữa khu vườn xanh. Khi hương trà dần dịu xuống, hoa nhài bắt đầu nở rộ mềm mại, trong trẻo và nữ tính đến khó quên. Cuối cùng, tất cả được ôm ấp trong lớp nền vanilla ấm ngọt, dịu dàng lưu lại trên da như dư âm của một ánh nhìn tinh tế.<br>Donna Green Stravaganza là lựa chọn lý tưởng cho những nàng yêu nét đẹp tự nhiên, không gồng gánh chỉ cần một lớp hương nhẹ đủ khiến người khác ngoái nhìn. Phù hợp cho cả ban ngày lẫn buổi tối, đặc biệt là những dịp bạn muốn mang theo mình một chút tự do, thanh mát và nữ tính có chiều sâu.', 'products/Valentino/Valentino%20Donna%20Born%20In%20Roma%20Green%20Stravaganza/valentino-donna-born-in-roma-green-stravaganza.jpg', 20, 2, 18, NULL),
-(51, 'Valentino Uomo Born In Roma Green Stravaganza', 3050000.00, 100, 'Hương Cam Bergamot, Cà Phê, Cỏ Hương Bài', 'nam', 'Tinh Tế, Nam Tính, Nhẹ Nhàng', 'Pháp', 2024, 'Khi bản lĩnh được tỏa sáng giữa vườn xanh rực rỡ<br>Ra mắt vào năm 2024, Valentino Uomo Born in Roma Green Stravaganza là một chương mới đầy năng lượng trong bộ sưu tập Born in Roma. Lấy cảm hứng từ những khu vườn đậm chất Ý giữa lòng thành Rome, mùi hương là sự tôn vinh cá tính tự do, sôi nổi và bản lĩnh của người đàn ông hiện đại, luôn chọn sống khác biệt.<br>Ngay từ những nốt đầu tiên, Green Stravaganza mở ra với cam Bergamot vùng Calabria, tươi sáng, rạng rỡ như ánh nắng Địa Trung Hải. Khi lớp hương lắng lại, nốt cà phê dần hiện lên, với chút mạnh mẽ, gợi cảm và tràn đầy năng lượng, như nhịp sống sôi động của thành phố. Kết thúc của hương thơm là sự kết hợp tinh tế giữa Cỏ hương bài ấm khô nồng nàn đầy quyến rũ, để lại một dấu ấn vừa chín chắn vừa cá tính.<br>Đây là mùi hương dành cho những người đàn ông yêu thích sự bứt phá nhưng vẫn giữ vững bản sắc riêng. Phù hợp trong những buổi hẹn hò, tiệc tối hay bất kỳ khoảnh khắc nào bạn muốn tỏa sáng một cách lịch lãm, cuốn hút và đầy khác biệt.', 'products/Valentino/Valentino%20Uomo%20Born%20In%20Roma%20Green%20Stravaganza/valentino-uomo-born-in-roma-green-stravaganza.jpg', 0, 1, 18, NULL);
+(51, 'Valentino Uomo Born In Roma Green Stravaganza', 3050000.00, 100, 'Hương Cam Bergamot, Cà Phê, Cỏ Hương Bài', 'nam', 'Tinh Tế, Nam Tính, Nhẹ Nhàng', 'Pháp', 2024, 'Khi bản lĩnh được tỏa sáng giữa vườn xanh rực rỡ<br>Ra mắt vào năm 2024, Valentino Uomo Born in Roma Green Stravaganza là một chương mới đầy năng lượng trong bộ sưu tập Born in Roma. Lấy cảm hứng từ những khu vườn đậm chất Ý giữa lòng thành Rome, mùi hương là sự tôn vinh cá tính tự do, sôi nổi và bản lĩnh của người đàn ông hiện đại, luôn chọn sống khác biệt.<br>Ngay từ những nốt đầu tiên, Green Stravaganza mở ra với cam Bergamot vùng Calabria, tươi sáng, rạng rỡ như ánh nắng Địa Trung Hải. Khi lớp hương lắng lại, nốt cà phê dần hiện lên, với chút mạnh mẽ, gợi cảm và tràn đầy năng lượng, như nhịp sống sôi động của thành phố. Kết thúc của hương thơm là sự kết hợp tinh tế giữa Cỏ hương bài ấm khô nồng nàn đầy quyến rũ, để lại một dấu ấn vừa chín chắn vừa cá tính.<br>Đây là mùi hương dành cho những người đàn ông yêu thích sự bứt phá nhưng vẫn giữ vững bản sắc riêng. Phù hợp trong những buổi hẹn hò, tiệc tối hay bất kỳ khoảnh khắc nào bạn muốn tỏa sáng một cách lịch lãm, cuốn hút và đầy khác biệt.', 'products/Valentino/Valentino%20Uomo%20Born%20In%20Roma%20Green%20Stravaganza/valentino-uomo-born-in-roma-green-stravaganza.jpg', 0, 1, 18, NULL),
+(60, 'new', 1000000.00, 100, NULL, 'nam', NULL, 'pháp', 2024, NULL, 'product_20260104_6959ec822a708.png', 1, 4, 30, '2026-01-04 11:41:15');
 
 -- --------------------------------------------------------
 
@@ -383,7 +389,7 @@ ALTER TABLE `thuong_hieu`
 -- AUTO_INCREMENT cho bảng `chi_tiet_don_hang`
 --
 ALTER TABLE `chi_tiet_don_hang`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT cho bảng `chi_tiet_gio_hang`
@@ -407,7 +413,7 @@ ALTER TABLE `danh_sach_yeu_thich`
 -- AUTO_INCREMENT cho bảng `don_hang`
 --
 ALTER TABLE `don_hang`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT cho bảng `gio_hang`
@@ -425,7 +431,7 @@ ALTER TABLE `nguoi_dung`
 -- AUTO_INCREMENT cho bảng `san_pham`
 --
 ALTER TABLE `san_pham`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=61;
 
 --
 -- AUTO_INCREMENT cho bảng `thuong_hieu`
@@ -481,4 +487,3 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-

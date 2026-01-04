@@ -27,18 +27,15 @@ $errors = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $ten_danh_muc = clean_input($_POST['ten_danh_muc'] ?? '');
     $mo_ta = clean_input($_POST['mo_ta'] ?? '');
-    $hinh_anh = clean_input($_POST['hinh_anh'] ?? '');
     
+    // Validate
     if (empty($ten_danh_muc)) $errors[] = 'Vui lòng nhập tên danh mục!';
     
     if (empty($errors)) {
-        $data = [
-            'ten_danh_muc' => $ten_danh_muc,
-            'mo_ta' => $mo_ta,
-            'hinh_anh' => $hinh_anh
-        ];
+        // Handle NULL for mo_ta
+        $mo_ta = !empty($mo_ta) ? $mo_ta : null;
         
-        $result = $categoryModel->update($category_id, $data);
+        $result = $categoryModel->update($category_id, $ten_danh_muc, $mo_ta);
         if ($result) {
             set_message('success', 'Cập nhật danh mục thành công!');
             redirect('views/admin/categories/index.php');
@@ -72,9 +69,9 @@ include __DIR__ . '/../layout/header.php';
     
     <div class="card border-0 shadow-sm">
         <div class="card-body">
-            <form method="POST">
+            <form method="POST" id="categoryForm">
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-8">
                         <div class="mb-3">
                             <label class="form-label">Tên danh mục <span class="text-danger">*</span></label>
                             <input type="text" class="form-control" name="ten_danh_muc" 
@@ -82,41 +79,55 @@ include __DIR__ . '/../layout/header.php';
                         </div>
                         
                         <div class="mb-3">
-                            <label class="form-label">URL Hình ảnh</label>
-                            <input type="url" class="form-control" name="hinh_anh" 
-                                   value="<?php echo htmlspecialchars($category['hinh_anh'] ?? ''); ?>">
-                            <small class="text-muted">Nhập link URL của hình ảnh danh mục</small>
-                        </div>
-                        
-                        <div class="mb-3">
                             <label class="form-label">Mô tả</label>
                             <textarea class="form-control" name="mo_ta" rows="5"><?php echo htmlspecialchars($category['mo_ta'] ?? ''); ?></textarea>
                         </div>
                     </div>
-                    
-                    <?php if (!empty($category['hinh_anh'])): ?>
-                    <div class="col-md-6">
-                        <label class="form-label">Hình ảnh hiện tại</label>
-                        <div class="border rounded p-3 text-center">
-                            <img src="<?php echo htmlspecialchars($category['hinh_anh']); ?>" 
-                                 class="img-fluid rounded" style="max-height: 200px;"
-                                 onerror="this.src='<?php echo ASSETS_URL; ?>images/placeholder.jpg'">
-                        </div>
-                    </div>
-                    <?php endif; ?>
                 </div>
                 
                 <hr>
                 
                 <div class="text-end">
-                    <a href="index.php" class="btn btn-secondary px-4">Hủy</a>
+                    <a href="index.php" class="btn btn-secondary px-4">
+                        <i class="fas fa-times me-2"></i>Hủy
+                    </a>
                     <button type="submit" class="btn btn-primary px-4">
-                        <i class="fas fa-save me-2"></i>Cập nhật
+                        <i class="fas fa-save me-2"></i>Cập nhật danh mục
                     </button>
                 </div>
             </form>
         </div>
     </div>
 </div>
+
+<script>
+// Validation form
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('categoryForm');
+    
+    form.addEventListener('submit', function(e) {
+        let isValid = true;
+        let errorMsg = [];
+        
+        // 1. Tên danh mục - NOT NULL trong DB
+        const tenDanhMuc = form.querySelector('[name="ten_danh_muc"]');
+        if (!tenDanhMuc.value.trim()) {
+            errorMsg.push('Tên danh mục không được để trống!');
+            tenDanhMuc.classList.add('is-invalid');
+            isValid = false;
+        } else {
+            tenDanhMuc.classList.remove('is-invalid');
+        }
+        
+        if (!isValid) {
+            e.preventDefault();
+            alert('Vui lòng kiểm tra lại:\n\n' + errorMsg.join('\n'));
+            return false;
+        }
+        
+        return true;
+    });
+});
+</script>
 
 <?php include __DIR__ . '/../layout/footer.php'; ?>
