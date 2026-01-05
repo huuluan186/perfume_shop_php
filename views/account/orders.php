@@ -83,7 +83,8 @@ include __DIR__ . '/../layout/header.php';
                     
                     <div class="accordion" id="ordersAccordion"><?php foreach ($orders as $index => $order): 
                             // Lấy chi tiết đơn hàng
-                            $order_details = $orderModel->getOrderDetails($order['id']);
+                            $order_details_result = $orderModel->getOrderDetails($order['id']);
+                            $order_details = $order_details_result ? $order_details_result['items'] : [];
                             
                             // Xác định trạng thái
                             $status = (int)$order['trang_thai'];
@@ -202,12 +203,15 @@ include __DIR__ . '/../layout/header.php';
                                                             <?php endif; ?>
                                                             <div>
                                                                 <strong><?php echo htmlspecialchars($detail['ten_san_pham'] ?? 'Sản phẩm không xác định'); ?></strong>
+                                                                <?php if (!empty($detail['ngay_xoa'])): ?>
+                                                                    <span class="badge bg-danger ms-2"><i class="fas fa-trash me-1"></i>Đã xóa</span>
+                                                                <?php endif; ?>
                                                             </div>
                                                         </div>
                                                     </td>
-                                                    <td><?php echo format_currency($detail['don_gia']); ?></td>
+                                                    <td><?php echo format_currency($detail['gia_ban']); ?></td>
                                                     <td class="text-center"><span class="badge bg-secondary"><?php echo $detail['so_luong']; ?></span></td>
-                                                    <td class="text-end"><strong class="text-primary"><?php echo format_currency($detail['don_gia'] * $detail['so_luong']); ?></strong></td>
+                                                    <td class="text-end"><strong class="text-primary"><?php echo format_currency($detail['gia_ban'] * $detail['so_luong']); ?></strong></td>
                                                 </tr>
                                                 <?php endforeach; ?>
                                             </tbody>

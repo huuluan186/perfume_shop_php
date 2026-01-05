@@ -102,11 +102,27 @@ include __DIR__ . '/../layout/header.php';
             <?php if ($pagination['total_pages'] > 1): ?>
             <nav class="mt-4">
                 <ul class="pagination justify-content-center">
+                    <?php if ($pagination['current_page'] > 1): ?>
+                    <li class="page-item">
+                        <a class="page-link" href="?page=<?php echo $pagination['current_page'] - 1; ?>">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    </li>
+                    <?php endif; ?>
+                    
                     <?php for ($i = 1; $i <= $pagination['total_pages']; $i++): ?>
                     <li class="page-item <?php echo ($i === $pagination['current_page']) ? 'active' : ''; ?>">
                         <a class="page-link" href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
                     </li>
                     <?php endfor; ?>
+                    
+                    <?php if ($pagination['current_page'] < $pagination['total_pages']): ?>
+                    <li class="page-item">
+                        <a class="page-link" href="?page=<?php echo $pagination['current_page'] + 1; ?>">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                    <?php endif; ?>
                 </ul>
             </nav>
             <?php endif; ?>

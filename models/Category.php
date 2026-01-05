@@ -12,7 +12,12 @@ class Category {
     
     // Lấy tất cả danh mục
     public function getAll() {
-        $query = "SELECT * FROM {$this->table} ORDER BY id DESC";
+        $query = "SELECT dm.*, 
+                         COUNT(sp.id) as product_count 
+                  FROM {$this->table} dm
+                  LEFT JOIN san_pham sp ON dm.id = sp.id_danh_muc AND sp.ngay_xoa IS NULL
+                  GROUP BY dm.id
+                  ORDER BY dm.id DESC";
         $result = $this->conn->query($query);
         return $result->fetch_all(MYSQLI_ASSOC);
     }

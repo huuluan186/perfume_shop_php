@@ -15,14 +15,15 @@ if ($order_id <= 0) {
 }
 
 $orderModel = new Order();
-$order = $orderModel->getByIdWithDeleted($order_id);
+$order_details_result = $orderModel->getOrderDetails($order_id, true); // include deleted orders for admin
 
-if (!$order) {
+if (!$order_details_result) {
     set_message('error', 'Không tìm thấy đơn hàng!');
     redirect('views/admin/orders/index.php');
 }
 
-$items = $orderModel->getOrderDetails($order_id);
+$order = $order_details_result['order'];
+$items = $order_details_result['items'];
 
 $page_title = "Chi tiết đơn hàng";
 include __DIR__ . '/../layout/header.php';
@@ -155,17 +156,20 @@ include __DIR__ . '/../layout/header.php';
                                     
                                     // Nếu có đường dẫn hình ảnh
                                     if ($image_path) {
-                                        // Nếu không phải URL đầy đủ, thêm ASSETS_URL
+                                        // Kiểm tra định dạng đường dẫn
                                         if (!preg_match('/^https?:\/\//', $image_path)) {
-                                            // Nếu đã có 'products/' ở đầu thì chỉ cần thêm ASSETS_URL
-                                            if (strpos($image_path, 'products/') === 0) {
-                                                $image_path = ASSETS_URL . $image_path;
+                                            // Nếu có dấu '/' thì là đường dẫn cũ trong products/
+                                            if (strpos($image_path, '/') !== false) {
+                                                $full_image_path = ASSETS_URL . urldecode($image_path);
                                             } else {
-                                                $image_path = ASSETS_URL . 'products/' . $image_path;
+                                                // Đường dẫn mới trong uploads/
+                                                $full_image_path = UPLOAD_URL . $image_path;
                                             }
+                                        } else {
+                                            $full_image_path = $image_path;
                                         }
                                     ?>
-                                        <img src="<?php echo htmlspecialchars($image_path); ?>" 
+                                        <img src="<?php echo htmlspecialchars($full_image_path); ?>" 
                                              class="rounded" style="width: 60px; height: 60px; object-fit: cover;"
                                              alt="<?php echo htmlspecialchars($item['ten_san_pham']); ?>"
                                              onerror="this.src='<?php echo ASSETS_URL; ?>images/placeholder.png'">
@@ -176,10 +180,15 @@ include __DIR__ . '/../layout/header.php';
                                         </div>
                                     <?php } ?>
                                 </td>
-                                <td><?php echo htmlspecialchars($item['ten_san_pham']); ?></td>
-                                <td><?php echo format_currency($item['don_gia']); ?></td>
+                                <td>
+                                    <?php echo htmlspecialchars($item['ten_san_pham']); ?>
+                                    <?php if (!empty($item['ngay_xoa'])): ?>
+                                        <span class="badge bg-danger ms-2"><i class="fas fa-trash me-1"></i>Đã xóa</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td><?php echo format_currency($item['gia_ban']); ?></td>
                                 <td class="text-center"><?php echo $item['so_luong']; ?></td>
-                                <td><strong><?php echo format_currency($item['don_gia'] * $item['so_luong']); ?></strong></td>
+                                <td><strong><?php echo format_currency($item['gia_ban'] * $item['so_luong']); ?></strong></td>
                             </tr>
                             <?php endforeach; ?>
                         <?php endif; ?>

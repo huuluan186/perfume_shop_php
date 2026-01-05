@@ -18,28 +18,15 @@ if ($order_id <= 0) {
 }
 
 $orderModel = new Order();
-$order = $orderModel->getByIdWithDeleted($order_id);
+$order_details_result = $orderModel->getOrderDetails($order_id, true); // include deleted for admin
 
-if (!$order) {
+if (!$order_details_result) {
     echo json_encode(['success' => false, 'message' => 'Không tìm thấy đơn hàng!']);
     exit;
 }
 
-// Lấy email từ bảng nguoi_dung nếu có id_nguoi_dung
-if (!empty($order['id_nguoi_dung'])) {
-    $database = new Database();
-    $conn = $database->connect();
-    $stmt = $conn->prepare("SELECT email FROM nguoi_dung WHERE id = ?");
-    $stmt->bind_param("i", $order['id_nguoi_dung']);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    if ($userData = $result->fetch_assoc()) {
-        $order['email'] = $userData['email'];
-    }
-}
-
-// Lấy chi tiết sản phẩm
-$items = $orderModel->getOrderDetails($order_id);
+$order = $order_details_result['order'];
+$items = $order_details_result['items'];
 
 // Format giá tiền
 $order['tong_tien_formatted'] = format_currency($order['tong_tien']);
@@ -52,9 +39,10 @@ foreach ($items as $item) {
         'ten_san_pham' => $item['ten_san_pham'],
         'duong_dan_hinh_anh' => $item['duong_dan_hinh_anh'] ?? '',
         'so_luong' => $item['so_luong'],
-        'don_gia' => $item['don_gia'],
-        'don_gia_formatted' => format_currency($item['don_gia']),
-        'thanh_tien_formatted' => format_currency($item['don_gia'] * $item['so_luong'])
+        'don_gia' => $item['gia_ban'], // Alias đã đổi từ don_gia thành gia_ban
+        'don_gia_formatted' => format_currency($item['gia_ban']),
+        'thanh_tien_formatted' => format_currency($item['gia_ban'] * $item['so_luong']),
+        'ngay_xoa' => $item['ngay_xoa'] ?? null
     ];
 }
 

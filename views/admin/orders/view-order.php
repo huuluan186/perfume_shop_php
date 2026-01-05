@@ -15,14 +15,15 @@ if ($order_id <= 0) {
 }
 
 $orderModel = new Order();
-$order = $orderModel->getById($order_id);
+$order_details_result = $orderModel->getOrderDetails($order_id);
 
-if (!$order) {
+if (!$order_details_result) {
     echo '<div class="alert alert-danger">Không tìm thấy đơn hàng!</div>';
     exit;
 }
 
-$items = $orderModel->getOrderDetails($order_id);
+$order = $order_details_result['order'];
+$items = $order_details_result['items'];
 ?>
 
 <div class="row mb-3">
@@ -75,10 +76,15 @@ $items = $orderModel->getOrderDetails($order_id);
         <tbody>
             <?php foreach ($items as $item): ?>
             <tr>
-                <td><?php echo htmlspecialchars($item['ten_san_pham']); ?></td>
-                <td><?php echo format_currency($item['don_gia']); ?></td>
+                <td>
+                    <?php echo htmlspecialchars($item['ten_san_pham']); ?>
+                    <?php if (!empty($item['ngay_xoa'])): ?>
+                        <span class="badge bg-danger ms-2"><i class="fas fa-trash me-1"></i>Đã xóa</span>
+                    <?php endif; ?>
+                </td>
+                <td><?php echo format_currency($item['gia_ban']); ?></td>
                 <td class="text-center"><?php echo $item['so_luong']; ?></td>
-                <td><strong><?php echo format_currency($item['don_gia'] * $item['so_luong']); ?></strong></td>
+                <td><strong><?php echo format_currency($item['gia_ban'] * $item['so_luong']); ?></strong></td>
             </tr>
             <?php endforeach; ?>
         </tbody>

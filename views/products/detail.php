@@ -10,7 +10,12 @@ if ($product_id <= 0) {
 }
 
 $productModel = new Product();
-$product = $productModel->getById($product_id);
+// Nếu là admin thì có thể xem sản phẩm đã xóa
+if (is_admin()) {
+    $product = $productModel->getByIdWithDeleted($product_id);
+} else {
+    $product = $productModel->getById($product_id);
+}
 
 if (!$product) {
     set_message('error', 'Sản phẩm không tồn tại!');
@@ -78,14 +83,21 @@ include __DIR__ . '/../layout/header.php';
                     </a>
                 </p>
                 <?php endif; ?>
-                <h2 class="fw-bold mb-3"><?php echo htmlspecialchars($product['ten_san_pham']); ?></h2>
+                <h2 class="fw-bold mb-3">
+                    <?php echo htmlspecialchars($product['ten_san_pham']); ?>
+                    <?php if (!empty($product['ngay_xoa'])): ?>
+                        <span class="badge bg-danger ms-2"><i class="fas fa-trash me-1"></i>Đã xóa</span>
+                    <?php endif; ?>
+                </h2>
                 
                 <div class="price-section mb-2">
                     <h3 class="text-primary fw-bold mb-0 d-inline-block me-3"><?php echo format_currency($product['gia_ban']); ?></h3>
-                    <?php if ($product['so_luong_ton'] > 0): ?>
-                        <span class="badge bg-success fs-6">Còn hàng (<?php echo $product['so_luong_ton']; ?>)</span>
-                    <?php else: ?>
-                        <span class="badge bg-danger fs-6">Hết hàng</span>
+                    <?php if (empty($product['ngay_xoa'])): ?>
+                        <?php if ($product['so_luong_ton'] > 0): ?>
+                            <span class="badge bg-success fs-6">Còn hàng (<?php echo $product['so_luong_ton']; ?>)</span>
+                        <?php else: ?>
+                            <span class="badge bg-danger fs-6">Hết hàng</span>
+                        <?php endif; ?>
                     <?php endif; ?>
                 </div>
                 
@@ -134,7 +146,7 @@ include __DIR__ . '/../layout/header.php';
                     </table>
                 </div>
                 
-                <?php if ($product['so_luong_ton'] > 0): ?>
+                <?php if (empty($product['ngay_xoa']) && $product['so_luong_ton'] > 0): ?>
                 <div class="quantity-section mb-4">
                     <label class="form-label fw-bold mb-2">Số lượng:</label>
                     <div class="input-group" style="width: 160px;">
@@ -165,7 +177,12 @@ include __DIR__ . '/../layout/header.php';
                 </div>
                 <?php else: ?>
                 <div class="alert alert-warning">
-                    <i class="fas fa-exclamation-triangle me-2"></i>Sản phẩm tạm thời hết hàng
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <?php if (!empty($product['ngay_xoa'])): ?>
+                        Sản phẩm đã ngừng kinh doanh
+                    <?php else: ?>
+                        Sản phẩm tạm thời hết hàng
+                    <?php endif; ?>
                 </div>
                 <?php endif; ?>
             </div>

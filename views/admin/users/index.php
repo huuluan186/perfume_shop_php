@@ -45,8 +45,6 @@ include __DIR__ . '/../layout/header.php';
                             <th>ID</th>
                             <th>Tên người dùng</th>
                             <th>Email</th>
-                            <th>Giới tính</th>
-                            <th>Ngày sinh</th>
                             <th>Vai trò</th>
                             <th>Trạng thái</th>
                             <th>Ngày tạo</th>
@@ -59,8 +57,6 @@ include __DIR__ . '/../layout/header.php';
                             <td><strong>#<?php echo $user['id']; ?></strong></td>
                             <td><?php echo htmlspecialchars($user['username'] ?? ''); ?></td>
                             <td><?php echo htmlspecialchars($user['email']); ?></td>
-                            <td><?php echo $user['gioi_tinh'] ? ucfirst($user['gioi_tinh']) : '-'; ?></td>
-                            <td><?php echo $user['ngay_sinh'] ? format_date($user['ngay_sinh']) : '-'; ?></td>
                             <td>
                                 <?php if ($user['vai_tro'] === ROLE_ADMIN): ?>
                                     <span class="badge bg-danger">Admin</span>
@@ -85,22 +81,16 @@ include __DIR__ . '/../layout/header.php';
                             </td>
                             <td><?php echo format_date($user['ngay_tao']); ?></td>
                             <td class="text-center sticky-action">
-                                <a href="view.php?id=<?php echo $user['id']; ?>" class="btn btn-sm btn-outline-info me-1" title="Xem chi tiết">
+                                <button class="btn btn-sm btn-outline-info me-1 view-user" 
+                                        data-id="<?php echo $user['id']; ?>" title="Xem chi tiết">
                                     <i class="fas fa-eye"></i>
-                                </a>
+                                </button>
                                 <?php if (!$user['ngay_xoa'] && $user['id'] !== $_SESSION['user_id']): ?>
-                                    <a href="edit.php?id=<?php echo $user['id']; ?>" class="btn btn-sm btn-outline-primary me-1" title="Sửa">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <button class="btn btn-sm btn-outline-<?php echo $user['trang_thai'] == 1 ? 'warning' : 'success'; ?> me-1 toggle-status" 
+                                    <button class="btn btn-sm btn-outline-<?php echo $user['trang_thai'] == 1 ? 'warning' : 'success'; ?> toggle-status" 
                                             data-id="<?php echo $user['id']; ?>"
                                             data-status="<?php echo $user['trang_thai']; ?>"
-                                            title="<?php echo $user['trang_thai'] == 1 ? 'Khóa' : 'Mở khóa'; ?>">
+                                            title="<?php echo $user['trang_thai'] == 1 ? 'Khóa tài khoản' : 'Mở khóa tài khoản'; ?>">
                                         <i class="fas fa-<?php echo $user['trang_thai'] == 1 ? 'lock' : 'unlock'; ?>"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-outline-danger delete-user" 
-                                            data-id="<?php echo $user['id']; ?>" title="Xóa">
-                                        <i class="fas fa-trash"></i>
                                     </button>
                                 <?php endif; ?>
                             </td>
@@ -113,15 +103,51 @@ include __DIR__ . '/../layout/header.php';
             <?php if ($pagination['total_pages'] > 1): ?>
             <nav class="mt-4">
                 <ul class="pagination justify-content-center">
+                    <?php if ($pagination['current_page'] > 1): ?>
+                    <li class="page-item">
+                        <a class="page-link" href="?page=<?php echo $pagination['current_page'] - 1; ?>">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    </li>
+                    <?php endif; ?>
+                    
                     <?php for ($i = 1; $i <= $pagination['total_pages']; $i++): ?>
                     <li class="page-item <?php echo ($i === $pagination['current_page']) ? 'active' : ''; ?>">
                         <a class="page-link" href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
                     </li>
                     <?php endfor; ?>
+                    
+                    <?php if ($pagination['current_page'] < $pagination['total_pages']): ?>
+                    <li class="page-item">
+                        <a class="page-link" href="?page=<?php echo $pagination['current_page'] + 1; ?>">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                    <?php endif; ?>
                 </ul>
             </nav>
             <?php endif; ?>
             <?php endif; ?>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Chi tiết người dùng -->
+<div class="modal fade" id="userDetailModal" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title"><i class="fas fa-user me-2"></i>Chi tiết người dùng</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="userDetailContent" style="max-height: 70vh; overflow-y: auto;">
+                <!-- Content will be loaded here -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i>Đóng
+                </button>
+            </div>
         </div>
     </div>
 </div>
@@ -131,6 +157,42 @@ include __DIR__ . '/../layout/header.php';
 <script>
 $(document).ready(function() {
     console.log('User management page loaded');
+    
+    // View user detail
+    $(document).on('click', '.view-user', function(e) {
+        e.preventDefault();
+        const userId = $(this).data('id');
+        console.log('View user clicked:', userId);
+        
+        // Show loading
+        $('#userDetailContent').html('<div class="text-center py-5"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>');
+        
+        // Show modal
+        const modal = new bootstrap.Modal(document.getElementById('userDetailModal'));
+        modal.show();
+        
+        // Load user detail
+        $.ajax({
+            url: 'get-detail.php',
+            method: 'GET',
+            data: { id: userId },
+            dataType: 'json',
+            success: function(response) {
+                console.log('User detail response:', response);
+                if (response.success) {
+                    const html = renderUserDetail(response.user, response.orders);
+                    $('#userDetailContent').html(html);
+                } else {
+                    $('#userDetailContent').html('<div class="alert alert-danger">' + response.message + '</div>');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error:', error);
+                console.log('Response:', xhr.responseText);
+                $('#userDetailContent').html('<div class="alert alert-danger">Có lỗi xảy ra khi tải thông tin!</div>');
+            }
+        });
+    });
     
     // Use event delegation for toggle status buttons
     $(document).on('click', '.toggle-status', function(e) {
@@ -204,8 +266,8 @@ $(document).ready(function() {
         });
     });
 });
-</script>
 
+function renderUserDetail(user, orders) {
     const roleBadge = user.vai_tro == 1 
         ? '<span class="badge bg-danger">Admin</span>' 
         : '<span class="badge bg-primary">Khách hàng</span>';
@@ -220,37 +282,38 @@ $(document).ready(function() {
         orders.forEach(function(o) {
             let statusClass = '';
             let statusText = '';
-            switch(o.trang_thai) {
-                case 'cho_xac_nhan':
+            const trangThai = parseInt(o.trang_thai);
+            switch(trangThai) {
+                case 0:
                     statusClass = 'warning';
-                    statusText = 'Chờ xác nhận';
+                    statusText = 'Chưa duyệt';
                     break;
-                case 'da_xac_nhan':
+                case 1:
                     statusClass = 'info';
-                    statusText = 'Đã xác nhận';
+                    statusText = 'Đã duyệt';
                     break;
-                case 'dang_giao':
+                case 2:
                     statusClass = 'primary';
-                    statusText = 'Đang giao';
+                    statusText = 'Đang giao hàng';
                     break;
-                case 'da_giao':
+                case 3:
                     statusClass = 'success';
-                    statusText = 'Đã giao';
+                    statusText = 'Hoàn thành';
                     break;
-                case 'da_huy':
+                case 4:
                     statusClass = 'danger';
                     statusText = 'Đã hủy';
                     break;
                 default:
                     statusClass = 'secondary';
-                    statusText = o.trang_thai;
+                    statusText = 'Không xác định';
             }
             
             ordersHtml += `
                 <tr>
                     <td class="text-center"><strong>#${o.id}</strong></td>
-                    <td>${o.ngay_dat_formatted}</td>
-                    <td class="text-end"><strong>${o.tong_tien_formatted}</strong></td>
+                    <td>${o.ngay_dat}</td>
+                    <td class="text-end"><strong>${o.tong_tien}</strong></td>
                     <td class="text-center">
                         <span class="badge bg-${statusClass}">${statusText}</span>
                     </td>
@@ -266,7 +329,7 @@ $(document).ready(function() {
             <div class="col-12">
                 <h4 class="text-primary mb-4">
                     ${user.username || 'N/A'}
-                    <span class="badge bg-primary ms-2">${orderCount} đơn hàng</span>
+                    <span class="badge bg-primary ms-2">${user.total_orders} đơn hàng</span>
                 </h4>
                 
                 <div class="card border-0 bg-light mb-4">
@@ -314,7 +377,7 @@ $(document).ready(function() {
                         </div>
                         <div class="row">
                             <div class="col-md-3"><small class="text-muted">Tổng chi tiêu:</small></div>
-                            <div class="col-md-9"><strong class="text-success">${totalSpent}</strong></div>
+                            <div class="col-md-9"><strong class="text-success">${user.total_spent_formatted}</strong></div>
                         </div>
                     </div>
                 </div>
@@ -322,8 +385,8 @@ $(document).ready(function() {
                 <div class="card border-0">
                     <div class="card-body">
                         <h6 class="text-primary mb-3">
-                            <i class="fas fa-shopping-cart me-2"></i>Lịch sử đơn hàng 
-                            <span class="badge bg-primary">${orderCount}</span>
+                            <i class="fas fa-shopping-cart me-2"></i>Đơn hàng gần đây 
+                            <span class="badge bg-primary">${orders.length}</span>
                         </h6>
                         <div class="table-responsive">
                             <table class="table table-hover align-middle">
@@ -346,3 +409,4 @@ $(document).ready(function() {
         </div>
     `;
 }
+</script>

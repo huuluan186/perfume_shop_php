@@ -77,10 +77,8 @@ include __DIR__ . '/../layout/header.php';
                         <tr>
                             <th>Mã đơn</th>
                             <th>Khách hàng</th>
-                            <th>SĐT</th>
                             <th>Tổng tiền</th>
                             <th>Trạng thái</th>
-                            <th>Thanh toán</th>
                             <th>Ngày đặt</th>
                             <th class="text-center sticky-action">Thao tác</th>
                         </tr>
@@ -90,7 +88,6 @@ include __DIR__ . '/../layout/header.php';
                         <tr <?php echo $order['ngay_xoa'] ? 'class="table-secondary" style="opacity: 0.6;"' : ''; ?>>
                             <td><strong>#<?php echo $order['id']; ?></strong></td>
                             <td><?php echo htmlspecialchars($order['ho_ten_nguoi_nhan'] ?? ''); ?></td>
-                            <td><?php echo htmlspecialchars($order['so_dien_thoai_nhan'] ?? ''); ?></td>
                             <td><strong class="text-primary"><?php echo format_currency($order['tong_tien']); ?></strong></td>
                             <td>
                                 <?php
@@ -111,7 +108,6 @@ include __DIR__ . '/../layout/header.php';
                                 }
                                 ?>
                             </td>
-                            <td><small><?php echo htmlspecialchars($order['phuong_thuc_thanh_toan'] ?? 'COD'); ?></small></td>
                             <td><?php echo format_date($order['ngay_dat']); ?></td>
                             <td class="text-center sticky-action">
                                 <button class="btn btn-sm btn-outline-info me-1 view-order" 
