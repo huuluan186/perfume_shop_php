@@ -12,10 +12,10 @@
                         Cửa hàng nước hoa cao cấp chuyên cung cấp các sản phẩm nước hoa chính hãng từ các thương hiệu nổi tiếng thế giới.
                     </p>
                     <div class="social-links mt-3">
-                        <a href="#" class="text-white me-3 hover-primary"><i class="fab fa-facebook fa-lg"></i></a>
-                        <a href="#" class="text-white me-3 hover-primary"><i class="fab fa-instagram fa-lg"></i></a>
-                        <a href="#" class="text-white me-3 hover-primary"><i class="fab fa-youtube fa-lg"></i></a>
-                        <a href="#" class="text-white hover-primary"><i class="fab fa-tiktok fa-lg"></i></a>
+                        <a href="" class="text-white me-3 hover-primary"><i class="fab fa-facebook fa-lg"></i></a>
+                        <a href="" class="text-white me-3 hover-primary"><i class="fab fa-instagram fa-lg"></i></a>
+                        <a href="" class="text-white me-3 hover-primary"><i class="fab fa-youtube fa-lg"></i></a>
+                        <a href="" class="text-white hover-primary"><i class="fab fa-tiktok fa-lg"></i></a>
                     </div>
                 </div>
                 
@@ -72,10 +72,10 @@
                                     <i class="fas fa-graduation-cap ms-2 me-1 text-info"></i>DA22TTA
                                 </p>
                                 <div class="social-links">
-                                    <a href="" target="_blank" class="btn btn-sm btn-outline-light me-2" title="GitHub">
+                                    <a href="https://github.com/huuluan186" target="_blank" class="btn btn-sm btn-outline-light me-2" title="GitHub">
                                         <i class="fab fa-github"></i>
                                     </a>
-                                    <a href="" target="_blank" class="btn btn-sm btn-outline-light" title="Facebook">
+                                    <a href="https://www.facebook.com/huu.luan.791758" target="_blank" class="btn btn-sm btn-outline-light" title="Facebook">
                                         <i class="fab fa-facebook"></i>
                                     </a>
                                 </div>
@@ -91,10 +91,10 @@
                                     <i class="fas fa-graduation-cap ms-2 me-1 text-info"></i>DA22TTA
                                 </p>
                                 <div class="social-links">
-                                    <a href="" target="_blank" class="btn btn-sm btn-outline-light me-2" title="GitHub">
+                                    <a href="https://github.com/huuanh2512" target="_blank" class="btn btn-sm btn-outline-light me-2" title="GitHub">
                                         <i class="fab fa-github"></i>
                                     </a>
-                                    <a href="" target="_blank" class="btn btn-sm btn-outline-light" title="Facebook">
+                                    <a href="https://www.facebook.com/hnauuh24" target="_blank" class="btn btn-sm btn-outline-light" title="Facebook">
                                         <i class="fab fa-facebook"></i>
                                     </a>
                                 </div>
@@ -110,10 +110,10 @@
                                     <i class="fas fa-graduation-cap ms-2 me-1 text-info"></i>DA22TTA
                                 </p>
                                 <div class="social-links">
-                                    <a href="" target="_blank" class="btn btn-sm btn-outline-light me-2" title="GitHub">
+                                    <a href="https://github.com/LamThanhDinh" target="_blank" class="btn btn-sm btn-outline-light me-2" title="GitHub">
                                         <i class="fab fa-github"></i>
                                     </a>
-                                    <a href="" target="_blank" class="btn btn-sm btn-outline-light" title="Facebook">
+                                    <a href="https://www.facebook.com/nottdd/" target="_blank" class="btn btn-sm btn-outline-light" title="Facebook">
                                         <i class="fab fa-facebook"></i>
                                     </a>
                                 </div>
