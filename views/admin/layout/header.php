@@ -19,8 +19,13 @@
     <header class="admin-header">
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container-fluid">
-                <a class="navbar-brand" href="<?php echo BASE_URL; ?>views/admin/dashboard.php">
-                    <i class="fas fa-spray-can me-2"></i>Perfume Shop Admin
+                <a class="navbar-brand d-flex align-items-center" href="<?php echo BASE_URL; ?>views/admin/dashboard.php">
+                    <img src="<?php echo BASE_URL; ?>assets/images/logo2.png" 
+                         alt="Perfume Shop" 
+                         height="60" 
+                         style="max-width: 250px; object-fit: contain;"
+                         class="me-2">
+                    <span>Admin</span>
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNav">
                     <span class="navbar-toggler-icon"></span>
