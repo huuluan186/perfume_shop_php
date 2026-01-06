@@ -23,10 +23,10 @@
                                     <i class="fas fa-graduation-cap me-1 text-info"></i>DA22TTA
                                 </p>
                                 <div class="social-links">
-                                    <a href="https://github.com/username1" target="_blank" class="btn btn-sm btn-outline-light me-1" title="GitHub">
+                                    <a href="https://github.com/huuluan186" target="_blank" class="btn btn-sm btn-outline-light me-1" title="GitHub">
                                         <i class="fab fa-github"></i>
                                     </a>
-                                    <a href="https://facebook.com/username1" target="_blank" class="btn btn-sm btn-outline-light" title="Facebook">
+                                    <a href="https://www.facebook.com/huu.luan.791758" target="_blank" class="btn btn-sm btn-outline-light" title="Facebook">
                                         <i class="fab fa-facebook"></i>
                                     </a>
                                 </div>
@@ -44,10 +44,10 @@
                                     <i class="fas fa-graduation-cap me-1 text-info"></i>DA22TTA
                                 </p>
                                 <div class="social-links">
-                                    <a href="https://github.com/username2" target="_blank" class="btn btn-sm btn-outline-light me-1" title="GitHub">
+                                    <a href="https://github.com/huuanh2512" target="_blank" class="btn btn-sm btn-outline-light me-1" title="GitHub">
                                         <i class="fab fa-github"></i>
                                     </a>
-                                    <a href="https://facebook.com/username2" target="_blank" class="btn btn-sm btn-outline-light" title="Facebook">
+                                    <a href="https://www.facebook.com/hnauuh24" target="_blank" class="btn btn-sm btn-outline-light" title="Facebook">
                                         <i class="fab fa-facebook"></i>
                                     </a>
                                 </div>
@@ -65,10 +65,10 @@
                                     <i class="fas fa-graduation-cap me-1 text-info"></i>DA22TTA
                                 </p>
                                 <div class="social-links">
-                                    <a href="https://github.com/username3" target="_blank" class="btn btn-sm btn-outline-light me-1" title="GitHub">
+                                    <a href="https://github.com/LamThanhDinh" target="_blank" class="btn btn-sm btn-outline-light me-1" title="GitHub">
                                         <i class="fab fa-github"></i>
                                     </a>
-                                    <a href="https://facebook.com/username3" target="_blank" class="btn btn-sm btn-outline-light" title="Facebook">
+                                    <a href="https://www.facebook.com/nottdd/" target="_blank" class="btn btn-sm btn-outline-light" title="Facebook">
                                         <i class="fab fa-facebook"></i>
                                     </a>
                                 </div>
