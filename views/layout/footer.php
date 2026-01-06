@@ -11,12 +11,6 @@
                     <p class="text-light-50">
                         Cửa hàng nước hoa cao cấp chuyên cung cấp các sản phẩm nước hoa chính hãng từ các thương hiệu nổi tiếng thế giới.
                     </p>
-                    <div class="social-links mt-3">
-                        <a href="" class="text-white me-3 hover-primary"><i class="fab fa-facebook fa-lg"></i></a>
-                        <a href="" class="text-white me-3 hover-primary"><i class="fab fa-instagram fa-lg"></i></a>
-                        <a href="" class="text-white me-3 hover-primary"><i class="fab fa-youtube fa-lg"></i></a>
-                        <a href="" class="text-white hover-primary"><i class="fab fa-tiktok fa-lg"></i></a>
-                    </div>
                 </div>
                 
                 <div class="col-lg-3 col-md-6">
