@@ -16,14 +16,15 @@ if ($order_id <= 0) {
 }
 
 $orderModel = new Order();
-$order = $orderModel->getById($order_id);
+$order_details_result = $orderModel->getOrderDetails($order_id);
 
-if (!$order || $order['id_nguoi_dung'] != $_SESSION['user_id']) {
+if (!$order_details_result || $order_details_result['order']['id_nguoi_dung'] != $_SESSION['user_id']) {
     echo '<div class="alert alert-danger">Không tìm thấy đơn hàng!</div>';
     exit;
 }
 
-$order_details = $orderModel->getOrderDetails($order_id);
+$order = $order_details_result['order'];
+$order_details = $order_details_result['items'];
 
 // Xác định trạng thái
 $status = (int)$order['trang_thai'];
@@ -137,12 +138,15 @@ switch($status) {
                         <?php endif; ?>
                         <div>
                             <strong><?php echo htmlspecialchars($detail['ten_san_pham']); ?></strong>
+                            <?php if (!empty($detail['ngay_xoa'])): ?>
+                                <span class="badge bg-danger ms-2"><i class="fas fa-trash me-1"></i>Đã xóa</span>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </td>
-                <td><?php echo format_currency($detail['don_gia']); ?></td>
+                <td><?php echo format_currency($detail['gia_ban']); ?></td>
                 <td class="text-center"><span class="badge bg-secondary"><?php echo $detail['so_luong']; ?></span></td>
-                <td class="text-end"><strong class="text-primary"><?php echo format_currency($detail['don_gia'] * $detail['so_luong']); ?></strong></td>
+                <td class="text-end"><strong class="text-primary"><?php echo format_currency($detail['gia_ban'] * $detail['so_luong']); ?></strong></td>
             </tr>
             <?php endforeach; ?>
         </tbody>

@@ -17,7 +17,7 @@ if ($order_id <= 0) {
 $orderModel = new Order();
 $order_details = $orderModel->getOrderDetails($order_id);
 
-if (!$order_details || $order_details['order']['nguoi_dung_id'] !== $_SESSION['user_id']) {
+if (!$order_details || $order_details['order']['id_nguoi_dung'] != $_SESSION['user_id']) {
     echo '<div class="alert alert-danger">Không tìm thấy đơn hàng!</div>';
     exit;
 }
@@ -50,10 +50,10 @@ $items = $order_details['items'];
         </div>
         <div class="col-md-6">
             <h6 class="fw-bold">Thông tin giao hàng</h6>
-            <p class="mb-1"><strong>Người nhận:</strong> <?php echo htmlspecialchars($order['ten_nguoi_nhan']); ?></p>
-            <p class="mb-1"><strong>SĐT:</strong> <?php echo htmlspecialchars($order['sdt_nguoi_nhan']); ?></p>
+            <p class="mb-1"><strong>Người nhận:</strong> <?php echo htmlspecialchars($order['ho_ten_nguoi_nhan']); ?></p>
+            <p class="mb-1"><strong>SĐT:</strong> <?php echo htmlspecialchars($order['so_dien_thoai_nhan']); ?></p>
             <p class="mb-1"><strong>Địa chỉ:</strong> <?php echo htmlspecialchars($order['dia_chi_giao_hang']); ?></p>
-            <p class="mb-1"><strong>Thanh toán:</strong> <?php echo htmlspecialchars($order['phuong_thuc_thanh_toan']); ?></p>
+            <p class="mb-1"><strong>Thanh toán:</strong> COD (Thanh toán khi nhận hàng)</p>
         </div>
     </div>
     

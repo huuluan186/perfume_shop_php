@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th1 04, 2026 lúc 05:44 AM
+-- Thời gian đã tạo: Th1 05, 2026 lúc 10:18 AM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -46,7 +46,12 @@ INSERT INTO `chi_tiet_don_hang` (`id`, `id_don_hang`, `id_san_pham`, `so_luong`,
 (4, 2, 49, 1, 4250000.00),
 (5, 3, 60, 4, 1000000.00),
 (6, 3, 50, 1, 3980000.00),
-(7, 4, 60, 1, 1000000.00);
+(7, 4, 60, 1, 1000000.00),
+(8, 5, 50, 1, 3980000.00),
+(9, 6, 47, 1, 3200000.00),
+(10, 6, 45, 1, 4280000.00),
+(11, 7, 49, 2, 4250000.00),
+(12, 7, 47, 1, 3200000.00);
 
 -- --------------------------------------------------------
 
@@ -80,7 +85,7 @@ CREATE TABLE `danh_muc` (
 INSERT INTO `danh_muc` (`id`, `ten_danh_muc`, `mo_ta`) VALUES
 (1, 'Nước hoa nam', NULL),
 (2, 'Nước hoa nữ', NULL),
-(3, 'Nước hoa unisex', NULL),
+(3, 'Nước hoa unisex', 'ok bro'),
 (4, 'Gift set', NULL);
 
 -- --------------------------------------------------------
@@ -126,10 +131,13 @@ CREATE TABLE `don_hang` (
 --
 
 INSERT INTO `don_hang` (`id`, `id_nguoi_dung`, `ho_ten_nguoi_nhan`, `so_dien_thoai_nhan`, `dia_chi_giao_hang`, `tong_tien`, `trang_thai`, `ngay_dat`, `ngay_xoa`) VALUES
-(1, 1, 'Hữu Luân', '0386291762', 'aps do tRà vinh', 415000.00, 0, '2026-01-02 16:41:28', NULL),
+(1, 1, 'Hữu Luân', '0386291762', 'aps do tRà vinh', 415000.00, 3, '2026-01-02 16:41:28', NULL),
 (2, 1, 'Hữu Luân', '0386291762', 'asaadsf gfgf', 10300000.00, 4, '2026-01-02 17:17:14', NULL),
 (3, 2, 'Hữu Luân', '0386291762', 'sdssds', 7980000.00, 4, '2026-01-04 11:37:01', NULL),
-(4, 2, 'Hữu Luân', '0386291762', 'dfdfhytygr', 1000000.00, 4, '2026-01-04 11:40:12', NULL);
+(4, 2, 'Hữu Luân', '0386291762', 'dfdfhytygr', 1000000.00, 4, '2026-01-04 11:40:12', NULL),
+(5, 2, 'Hữu Luân', '0386291762', 'dffdfg', 3980000.00, 0, '2026-01-05 14:31:55', NULL),
+(6, 2, 'Hữu Luân', '0386291762', 'fggf', 7480000.00, 0, '2026-01-05 14:33:04', NULL),
+(7, 2, 'Hữu Luân', '0386291762', 't6gggfg', 11700000.00, 1, '2026-01-05 14:36:40', NULL);
 
 -- --------------------------------------------------------
 
@@ -142,6 +150,20 @@ CREATE TABLE `gio_hang` (
   `id_nguoi_dung` int(11) DEFAULT NULL,
   `ngay_tao` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `lien_he`
+--
+
+CREATE TABLE `lien_he` (
+  `id` int(11) NOT NULL,
+  `ho_ten` varchar(150) NOT NULL,
+  `email` varchar(150) NOT NULL,
+  `noi_dung` text NOT NULL,
+  `thoi_gian_gui` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -167,7 +189,7 @@ CREATE TABLE `nguoi_dung` (
 --
 
 INSERT INTO `nguoi_dung` (`id`, `username`, `gioi_tinh`, `ngay_sinh`, `email`, `password`, `vai_tro`, `trang_thai`, `ngay_tao`, `ngay_xoa`) VALUES
-(1, 'luan2', '', '2025-12-08', 'luanphamhuu2004@gmail.com', 'bbb8aae57c104cda40c93843ad5e6db8', 'khach_hang', 1, '2026-01-01 20:10:23', NULL),
+(1, 'luan2', '', '2025-12-08', 'luanphamhuu2004@gmail.com', 'bbb8aae57c104cda40c93843ad5e6db8', 'khach_hang', 0, '2026-01-01 20:10:23', NULL),
 (2, 'admin', NULL, NULL, 'admin@gmail.com', '0192023a7bbd73250516f069df18b500', 'quan_tri_vien', 1, '2026-01-02 17:31:02', NULL);
 
 -- --------------------------------------------------------
@@ -244,14 +266,19 @@ INSERT INTO `san_pham` (`id`, `ten_san_pham`, `gia_ban`, `dung_tich_ml`, `nhom_h
 (43, 'Prada Luna Rossa Ocean', 2800000.00, 100, 'Hoa oải hương, Cam bergamot, Hoa diên vĩ', 'nam', 'Nam tính, Tươi mát, Hấp dẫn', 'Pháp', 2021, 'Prada vẫn luôn được biết đến với phong cách làm hương tinh tế chuẩn mực, thể hiện rõ nét nam tính nhưng không hề đi theo \'lối mòn\' tác chế. Chính thế, những ấn phẩm hương thơm khoác tên Prada vẫn luôn giữ được sự yêu thích của người nghiện hương mặc cho sự bào mòn của thời gian và thời đại.<br>Đừng để cái tên Luna Rossa Ocean khiến bạn lầm tưởng rằng đây là mùi hương của nước, của biển. Dầu cho thực sự có một nét tính cách rất dễ chịu, nhưng Prada Luna Rossa Ocean lại được làm nên trước tiên bởi những nét hương của Cam chanh. Từ tông vị thanh chua ấy, Hoa diên vĩ và Xạ hương mới dần phủ lên một lớp, bồng bồng mền màng, là dịu dàng đi tổng thể nhưng vẫn nam tính hiện đại bởi Xô thơm và Cỏ hương bài.<br>Oải hương là một nét hương sáng, nói thế không có nghĩa sự xuất hiện của loài hoa này sẽ giảm đi chiều sâu sắc của mùi hương, mà \'sáng\' ở đây tượng trưng cho hiệu ứng miên man, nồng đượm mà nó đã giúp tôn lên cho tổng thể. Tinh tế, phong cách, hiện đại, đó là những gì ta có thể tóm gọn về Prada Luna Rossa Ocean.', 'products/Prada/Prada%20Luna%20Rossa%20Ocean/prada-ocean-100ml.jpg', 20, 1, 16, NULL),
 (44, 'Prada Luna Rossa Sport EDT', 3800000.00, 150, 'Hoa oải hương, Hương vanila, Đậu tonka', 'nam', 'Nổi bật, Hấp dẫn, Hiện đại', 'Anh, Pháp', 2015, 'Có vẻ như trong những mùi hương đến từ dòng Luna Rossa của Prada, thì Sport là một cái tên khác biệt nhất so với những người anh em đồng trang lứa, và cũng là một nhân vật “thiếu” DNA Prada nhất trong kho nước hoa của nhà mốt đến từ Ý.<br>Prada Luna Rossa Sport Eau de Toilette không khai thác mùi hương từ những nốt quen thuộc với fan của Prada, là Diên vĩ, Phấn hay Hổ phách, cũng không phải là đất diễn của các nốt hương tổng hợp đại diện cho một xu hướng mùi hương hiện đại như những người anh em Luna Rossa. Khởi đầu với Bách xù và Gừng, những nốt hương quen thuộc với người yêu nước hoa cổ điển, mở ra một chút tươi thanh lịch, gọn gàng và sạch sẽ. Oải hương vẫn nắm giữ vị trí trung tâm trong Luna Rossa Sport, gia tăng màu sắc thanh lịch cổ điển trong mùi hương, với một thái độ nhã nhặn nền nã. Cùng với Oải hương, mùi hương này đem tới một vị ngọt dịu, hơi ngậy và mềm mại, đem lại cảm giác mãnh liệt hơn để đúng với cái tên Sport, được tạo thành bởi Vanilla và Đậu Tonka.<br>Thật khó hiểu khi với mùi hương này, Prada lại đặt cho nó một cái tên là Sport. Nhưng Luna Rossa Sport là một chai nước hoa dễ chịu, nịnh mũi và có thể đáp ứng bất kỳ yêu cầu nào đến từ các quý ông. Đó là sự ngọt ngào, dễ mến và nét thanh lịch chỉn chu.', 'products/Prada/Prada%20Luna%20Rossa%20Sport%20EDT/prada-luna-rossa-sport-edt.jpg', 10, 1, 16, NULL);
 INSERT INTO `san_pham` (`id`, `ten_san_pham`, `gia_ban`, `dung_tich_ml`, `nhom_huong`, `gioi_tinh_phu_hop`, `phong_cach`, `xuat_xu`, `nam_phat_hanh`, `mo_ta`, `duong_dan_hinh_anh`, `so_luong_ton`, `id_danh_muc`, `id_thuong_hieu`, `ngay_xoa`) VALUES
-(45, 'Prada Paradoxe Virtual Flower', 4280000.00, 90, 'Hương Hoa Nhài, Hoa Cam Đắng, Cam Bergamot', 'nữ', 'Nhẹ Nhàng, Tươi Mát, Cuốn Hút', 'Pháp', 2024, 'Khi hương hoa trắng chạm đến thế giới mộng ảo<br>Ra mắt năm 2024, Paradoxe Virtual Flower là chương tiếp theo đầy mới mẻ của nhà mốt Prada trong bộ sưu tập Paradoxe, nơi vẻ đẹp nữ tính được tái hiện qua lăng kính hiện đại cùng sự tươi trẻ giàu năng lượng. Mùi hương là một đóa hoa trắng bước ra từ giấc mơ, nhẹ nhàng nhưng vẫn đầy ấn tượng, như một lực chọn đẹp của những cô nàng yêu sự tinh tế mà chẳng ngại khác biệt.<br>Mở đầu là Cam Bergamot từ Calabria, một khởi đầu mát lành, sáng bừng và mang lại cảm giác như làn gió đầu ngày lướt qua làn da. Sự tươi mát ấy là tấm nền tuyệt đẹp dẫn tới sự bung nở của Nhài và Hoa cam: nữ tính, mềm mại và thoảng chút ngọt, như một nụ cười nhẹ luôn khắc dấu trong tim nếu lỡ lọt tầm mắt. Sự nữ tính đẹp đẽ ấy lan tỏa trên lớp nền gợi cảm trong trẻo được thiết kế bởi Xạ hương trắng và Hạt vông vang (Một loại \'xạ hương\' thực vật), để viết lại một điểm kết cho Paradoxe Virtual Flower bằng sự ấm áp, như mùi da sạch thoảng hương hoa, lưu luyến và đầy cảm xúc.<br>Virtual Flower là lựa chọn lý tưởng cho những ngày bạn muốn bản thân trở nên nhẹ tênh, tự do nhưng vẫn có điểm nhấn rất riêng. Thích hợp với mùa xuân - hè, cả ban ngày lẫn buổi tối, như là một hương thơm đặc trưng ấn tượng mà không phô trương, và luôn khiến người khác muốn lại gần thêm chút nữa.', 'products/Prada/Prada%20Paradoxe%20Virtual%20Flower/prada-paradoxe-virtual-flower.jpg', 10, 2, 16, NULL),
+(45, 'Prada Paradoxe Virtual Flower', 4280000.00, 90, 'Hương Hoa Nhài, Hoa Cam Đắng, Cam Bergamot', 'nữ', 'Nhẹ Nhàng, Tươi Mát, Cuốn Hút', 'Pháp', 2024, 'Khi hương hoa trắng chạm đến thế giới mộng ảo<br>Ra mắt năm 2024, Paradoxe Virtual Flower là chương tiếp theo đầy mới mẻ của nhà mốt Prada trong bộ sưu tập Paradoxe, nơi vẻ đẹp nữ tính được tái hiện qua lăng kính hiện đại cùng sự tươi trẻ giàu năng lượng. Mùi hương là một đóa hoa trắng bước ra từ giấc mơ, nhẹ nhàng nhưng vẫn đầy ấn tượng, như một lực chọn đẹp của những cô nàng yêu sự tinh tế mà chẳng ngại khác biệt.<br>Mở đầu là Cam Bergamot từ Calabria, một khởi đầu mát lành, sáng bừng và mang lại cảm giác như làn gió đầu ngày lướt qua làn da. Sự tươi mát ấy là tấm nền tuyệt đẹp dẫn tới sự bung nở của Nhài và Hoa cam: nữ tính, mềm mại và thoảng chút ngọt, như một nụ cười nhẹ luôn khắc dấu trong tim nếu lỡ lọt tầm mắt. Sự nữ tính đẹp đẽ ấy lan tỏa trên lớp nền gợi cảm trong trẻo được thiết kế bởi Xạ hương trắng và Hạt vông vang (Một loại \'xạ hương\' thực vật), để viết lại một điểm kết cho Paradoxe Virtual Flower bằng sự ấm áp, như mùi da sạch thoảng hương hoa, lưu luyến và đầy cảm xúc.<br>Virtual Flower là lựa chọn lý tưởng cho những ngày bạn muốn bản thân trở nên nhẹ tênh, tự do nhưng vẫn có điểm nhấn rất riêng. Thích hợp với mùa xuân - hè, cả ban ngày lẫn buổi tối, như là một hương thơm đặc trưng ấn tượng mà không phô trương, và luôn khiến người khác muốn lại gần thêm chút nữa.', 'products/Prada/Prada%20Paradoxe%20Virtual%20Flower/prada-paradoxe-virtual-flower.jpg', 9, 2, 16, NULL),
 (46, 'Salvatore Ferragamo Savane di Seta', 2816000.00, 100, 'Bơ diên vĩ, Gỗ đàn hương, Hạt cà rốt', 'unisex', 'Cuốn hút, Nổi bật, Tinh tế', 'Ý', 2021, 'Có bao giờ bạn bắt gặp một vẻ đẹp bất bình thường vì quá đơn giản chưa? Tối giản có thể là một xu hướng, nhưng Savane di Seta còn bình dị hơn cả tối giản nữa. Tất nhiên, nói thế không có nghĩa mùi hương này được tạo nên xuề xòa hay không công kỹ, chỉ là vẻ đẹp này quá lạ lẫm so với hàng hà sa số những “bình hoa di động” trên thị trường hiện nay.<br>Không có lấy một nốt hương Hoa hay Trái cây, nhưng Savane di Seta có thể mau chóng khiến ta thấy dễ chịu, được ve vuốt với hương vị bồng bềnh, hơi phấn của Rễ cây diên vĩ. Tầng hương phấn này của Rễ cây diên vĩ không quá nữ tính, hơi ướm một chút đất và có những nét màu tối nếu ngửi kỹ.<br>Để làm dày thêm và tạo chiều sâu cho tổng thể mùi hương, Savane di Seta đã chỉ sử dụng đúng duy nhất mùi hương của Gỗ đàn hương với tông vị ấm áp, ngọt đậm đặc trưng. Thế đấy, chỉ với vẹn vẹn những nốt hương này thôi, đơn giản quá sức tưởng tượng, nhưng ấn tượng mà bạn sẽ có với Savane di Seta không hề đơn giản như vậy đâu.', 'products/Salvatore%20Ferragamo/Salvatore%20Ferragamo%20Savane%20di%20Seta/salvatore-ferragamo-savane-di-seta.jpg', 18, 3, 28, NULL),
-(47, 'Thierry Mugler Alien', 3200000.00, 100, 'Hoa nhài, Hổ phách, Gỗ', 'nữ', 'Bí ẩn, Quyến rũ, Nổi bật', 'Pháp', 2005, 'Thierry Mugler là một người có cá tính mạnh mẽ, thể hiện rõ qua tất cả những thứ ông tạo ra, từ những bộ trang phục ông đã từng thiết kế, hay những mùi hương khi chuyển sang tập trung vào Mugler Perfumes. Nước hoa của Mugler phần lớn đều được đón nhận nồng nhiệt từ người dùng, hoặc là những mùi hương được giới chuyên sâu đánh giá cao như dòng A*Men, Mirror Mirror hay đặc biệt là Les Exceptions, hoặc là thỏa mãn được nhu cầu của đại chúng và trở thành một “best-seller”. Alien là một cái tên thỏa mãn đại chúng như vậy, nổi tiếng và trở thành một di sản đặc trưng của Mugler.<br>Alien nối tiếp sự thành công của người chị Angel đi trước và đã duy trì được danh tiếng của Thierry Mugler trong ngành nước hoa, với một thủ pháp làm hương ngược lại hoàn toàn. Alien đánh vào sự đơn giản, không phải một mùi hương ngọt ngào đầy phức tạp như Angel, mà khai thác vẻ đẹp nữ tính gợi cảm của hương thơm chỉ trong hai nốt: Hoa nhài và Nhựa hổ phách, cùng một chút xêu gia giảm bằng hương Gỗ. Alien đại diện cho sự hỗn mang đúng với màu tím huyền ảo của chai nước hoa này, với mùi hương chuyển qua lại giữa các sắc thái cảm xúc. Khi thì tươi tắn mềm mại với Nhài, khi lại gợi cảm, quyến rũ và tối màu hơn với Nhựa hương, lúc lại lơ lửng ở giữa, tạo ra cảm xúc thú vị cho người thưởng thức. Một mùi hương không phức tạp, nhưng có thái độ, ở giữa và biến chuyển qua lại, vừa ngây thơ hiền dịu mà lại rất “đàn bà”.<br>Alien thực tế không dành cho số đông, và ai yêu thích nó thường đều đã xây dựng được những cá tính riêng về việc chọn mùi hương cho bản thân. Alien đủ đậm thẫm, cũng chẳng thiếu nồng nhiệt, mạnh mẽ bung tỏa trên làn da.', 'products/Thierry%20Mugler/Thierry%20Mugler%20Alien/thierry-mugler-alien-edp.jpg', 15, 2, 26, NULL),
+(47, 'Thierry Mugler Alien', 3200000.00, 100, 'Hoa nhài, Hổ phách, Gỗ', 'nữ', 'Bí ẩn, Quyến rũ, Nổi bật', 'Pháp', 2005, 'Thierry Mugler là một người có cá tính mạnh mẽ, thể hiện rõ qua tất cả những thứ ông tạo ra, từ những bộ trang phục ông đã từng thiết kế, hay những mùi hương khi chuyển sang tập trung vào Mugler Perfumes. Nước hoa của Mugler phần lớn đều được đón nhận nồng nhiệt từ người dùng, hoặc là những mùi hương được giới chuyên sâu đánh giá cao như dòng A*Men, Mirror Mirror hay đặc biệt là Les Exceptions, hoặc là thỏa mãn được nhu cầu của đại chúng và trở thành một “best-seller”. Alien là một cái tên thỏa mãn đại chúng như vậy, nổi tiếng và trở thành một di sản đặc trưng của Mugler.<br>Alien nối tiếp sự thành công của người chị Angel đi trước và đã duy trì được danh tiếng của Thierry Mugler trong ngành nước hoa, với một thủ pháp làm hương ngược lại hoàn toàn. Alien đánh vào sự đơn giản, không phải một mùi hương ngọt ngào đầy phức tạp như Angel, mà khai thác vẻ đẹp nữ tính gợi cảm của hương thơm chỉ trong hai nốt: Hoa nhài và Nhựa hổ phách, cùng một chút xêu gia giảm bằng hương Gỗ. Alien đại diện cho sự hỗn mang đúng với màu tím huyền ảo của chai nước hoa này, với mùi hương chuyển qua lại giữa các sắc thái cảm xúc. Khi thì tươi tắn mềm mại với Nhài, khi lại gợi cảm, quyến rũ và tối màu hơn với Nhựa hương, lúc lại lơ lửng ở giữa, tạo ra cảm xúc thú vị cho người thưởng thức. Một mùi hương không phức tạp, nhưng có thái độ, ở giữa và biến chuyển qua lại, vừa ngây thơ hiền dịu mà lại rất “đàn bà”.<br>Alien thực tế không dành cho số đông, và ai yêu thích nó thường đều đã xây dựng được những cá tính riêng về việc chọn mùi hương cho bản thân. Alien đủ đậm thẫm, cũng chẳng thiếu nồng nhiệt, mạnh mẽ bung tỏa trên làn da.', 'products/Thierry%20Mugler/Thierry%20Mugler%20Alien/thierry-mugler-alien-edp.jpg', 13, 2, 26, NULL),
 (48, 'Tom Ford Ombré Leather', 4500000.00, 100, 'Hương da thuộc', 'unisex', 'Sang trọng, Ấm áp, Cổ điển', 'Mỹ', 2018, 'Nước hoa Tom Ford Ombré Leather không phải là một mùi hương dễ ngửi, nhưng càng ngửi thì bạn sẽ càng yêu thích. Mùi hương đâu đó là dư âm của sự cổ điển, tươi mát và cũng chính sự cá tính này đã tạo nên sự không giới hạn để cả chàng và nàng đều có thể thưởng thức.', 'products/Tom%20Ford/Tom%20Ford%20Ombré%20Leather/tom-ford-ombre-leather-100ml.jpg', 15, 3, 8, NULL),
-(49, 'Tom Ford Ombre Leather Parfum', 4250000.00, 100, 'Da thuộc, Lá hoa violet, Hoa nhài Sambac', 'unisex', 'Sang trọng, Thanh lịch, Quyến rũ, Gây nghiện', 'Mỹ, Thụy Sĩ', 2021, 'Sự xuất hiện của siêu phẩm Tom Ford Ombre Leather vào năm 2018 đã tạo ra một làn sóng dữ dội bởi mùi hương Da Thuộc chủ đạo vô cùng nam tính.<br>Sau 3 năm, tức là năm 2021, một phiên bản mới nhất được ra mắt - Tom Ford Ombre Leather Parfum cùng những hình thái mới của một gã đàn ông được mô phỏng từ một khía cạnh khác biệt và vô cùng đặc biệt.<br>Tầng hương đầu xuất hiện cùng với mùi hương Gỗ Tuyết Tùng và Lá Violet đã mang đến một hỗn hợp cân bằng đầy tinh tế, mùi hương thanh ngọt hòa cùng hương trầm ấm của gỗ là một điều vô cùng táo bạo để mang lại một sự khác biệt đầy cá tính.<br>Phía tầng hương sau là sự xuất hiện của Hoa Nhài Sambac, có lẽ ở phiên bản Parfum dù được nâng cấp ở phần nồng độ tinh dầu để mùi hương trở nên mạnh mẽ hơn thì phần xuất hiện của Hoa Nhài Sambac lại đi ngược lại hoàn toàn với định hướng mùi hương của Ombre Leather, phần hoa Nhài có phần dày mùi hương thanh tươi hơn như 1 cách để nhìn vào gã đàn ông bụi bặm phong trần kia bằng một khía cạnh sâu sắc hơn với tâm hồn cũng yếu đuối cũng muốn được đồng cảm.<br>Ombre Leather Parfum là nguồn cảm hứng bất tận đến từ khu vực miền Tây Nước Mỹ, nơi mà sự bụi bặm và phong trần của những gã cao bồi với chiếc áo da đang trầm ngâm với những điếu thuốc dang dở.<br>Mùi hương của Da Thuộc được khai thác rõ rệt và mạnh mẽ hơn để tạo ra những dấu ấn đúng tinh thần như cái tên đã được sinh ra - Ombre Leather Parfum. Ngoài ra, sự kết hợp với thuốc lá đã thực sự khiến Ombre Leather một lần nữa lại ghi dấu ấn trong lòng giới mộ điệu mùi hương.', 'products/Tom%20Ford/Tom%20Ford%20Ombre%20Leather%20Parfum/ombre-leather-parfum-tom-ford.jpg', 8, 3, 8, NULL),
-(50, 'Valentino Donna Born In Roma Green Stravaganza', 3980000.00, 100, 'Hương Trà Đen Lapsang Souchong, Hoa Nhài, Vanila', 'nữ', 'Ngọt Ngào, Tươi Mới, Quyến Rũ', 'Pháp', 2024, 'Ra mắt vào năm 2024, Valentino Donna Born in Roma Green Stravaganza là lời thì thầm đầy sức sống đến từ kinh đô hoa lệ, nơi những khu vườn thanh mát của Rome được tái hiện qua từng tầng hương. Với thiết kế chai màu xanh lục bắt mắt, cùng họa tiết Rockstud đặc trưng, đây không chỉ là một chai nước hoa, mà là một tuyên ngôn phong cách cho người phụ nữ hiện đại, biết tận hưởng cuộc sống theo cách riêng.<br>Mùi hương mở đầu bằng trà Lapsang Souchong, nhẹ nhàng, có chút khói quyện đầy thư giãn, như một buổi chiều thảnh thơi giữa khu vườn xanh. Khi hương trà dần dịu xuống, hoa nhài bắt đầu nở rộ mềm mại, trong trẻo và nữ tính đến khó quên. Cuối cùng, tất cả được ôm ấp trong lớp nền vanilla ấm ngọt, dịu dàng lưu lại trên da như dư âm của một ánh nhìn tinh tế.<br>Donna Green Stravaganza là lựa chọn lý tưởng cho những nàng yêu nét đẹp tự nhiên, không gồng gánh chỉ cần một lớp hương nhẹ đủ khiến người khác ngoái nhìn. Phù hợp cho cả ban ngày lẫn buổi tối, đặc biệt là những dịp bạn muốn mang theo mình một chút tự do, thanh mát và nữ tính có chiều sâu.', 'products/Valentino/Valentino%20Donna%20Born%20In%20Roma%20Green%20Stravaganza/valentino-donna-born-in-roma-green-stravaganza.jpg', 20, 2, 18, NULL),
+(49, 'Tom Ford Ombre Leather Parfum', 4250000.00, 100, 'Da thuộc, Lá hoa violet, Hoa nhài Sambac', 'unisex', 'Sang trọng, Thanh lịch, Quyến rũ, Gây nghiện', 'Mỹ, Thụy Sĩ', 2021, 'Sự xuất hiện của siêu phẩm Tom Ford Ombre Leather vào năm 2018 đã tạo ra một làn sóng dữ dội bởi mùi hương Da Thuộc chủ đạo vô cùng nam tính.<br>Sau 3 năm, tức là năm 2021, một phiên bản mới nhất được ra mắt - Tom Ford Ombre Leather Parfum cùng những hình thái mới của một gã đàn ông được mô phỏng từ một khía cạnh khác biệt và vô cùng đặc biệt.<br>Tầng hương đầu xuất hiện cùng với mùi hương Gỗ Tuyết Tùng và Lá Violet đã mang đến một hỗn hợp cân bằng đầy tinh tế, mùi hương thanh ngọt hòa cùng hương trầm ấm của gỗ là một điều vô cùng táo bạo để mang lại một sự khác biệt đầy cá tính.<br>Phía tầng hương sau là sự xuất hiện của Hoa Nhài Sambac, có lẽ ở phiên bản Parfum dù được nâng cấp ở phần nồng độ tinh dầu để mùi hương trở nên mạnh mẽ hơn thì phần xuất hiện của Hoa Nhài Sambac lại đi ngược lại hoàn toàn với định hướng mùi hương của Ombre Leather, phần hoa Nhài có phần dày mùi hương thanh tươi hơn như 1 cách để nhìn vào gã đàn ông bụi bặm phong trần kia bằng một khía cạnh sâu sắc hơn với tâm hồn cũng yếu đuối cũng muốn được đồng cảm.<br>Ombre Leather Parfum là nguồn cảm hứng bất tận đến từ khu vực miền Tây Nước Mỹ, nơi mà sự bụi bặm và phong trần của những gã cao bồi với chiếc áo da đang trầm ngâm với những điếu thuốc dang dở.<br>Mùi hương của Da Thuộc được khai thác rõ rệt và mạnh mẽ hơn để tạo ra những dấu ấn đúng tinh thần như cái tên đã được sinh ra - Ombre Leather Parfum. Ngoài ra, sự kết hợp với thuốc lá đã thực sự khiến Ombre Leather một lần nữa lại ghi dấu ấn trong lòng giới mộ điệu mùi hương.', 'products/Tom%20Ford/Tom%20Ford%20Ombre%20Leather%20Parfum/ombre-leather-parfum-tom-ford.jpg', 6, 3, 8, NULL),
+(50, 'Valentino Donna Born In Roma Green Stravaganza', 3980000.00, 100, 'Hương Trà Đen Lapsang Souchong, Hoa Nhài, Vanila', 'nữ', 'Ngọt Ngào, Tươi Mới, Quyến Rũ', 'Pháp', 2024, 'Ra mắt vào năm 2024, Valentino Donna Born in Roma Green Stravaganza là lời thì thầm đầy sức sống đến từ kinh đô hoa lệ, nơi những khu vườn thanh mát của Rome được tái hiện qua từng tầng hương. Với thiết kế chai màu xanh lục bắt mắt, cùng họa tiết Rockstud đặc trưng, đây không chỉ là một chai nước hoa, mà là một tuyên ngôn phong cách cho người phụ nữ hiện đại, biết tận hưởng cuộc sống theo cách riêng.<br>Mùi hương mở đầu bằng trà Lapsang Souchong, nhẹ nhàng, có chút khói quyện đầy thư giãn, như một buổi chiều thảnh thơi giữa khu vườn xanh. Khi hương trà dần dịu xuống, hoa nhài bắt đầu nở rộ mềm mại, trong trẻo và nữ tính đến khó quên. Cuối cùng, tất cả được ôm ấp trong lớp nền vanilla ấm ngọt, dịu dàng lưu lại trên da như dư âm của một ánh nhìn tinh tế.<br>Donna Green Stravaganza là lựa chọn lý tưởng cho những nàng yêu nét đẹp tự nhiên, không gồng gánh chỉ cần một lớp hương nhẹ đủ khiến người khác ngoái nhìn. Phù hợp cho cả ban ngày lẫn buổi tối, đặc biệt là những dịp bạn muốn mang theo mình một chút tự do, thanh mát và nữ tính có chiều sâu.', 'products/Valentino/Valentino%20Donna%20Born%20In%20Roma%20Green%20Stravaganza/valentino-donna-born-in-roma-green-stravaganza.jpg', 19, 2, 18, NULL),
 (51, 'Valentino Uomo Born In Roma Green Stravaganza', 3050000.00, 100, 'Hương Cam Bergamot, Cà Phê, Cỏ Hương Bài', 'nam', 'Tinh Tế, Nam Tính, Nhẹ Nhàng', 'Pháp', 2024, 'Khi bản lĩnh được tỏa sáng giữa vườn xanh rực rỡ<br>Ra mắt vào năm 2024, Valentino Uomo Born in Roma Green Stravaganza là một chương mới đầy năng lượng trong bộ sưu tập Born in Roma. Lấy cảm hứng từ những khu vườn đậm chất Ý giữa lòng thành Rome, mùi hương là sự tôn vinh cá tính tự do, sôi nổi và bản lĩnh của người đàn ông hiện đại, luôn chọn sống khác biệt.<br>Ngay từ những nốt đầu tiên, Green Stravaganza mở ra với cam Bergamot vùng Calabria, tươi sáng, rạng rỡ như ánh nắng Địa Trung Hải. Khi lớp hương lắng lại, nốt cà phê dần hiện lên, với chút mạnh mẽ, gợi cảm và tràn đầy năng lượng, như nhịp sống sôi động của thành phố. Kết thúc của hương thơm là sự kết hợp tinh tế giữa Cỏ hương bài ấm khô nồng nàn đầy quyến rũ, để lại một dấu ấn vừa chín chắn vừa cá tính.<br>Đây là mùi hương dành cho những người đàn ông yêu thích sự bứt phá nhưng vẫn giữ vững bản sắc riêng. Phù hợp trong những buổi hẹn hò, tiệc tối hay bất kỳ khoảnh khắc nào bạn muốn tỏa sáng một cách lịch lãm, cuốn hút và đầy khác biệt.', 'products/Valentino/Valentino%20Uomo%20Born%20In%20Roma%20Green%20Stravaganza/valentino-uomo-born-in-roma-green-stravaganza.jpg', 0, 1, 18, NULL),
-(60, 'new', 1000000.00, 100, NULL, 'nam', NULL, 'pháp', 2024, NULL, 'product_20260104_6959ec822a708.png', 1, 4, 30, '2026-01-04 11:41:15');
+(60, 'new', 1000000.00, 100, NULL, 'nam', NULL, 'pháp', 2024, NULL, 'product_20260104_6959ec822a708.png', 1, 4, 30, '2026-01-04 11:41:15'),
+(61, 'Gift Set Jean Paul Gaultier Scandal EDP 3pcs', 4390000.00, 80, 'Mật ong, Hoắc hương, Sáp mật ong, Hương caramen, Hoa dành dành', 'nữ', 'Gợi cảm, Sành điệu, Khiêu khích', 'Pháp, Tây Ban Nha', 2017, NULL, 'product_20260105_695b7d4fc830f.jpg', 10, 4, 24, NULL),
+(62, 'Gift Set Carolina Herrera Bad Boy Le Parfum 2pcs', 3200000.00, 100, 'Cần sa, Cỏ hương bài, Tiêu đen', 'nam', 'Quyến rũ, Nam tính, Lịch lãm', 'Mỹ, Tây Ban Nha', 2021, NULL, 'product_20260105_695b7dba553ac.jpg', 10, 4, 29, NULL),
+(63, 'Gift set Gucci Flora Gorgeous Orchid 3pcs', 4480000.00, 100, 'Hương Vanilla, Hoa Phong Lan, Ozonic Notes', 'nữ', 'Ngọt Ngào, Nhẹ Nhàng, Nữ tính', 'Tây Ban Nha', NULL, NULL, 'product_20260105_695b7e9d34f1f.jpg', 10, NULL, 3, NULL),
+(64, 'Gift Set Marc Jacobs Daisy 3pcs', 2800000.00, 100, 'Lá hoa tím, Quả bưởi, Hoa tím, Dâu tây', 'nữ', 'Quyến rũ, Tươi mới, Tinh tế', 'Tây Ban Nha, Pháp, M', 2007, NULL, 'product_20260105_695b7f30e3ff2.jpg', 10, 4, 38, NULL),
+(65, 'Gift Set Giorgio Armani Acqua Di Gio 3 pcs', 2980000.00, 100, 'Hương biển, Quả chanh vàng, Quả chanh xanh, Cam bergamot, Hoa nhài, Quả cam', 'nam', 'Hấp dẫn, Tươi mát, Nam tính', 'Pháp', 1996, 'Nước hoa Acqua di Gio của hãng Giorgio Armani được chuyên gia nước hoa Alberto Morillas tạo ra vào năm 1996, và có lẽ nó cũng là một trong những tác phẩm kinh điển nhất mà ông đã tạo ra. &quot;Giò trắng&quot;, cái tên thân thuộc và dễ thương mà những người yêu mến nước hoa trải qua nhiều thế hệ dành tặng cho chai nước hoa Acqua di Gio cùng với những câu chuyện và giai thoại về nó. Một chàng trai trong mơ xuất hiện với nụ cười tỏa nắng, mặc sơ mi trắng, cùng hương thơm quá đỗi &quot;gợi nhớ&quot; của Giorgio Armani Acqua di Gio khiến cô nàng nào đó thổn thức, nhớ nhung và đem cả khoảnh khắc đó vào giấc mơ, để rồi viết ra câu chuyện của mình trên mạng xã hội với mong muốn tìm kiếm sự trợ giúp cho bản thân mình, rằng chàng trai kia là ai, và mùi hương đó là gì. Cứ thế, mùi hương của Acqua di Gio được mặc định dành cho trai đẹp, và phải mặc sơ mi trắng, tựa như một chàng trai &quot;quốc dân&quot; trong lòng của những cô gái vậy. Giorgio Armani Acqua di Gio sở hữu note hương tươi mát của Nước biển, Chanh và Cam, biến mọi không gian trở nên thư giãn, dễ chịu, cuốn hút mọi người bởi chính sự tinh tế, nam tính đầy chất tự do, mạnh mẽ của đàn ông. Hoa nhài nằm ở midnote giúp chàng trai Acqua di Gio trở nên thân thiện và từ tốn, trước khi hương thơm của xạ hương trắng và Gỗ tuyết tùng đánh gục mọi sự tò mò của đối phương, khiến họ nhớ nhung và không thể nào quên được. Giorgio Armani Acqua di Gio nhẹ nhàng, chân thật, tươi sáng và hiện đại, một người đàn ông tự do, một người đàn ông luôn để lại sự nhớ nhung nhiều nhất cho mọi cô gái đã từng bước qua, dù chỉ là vô tình.', 'product_20260105_695b803ebfb8a.jpg', 10, 4, 12, NULL);
 
 -- --------------------------------------------------------
 
@@ -310,7 +337,8 @@ INSERT INTO `thuong_hieu` (`id`, `ten_thuong_hieu`, `quoc_gia`, `mo_ta`, `duong_
 (35, 'Amouage', 'Oman', 'Amouage là thương hiệu niche cao cấp với những mùi hương xa xỉ và phức tạp.', 'https://thefragranceclinic.com.au/wp-content/uploads/2023/01/amouage-australia.png', NULL),
 (36, 'Jimmy Choo', 'United Kingdom', 'Jimmy Choo mang đến những mùi hương gợi cảm, hiện đại và đầy quyến rũ.', 'https://1000logos.net/wp-content/uploads/2022/07/Jimmy-Choo-Logo-1996.png', NULL),
 (37, 'Louis Vuitton', 'France', 'Louis Vuitton mang đến những mùi hương sang trọng, đậm chất du hành và di sản Pháp.', 'https://theme.hstatic.net/1000340570/1000964732/14/logo-brand-louis-vuitton.png', NULL),
-(38, 'Marc Jacobs', 'United States', 'Marc Jacobs nổi tiếng với những mùi hương trẻ trung, sáng tạo và hiện đại.', 'https://theme.hstatic.net/1000340570/1000964732/14/logo-brand-marc-jacobs.png', NULL);
+(38, 'Marc Jacobs', 'United States', 'Marc Jacobs nổi tiếng với những mùi hương trẻ trung, sáng tạo và hiện đại.', 'https://theme.hstatic.net/1000340570/1000964732/14/logo-brand-marc-jacobs.png', NULL),
+(39, 'Bond No.9', 'Mỹ', 'damn', 'https://theme.hstatic.net/1000340570/1000964732/14/logo-brand-bond-no-9.png', NULL);
 
 --
 -- Chỉ mục cho các bảng đã đổ
@@ -361,6 +389,12 @@ ALTER TABLE `gio_hang`
   ADD KEY `id_nguoi_dung` (`id_nguoi_dung`);
 
 --
+-- Chỉ mục cho bảng `lien_he`
+--
+ALTER TABLE `lien_he`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Chỉ mục cho bảng `nguoi_dung`
 --
 ALTER TABLE `nguoi_dung`
@@ -389,7 +423,7 @@ ALTER TABLE `thuong_hieu`
 -- AUTO_INCREMENT cho bảng `chi_tiet_don_hang`
 --
 ALTER TABLE `chi_tiet_don_hang`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT cho bảng `chi_tiet_gio_hang`
@@ -401,7 +435,7 @@ ALTER TABLE `chi_tiet_gio_hang`
 -- AUTO_INCREMENT cho bảng `danh_muc`
 --
 ALTER TABLE `danh_muc`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT cho bảng `danh_sach_yeu_thich`
@@ -413,12 +447,18 @@ ALTER TABLE `danh_sach_yeu_thich`
 -- AUTO_INCREMENT cho bảng `don_hang`
 --
 ALTER TABLE `don_hang`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT cho bảng `gio_hang`
 --
 ALTER TABLE `gio_hang`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT cho bảng `lien_he`
+--
+ALTER TABLE `lien_he`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
@@ -431,13 +471,13 @@ ALTER TABLE `nguoi_dung`
 -- AUTO_INCREMENT cho bảng `san_pham`
 --
 ALTER TABLE `san_pham`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=61;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=66;
 
 --
 -- AUTO_INCREMENT cho bảng `thuong_hieu`
 --
 ALTER TABLE `thuong_hieu`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
 
 --
 -- Các ràng buộc cho các bảng đã đổ

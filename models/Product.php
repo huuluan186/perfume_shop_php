@@ -499,6 +499,24 @@ class Product {
         return $result['total'];
     }
     
+    // Lấy top sản phẩm bán chạy nhất
+    public function getTopSelling($limit = 5) {
+        $query = "SELECT sp.ten_san_pham, SUM(ctdh.so_luong) as total_sold
+                  FROM chi_tiet_don_hang ctdh
+                  INNER JOIN {$this->table} sp ON ctdh.id_san_pham = sp.id
+                  INNER JOIN don_hang dh ON ctdh.id_don_hang = dh.id
+                  WHERE dh.trang_thai != ? AND dh.ngay_xoa IS NULL
+                  GROUP BY sp.id, sp.ten_san_pham
+                  ORDER BY total_sold DESC
+                  LIMIT ?";
+        
+        $cancelled_status = ORDER_STATUS_CANCELLED;
+        $stmt = $this->conn->prepare($query);
+        $stmt->bind_param("ii", $cancelled_status, $limit);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    }
+    
     public function __destruct() {
         if ($this->conn) {
             $this->conn->close();

@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../helpers/functions.php';
+require_once __DIR__ . '/../models/Contact.php';
 
 $page_title = "Liên hệ";
 include __DIR__ . '/layout/header.php';
@@ -11,7 +12,6 @@ $errors = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = clean_input($_POST['name'] ?? '');
     $email = clean_input($_POST['email'] ?? '');
-    $phone = clean_input($_POST['phone'] ?? '');
     $message = clean_input($_POST['message'] ?? '');
     
     if (empty($name)) {
@@ -19,42 +19,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     if (empty($email)) {
         $errors[] = 'Vui lòng nhập email!';
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $errors[] = 'Email không hợp lệ!';
     }
     if (empty($message)) {
         $errors[] = 'Vui lòng nhập nội dung!';
     }
     
     if (empty($errors)) {
-        // Lưu vào file log
-        $log_dir = __DIR__ . '/../logs';
-        if (!file_exists($log_dir)) {
-            mkdir($log_dir, 0777, true);
+        $contactModel = new Contact();
+        $data = [
+            'ho_ten' => $name,
+            'email' => $email,
+            'noi_dung' => $message
+        ];
+        
+        if ($contactModel->create($data)) {
+            $success = true;
+            set_message('success', 'Cảm ơn bạn đã gửi liên hệ! Chúng tôi sẽ phản hồi sớm nhất.');
+        } else {
+            $errors[] = 'Có lỗi xảy ra, vui lòng thử lại!';
         }
-        
-        $log_file = $log_dir . '/contact_' . date('Y-m') . '.txt';
-        $log_content = sprintf(
-            "\n========================================\nNgày giờ: %s\nHọ tên: %s\nEmail: %s\nSố điện thoại: %s\nNội dung:\n%s\n========================================\n",
-            date('d/m/Y H:i:s'),
-            $name,
-            $email,
-            $phone ?: 'Không có',
-            $message
-        );
-        file_put_contents($log_file, $log_content, FILE_APPEND);
-        
-        // Gửi email thông báo cho admin (nếu cấu hình mail)
-        $admin_email = 'admin@perfumeshop.com'; // Thay bằng email của bạn
-        $subject = '[Liên hệ mới] ' . $name;
-        $email_body = "Có liên hệ mới từ website:\n\n" . $log_content;
-        $headers = "From: noreply@perfumeshop.com\r\n";
-        $headers .= "Reply-To: $email\r\n";
+    }
+}
         
         // Uncomment dòng dưới khi đã cấu hình mail server
         // mail($admin_email, $subject, $email_body, $headers);
-        
-        $success = true;
-    }
-}
 ?>
 
 <div class="container my-5">
@@ -63,16 +53,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <h2 class="fw-bold mb-4">Liên Hệ Với Chúng Tôi</h2>
             
             <?php if ($success): ?>
-            <div class="alert alert-success">
+            <div class="alert alert-success alert-dismissible fade show">
+                <i class="fas fa-check-circle me-2"></i>
                 Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi trong thời gian sớm nhất.
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
             <?php endif; ?>
             
             <?php if (!empty($errors)): ?>
-            <div class="alert alert-danger">
+            <div class="alert alert-danger alert-dismissible fade show">
+                <i class="fas fa-exclamation-circle me-2"></i>
                 <?php foreach ($errors as $error): ?>
                     <div><?php echo htmlspecialchars($error); ?></div>
                 <?php endforeach; ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
             <?php endif; ?>
             
@@ -87,10 +81,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <div class="col-md-6 mb-3">
                                 <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
                                 <input type="email" class="form-control" id="email" name="email" required>
-                            </div>
-                            <div class="col-md-12 mb-3">
-                                <label for="phone" class="form-label">Số điện thoại</label>
-                                <input type="tel" class="form-control" id="phone" name="phone">
                             </div>
                             <div class="col-md-12 mb-3">
                                 <label for="message" class="form-label">Nội dung <span class="text-danger">*</span></label>

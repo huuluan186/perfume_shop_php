@@ -118,28 +118,47 @@ class Order {
     }
     
     // Lấy chi tiết sản phẩm trong đơn hàng
-    public function getOrderDetails($order_id) {
-        $query = "SELECT ct.id, ct.id_don_hang, ct.id_san_pham, ct.so_luong, ct.don_gia,
-                         sp.ten_san_pham, sp.duong_dan_hinh_anh
+    public function getOrderDetails($order_id, $include_deleted = false) {
+        // Lấy thông tin đơn hàng
+        if ($include_deleted) {
+            $order = $this->getByIdWithDeleted($order_id);
+        } else {
+            $order = $this->getById($order_id);
+        }
+        
+        if (!$order) {
+            return false;
+        }
+        
+        // Lấy danh sách sản phẩm trong đơn hàng - luôn lấy tất cả kể cả sản phẩm đã xóa
+        // vì đơn hàng đã đặt rồi thì phải hiển thị đầy đủ thông tin
+        $query = "SELECT ct.id, ct.id_don_hang, ct.id_san_pham, ct.so_luong, ct.don_gia as gia_ban,
+                         COALESCE(sp.ten_san_pham, CONCAT('Sản phẩm #', ct.id_san_pham, ' (đã xóa)')) as ten_san_pham, 
+                         sp.duong_dan_hinh_anh, 
+                         sp.ngay_xoa
                   FROM {$this->detail_table} ct
-                  INNER JOIN san_pham sp ON ct.id_san_pham = sp.id
-                  WHERE ct.id_don_hang = ? AND sp.ngay_xoa IS NULL";
+                  LEFT JOIN san_pham sp ON ct.id_san_pham = sp.id
+                  WHERE ct.id_don_hang = ?";
         
         $stmt = $this->conn->prepare($query);
         if (!$stmt) {
             error_log("Lỗi prepare statement: " . $this->conn->error);
-            return [];
+            return false;
         }
         
         $stmt->bind_param("i", $order_id);
         if (!$stmt->execute()) {
             error_log("Lỗi execute: " . $stmt->error);
-            return [];
+            return false;
         }
         
-        $result = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-        error_log("Order ID $order_id có " . count($result) . " sản phẩm");
-        return $result;
+        $items = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+        error_log("Order ID $order_id có " . count($items) . " sản phẩm");
+        
+        return [
+            'order' => $order,
+            'items' => $items
+        ];
     }
     
     // Lấy tất cả đơn hàng (admin)
@@ -232,7 +251,13 @@ class Order {
     // Hủy đơn hàng
     public function cancel($id) {
         // Lấy chi tiết đơn hàng để hoàn lại số lượng
-        $orderDetails = $this->getOrderDetails($id);
+        $orderDetailsResult = $this->getOrderDetails($id);
+        
+        if (!$orderDetailsResult) {
+            return false;
+        }
+        
+        $orderDetails = $orderDetailsResult['items'];
         
         // Bắt đầu transaction
         $this->conn->begin_transaction();

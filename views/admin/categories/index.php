@@ -35,10 +35,10 @@ include __DIR__ . '/../layout/header.php';
                 <table class="table table-hover align-middle table-sticky-action">
                     <thead class="table-light">
                         <tr>
-                            <th width="80">ID</th>
+                            <th width="100">ID</th>
                             <th>Tên danh mục</th>
-                            <th width="500">Mô tả</th>
-                            <th class="text-center sticky-action">Thao tác</th>
+                            <th width="200" class="text-center">Số sản phẩm</th>
+                            <th width="250" class="text-center sticky-action">Thao tác</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -46,8 +46,10 @@ include __DIR__ . '/../layout/header.php';
                         <tr>
                             <td><strong>#<?php echo $category['id']; ?></strong></td>
                             <td><strong><?php echo htmlspecialchars($category['ten_danh_muc']); ?></strong></td>
-                            <td><small><?php echo htmlspecialchars(substr($category['mo_ta'] ?? '', 0, 150)); ?><?php echo (strlen($category['mo_ta'] ?? '') > 150) ? '...' : ''; ?></small></td>
-                            <td class="text-nowrap">
+                            <td class="text-center">
+                                <span class="badge bg-primary"><?php echo $category['product_count'] ?? 0; ?> sản phẩm</span>
+                            </td>
+                            <td class="text-nowrap text-center">
                                 <button class="btn btn-sm btn-outline-info me-1 view-category" 
                                         data-id="<?php echo $category['id']; ?>" title="Xem chi tiết">
                                     <i class="fas fa-eye" style="pointer-events: none;"></i>
@@ -232,7 +234,11 @@ function renderCategoryDetail(category, products, productCount) {
                         </div>
                         <div class="row">
                             <div class="col-md-3"><small class="text-muted">Mô tả:</small></div>
-                            <div class="col-md-9">${category.mo_ta ? category.mo_ta.replace(/\n/g, '<br>') : '<span class="text-muted fst-italic">Chưa có mô tả</span>'}</div>
+                            <div class="col-md-9">
+                                <div style="white-space: pre-wrap; word-wrap: break-word;">
+                                    ${category.mo_ta ? category.mo_ta : '<span class="text-muted fst-italic">Chưa có mô tả</span>'}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -266,5 +272,3 @@ function renderCategoryDetail(category, products, productCount) {
     `;
 }
 </script>
-
-<?php include __DIR__ . '/../layout/footer.php'; ?>

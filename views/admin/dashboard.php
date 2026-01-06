@@ -32,13 +32,34 @@ $shipping_orders = $orderModel->count(['status' => ORDER_STATUS_SHIPPING]);
 $completed_orders = $orderModel->count(['status' => ORDER_STATUS_COMPLETED]);
 
 // Thống kê doanh thu
-$revenue_stats = $orderModel->getRevenue();
+$revenue_total = $orderModel->getRevenue();
+$total_revenue = $revenue_total['total_revenue'] ?? 0;
+
+// Doanh thu tháng này
+$first_day_of_month = date('Y-m-01');
+$last_day_of_month = date('Y-m-t');
+$revenue_month = $orderModel->getRevenue($first_day_of_month, $last_day_of_month);
+$month_revenue = $revenue_month['total_revenue'] ?? 0;
+
+// Doanh thu 7 ngày qua (cho biểu đồ)
+$daily_revenue = [];
+for ($i = 6; $i >= 0; $i--) {
+    $date = date('Y-m-d', strtotime("-$i days"));
+    $revenue = $orderModel->getRevenue($date, $date);
+    $daily_revenue[] = [
+        'date' => date('d/m', strtotime($date)),
+        'revenue' => $revenue['total_revenue'] ?? 0
+    ];
+}
 
 // Đơn hàng mới nhất
 $recent_orders = $orderModel->getAll([], 5, 0);
 
 // Sản phẩm sắp hết hàng
 $low_stock_products = $productModel->getLowStock(5);
+
+// Sản phẩm bán chạy nhất
+$top_selling_products = $productModel->getTopSelling(5);
 
 $page_title = "Admin Dashboard";
 include __DIR__ . '/layout/header.php';
@@ -55,7 +76,7 @@ include __DIR__ . '/layout/header.php';
 <!-- Statistics Cards -->
 <div class="row g-4 mb-4">
         <div class="col-xl-3 col-md-6">
-            <div class="card border-0 shadow-sm bg-primary text-white">
+            <div class="card border-0 shadow-sm bg-primary text-white h-100">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
@@ -76,7 +97,7 @@ include __DIR__ . '/layout/header.php';
         </div>
         
         <div class="col-xl-3 col-md-6">
-            <div class="card border-0 shadow-sm bg-success text-white">
+            <div class="card border-0 shadow-sm bg-success text-white h-100">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
@@ -97,7 +118,7 @@ include __DIR__ . '/layout/header.php';
         </div>
         
         <div class="col-xl-3 col-md-6">
-            <div class="card border-0 shadow-sm bg-warning text-white">
+            <div class="card border-0 shadow-sm bg-warning text-white h-100">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
@@ -118,12 +139,12 @@ include __DIR__ . '/layout/header.php';
         </div>
         
         <div class="col-xl-3 col-md-6">
-            <div class="card border-0 shadow-sm bg-info text-white">
+            <div class="card border-0 shadow-sm bg-info text-white h-100">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="text-white-50 mb-1">Doanh thu tháng</h6>
-                            <h3 class="mb-0"><?php echo format_currency($revenue_stats['month'] ?? 0); ?></h3>
+                            <h6 class="text-white-50 mb-1">Tổng doanh thu</h6>
+                            <h3 class="mb-0 fs-5"><?php echo format_currency($total_revenue); ?></h3>
                         </div>
                         <div class="fs-1 opacity-50">
                             <i class="fas fa-dollar-sign"></i>
@@ -131,7 +152,9 @@ include __DIR__ . '/layout/header.php';
                     </div>
                 </div>
                 <div class="card-footer bg-white bg-opacity-10 border-0">
-                    <small>Tổng: <?php echo format_currency($revenue_stats['total'] ?? 0); ?></small>
+                    <a href="orders/" class="text-white text-decoration-none small">
+                        Xem chi tiết <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
                 </div>
             </div>
         </div>
@@ -168,6 +191,34 @@ include __DIR__ . '/layout/header.php';
                 <div class="card-body">
                     <h6 class="text-muted mb-2">Hoàn thành</h6>
                     <h4 class="mb-0 text-success"><?php echo $completed_orders; ?> đơn</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Revenue Chart -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0">
+                    <h5 class="mb-0 fw-bold"><i class="fas fa-chart-line me-2"></i>Doanh thu 7 ngày gần đây</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="revenueChart" height="80"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Top Selling Products Chart -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0">
+                    <h5 class="mb-0 fw-bold"><i class="fas fa-chart-bar me-2"></i>Top 5 sản phẩm bán chạy nhất</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="topSellingChart" height="80"></canvas>
                 </div>
             </div>
         </div>
@@ -256,5 +307,161 @@ include __DIR__ . '/layout/header.php';
             </div>
         </div>
     </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+// Dữ liệu biểu đồ doanh thu
+const revenueData = <?php echo json_encode($daily_revenue); ?>;
+const revenueLabels = revenueData.map(item => item.date);
+const revenueValues = revenueData.map(item => item.revenue);
+
+// Vẽ biểu đồ doanh thu
+const ctxRevenue = document.getElementById('revenueChart').getContext('2d');
+const revenueChart = new Chart(ctxRevenue, {
+    type: 'line',
+    data: {
+        labels: revenueLabels,
+        datasets: [{
+            label: 'Doanh thu (VNĐ)',
+            data: revenueValues,
+            borderColor: 'rgb(13, 110, 253)',
+            backgroundColor: 'rgba(13, 110, 253, 0.1)',
+            tension: 0.4,
+            fill: true,
+            pointBackgroundColor: 'rgb(13, 110, 253)',
+            pointBorderColor: '#fff',
+            pointBorderWidth: 2,
+            pointRadius: 5,
+            pointHoverRadius: 7
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+            legend: {
+                display: false
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        return 'Doanh thu: ' + new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(context.parsed.y);
+                    }
+                }
+            }
+        },
+        scales: {
+            x: {
+                title: {
+                    display: true,
+                    text: 'Ngày',
+                    font: {
+                        size: 14,
+                        weight: 'bold'
+                    }
+                }
+            },
+            y: {
+                beginAtZero: true,
+                title: {
+                    display: true,
+                    text: 'Doanh thu (VNĐ)',
+                    font: {
+                        size: 14,
+                        weight: 'bold'
+                    }
+                },
+                ticks: {
+                    callback: function(value) {
+                        return new Intl.NumberFormat('vi-VN', { notation: 'compact', compactDisplay: 'short' }).format(value);
+                    }
+                }
+            }
+        }
+    }
+});
+
+// Dữ liệu biểu đồ sản phẩm bán chạy
+const topSellingData = <?php echo json_encode($top_selling_products); ?>;
+const productLabels = topSellingData.map(item => {
+    const name = item.ten_san_pham;
+    return name.length > 25 ? name.substring(0, 25) + '...' : name;
+});
+const productValues = topSellingData.map(item => parseInt(item.total_sold));
+
+// Vẽ biểu đồ sản phẩm bán chạy
+const ctxTopSelling = document.getElementById('topSellingChart').getContext('2d');
+const topSellingChart = new Chart(ctxTopSelling, {
+    type: 'bar',
+    data: {
+        labels: productLabels,
+        datasets: [{
+            label: 'Số lượng đã bán',
+            data: productValues,
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.8)',
+                'rgba(54, 162, 235, 0.8)',
+                'rgba(255, 206, 86, 0.8)',
+                'rgba(75, 192, 192, 0.8)',
+                'rgba(153, 102, 255, 0.8)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)'
+            ],
+            borderWidth: 2
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+            legend: {
+                display: false
+            },
+            tooltip: {
+                callbacks: {
+                    title: function(context) {
+                        const index = context[0].dataIndex;
+                        return topSellingData[index].ten_san_pham;
+                    },
+                    label: function(context) {
+                        return 'Đã bán: ' + context.parsed.y + ' sản phẩm';
+                    }
+                }
+            }
+        },
+        scales: {
+            x: {
+                title: {
+                    display: true,
+                    text: 'Sản phẩm',
+                    font: {
+                        size: 14,
+                        weight: 'bold'
+                    }
+                }
+            },
+            y: {
+                beginAtZero: true,
+                title: {
+                    display: true,
+                    text: 'Số lượng đã bán',
+                    font: {
+                        size: 14,
+                        weight: 'bold'
+                    }
+                },
+                ticks: {
+                    stepSize: 1
+                }
+            }
+        }
+    }
+});
+</script>
 
 <?php include __DIR__ . '/layout/footer.php'; ?>
