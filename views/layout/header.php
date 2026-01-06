@@ -60,9 +60,14 @@ if (is_logged_in() && !is_admin()) {
         <header class="header bg-white shadow-sm">
             <div class="container">
             <nav class="navbar navbar-expand-lg navbar-light py-3">
-                <a class="navbar-brand fw-bold text-primary fs-4" href="<?php echo BASE_URL; ?>">
-                    <i class="fas fa-spray-can me-2"></i>Perfume Shop
-                </a>
+             <a class="navbar-brand d-flex align-items-center"
+             href="<?php echo BASE_URL; ?>">
+            <img src="<?php echo BASE_URL; ?>/assets/images/logo.png"
+             alt="Perfume Shop"
+             height="40"
+             class="me-2">
+    </a>
+
                 
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                     <span class="navbar-toggler-icon"></span>
