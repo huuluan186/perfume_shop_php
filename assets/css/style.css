@@ -51,6 +51,16 @@ a:hover {
     transform: scale(1.05);
 }
 
+/* Logo Image */
+.logo-img {
+    max-height: 80px;
+    max-width: 280px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: 12px;
+}
+
 .nav-link {
     font-weight: 500;
     position: relative;
@@ -616,6 +626,16 @@ button:focus-visible {
     
     .navbar-brand {
         font-size: 1.2rem;
+    }
+    
+    .logo-img {
+        max-height: 50px;
+        max-width: 150px;
+    }
+    
+    .header .navbar {
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
     }
 }
 
