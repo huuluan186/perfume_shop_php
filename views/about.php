@@ -42,7 +42,7 @@ include __DIR__ . '/layout/header.php';
                             <i class="fas fa-shipping-fast fa-3x text-primary"></i>
                         </div>
                         <h5 class="fw-bold">Giao Hàng Toàn Quốc</h5>
-                        <p class="text-muted">Miễn phí vận chuyển cho đơn hàng từ 500.000đ</p>
+                        <p class="text-muted">Miễn phí vận chuyển</p>
                     </div>
                 </div>
                 <div class="col-md-4">
@@ -67,7 +67,7 @@ include __DIR__ . '/layout/header.php';
                                 </div>
                                 <div>
                                     <h6 class="fw-bold">Sản phẩm đa dạng</h6>
-                                    <p class="text-muted">Hơn 500+ sản phẩm từ các thương hiệu nổi tiếng như Chanel, Dior, Gucci, YSL...</p>
+                                    <p class="text-muted">Kinh doanh các sản phẩm từ các thương hiệu nổi tiếng như Chanel, Dior, Gucci, YSL...</p>
                                 </div>
                             </div>
                         </div>
@@ -78,7 +78,7 @@ include __DIR__ . '/layout/header.php';
                                 </div>
                                 <div>
                                     <h6 class="fw-bold">Giá cả cạnh tranh</h6>
-                                    <p class="text-muted">Cam kết giá tốt nhất thị trường với nhiều chương trình ưu đãi hấp dẫn</p>
+                                    <p class="text-muted">Cam kết giá tốt nhất thị trường</p>
                                 </div>
                             </div>
                         </div>
@@ -125,7 +125,7 @@ include __DIR__ . '/layout/header.php';
                     <div class="col-md-4">
                         <i class="fas fa-envelope fa-2x text-primary mb-3"></i>
                         <h6 class="fw-bold">Email</h6>
-                        <p class="text-muted">info@perfumeshop.vn<br>support@perfumeshop.vn</p>
+                        <p class="text-muted">contact@perfumeshop.vn<br>luanphamhuu2004@gmail.com</p>
                     </div>
                 </div>
             </div>

@@ -11,7 +11,7 @@ define('UPLOAD_PATH', __DIR__ . '/../uploads/');
 define('UPLOAD_URL', BASE_URL . 'uploads/');
 
 // Số sản phẩm trên mỗi trang
-define('PRODUCTS_PER_PAGE', 8);
+define('PRODUCTS_PER_PAGE', 9);
 define('ORDERS_PER_PAGE', 8);
 
 // Múi giờ

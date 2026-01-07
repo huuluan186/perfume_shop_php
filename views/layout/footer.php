@@ -6,7 +6,7 @@
             <div class="row g-4 mb-4">
                 <div class="col-lg-5 col-md-6">
                     <h5 class="text-primary mb-3">
-                        <i class="fas fa-spray-can me-2"></i>Perfume Shop
+                        Perfume Shop
                     </h5>
                     <p class="text-light-50">
                         Cửa hàng nước hoa cao cấp chuyên cung cấp các sản phẩm nước hoa chính hãng từ các thương hiệu nổi tiếng thế giới.
@@ -16,31 +16,27 @@
                 <div class="col-lg-3 col-md-6">
                     <h5 class="mb-3">Liên kết nhanh</h5>
                     <ul class="list-unstyled footer-links">
-                        <li class="mb-2"><a href="<?php echo BASE_URL; ?>" class="text-light-50 text-decoration-none hover-primary"><i class="fas fa-chevron-right me-2"></i>Trang chủ</a></li>
-                        <li class="mb-2"><a href="<?php echo BASE_URL; ?>views/products/index.php" class="text-light-50 text-decoration-none hover-primary"><i class="fas fa-chevron-right me-2"></i>Sản phẩm</a></li>
-                        <li class="mb-2"><a href="<?php echo BASE_URL; ?>views/brands/index.php" class="text-light-50 text-decoration-none hover-primary"><i class="fas fa-chevron-right me-2"></i>Thương hiệu</a></li>
-                        <li class="mb-2"><a href="<?php echo BASE_URL; ?>views/about.php" class="text-light-50 text-decoration-none hover-primary"><i class="fas fa-chevron-right me-2"></i>Giới thiệu</a></li>
-                        <li class="mb-2"><a href="<?php echo BASE_URL; ?>views/contact.php" class="text-light-50 text-decoration-none hover-primary"><i class="fas fa-chevron-right me-2"></i>Liên hệ</a></li>
+                        <li class="mb-2"><a href="<?php echo BASE_URL; ?>" class="text-light-50 text-decoration-none hover-primary">Trang chủ</a></li>
+                        <li class="mb-2"><a href="<?php echo BASE_URL; ?>views/products/index.php" class="text-light-50 text-decoration-none hover-primary">Sản phẩm</a></li>
+                        <li class="mb-2"><a href="<?php echo BASE_URL; ?>views/brands/index.php" class="text-light-50 text-decoration-none hover-primary">Thương hiệu</a></li>
+                        <li class="mb-2"><a href="<?php echo BASE_URL; ?>views/about.php" class="text-light-50 text-decoration-none hover-primary">Giới thiệu</a></li>
+                        <li class="mb-2"><a href="<?php echo BASE_URL; ?>views/contact.php" class="text-light-50 text-decoration-none hover-primary">Liên hệ</a></li>
                     </ul>
                 </div>
                 
                 <div class="col-lg-4 col-md-12">
                     <h5 class="mb-3">Thông tin liên hệ</h5>
                     <ul class="list-unstyled">
-                        <li class="mb-2 d-flex align-items-start">
-                            <i class="fas fa-map-marker-alt me-2 mt-1 text-primary"></i>
+                        <li class="mb-2">
                             <span class="text-light-50">126 Nguyễn Thiện Thành, Phường Hòa Thuận, tỉnh Vĩnh Long</span>
                         </li>
-                        <li class="mb-2 d-flex align-items-center">
-                            <i class="fas fa-phone me-2 text-primary"></i>
+                        <li class="mb-2">
                             <span class="text-light-50">1900 1836</span>
                         </li>
-                        <li class="mb-2 d-flex align-items-center">
-                            <i class="fas fa-envelope me-2 text-primary"></i>
+                        <li class="mb-2">
                             <span class="text-light-50">contact@perfumeshop.com</span>
                         </li>
-                        <li class="mb-2 d-flex align-items-center">
-                            <i class="fas fa-clock me-2 text-primary"></i>
+                        <li class="mb-2">
                             <span class="text-light-50">8:00 - 22:00 (Hàng ngày)</span>
                         </li>
                     </ul>
@@ -53,7 +49,7 @@
             <div class="row mb-4">
                 <div class="col-12">
                     <h5 class="text-center text-white mb-4">
-                        <i class="fas fa-users me-2"></i>Thành viên nhóm
+                        Thành viên nhóm
                     </h5>
                     <div class="row g-3 justify-content-center">
                         <!-- Thành viên 1 -->
@@ -62,8 +58,7 @@
 
                                 <h6 class="text-white mb-2 fw-bold">PHẠM HỮU LUÂN</h6>
                                 <p class="text-light small mb-2">
-                                    <i class="fas fa-id-card me-1 text-info"></i>110122016 | 
-                                    <i class="fas fa-graduation-cap ms-2 me-1 text-info"></i>DA22TTA
+                                    110122016 | DA22TTA
                                 </p>
                                 <div class="social-links">
                                     <a href="https://github.com/huuluan186" target="_blank" class="btn btn-sm btn-outline-light me-2" title="GitHub">
@@ -81,8 +76,7 @@
                             <div class="team-member p-3 border border-info rounded h-100 text-center" style="background-color: rgba(13, 110, 253, 0.1);">
                                 <h6 class="text-white mb-2 fw-bold">NGUYỄN HỮU ANH</h6>
                                 <p class="text-light small mb-2">
-                                    <i class="fas fa-id-card me-1 text-info"></i>110122033 | 
-                                    <i class="fas fa-graduation-cap ms-2 me-1 text-info"></i>DA22TTA
+                                    110122033 | DA22TTA
                                 </p>
                                 <div class="social-links">
                                     <a href="https://github.com/huuanh2512" target="_blank" class="btn btn-sm btn-outline-light me-2" title="GitHub">
@@ -100,8 +94,7 @@
                             <div class="team-member p-3 border border-info rounded h-100 text-center" style="background-color: rgba(13, 110, 253, 0.1);">
                                 <h6 class="text-white mb-2 fw-bold">LÂM THANH ĐỈNH</h6>
                                 <p class="text-light small mb-2">
-                                    <i class="fas fa-id-card me-1 text-info"></i>110122051 | 
-                                    <i class="fas fa-graduation-cap ms-2 me-1 text-info"></i>DA22TTA
+                                    110122051 | DA22TTA
                                 </p>
                                 <div class="social-links">
                                     <a href="https://github.com/LamThanhDinh" target="_blank" class="btn btn-sm btn-outline-light me-2" title="GitHub">
@@ -134,7 +127,7 @@
 
     <!-- Back to Top Button -->
     <button id="backToTop" class="btn btn-primary position-fixed bottom-0 end-0 m-4 d-flex align-items-center justify-content-center" style="display: none; z-index: 999;">
-        <i class="fas fa-arrow-up"></i>
+        ↑
     </button>
 
     <!-- jQuery -->

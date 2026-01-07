@@ -173,7 +173,9 @@ include __DIR__ . '/../layout/header.php';
                         <div class="card-body">
                             <h6 class="product-brand text-muted small"><?php echo htmlspecialchars($product['ten_thuong_hieu']); ?></h6>
                             <h5 class="product-name mb-2">
-                                <a href="detail.php?id=<?php echo $product['id']; ?>" class="text-decoration-none text-dark">
+                                <a href="detail.php?id=<?php echo $product['id']; ?>" 
+                                   class="text-decoration-none text-dark"
+                                   title="<?php echo htmlspecialchars($product['ten_san_pham']); ?>">
                                     <?php echo htmlspecialchars($product['ten_san_pham']); ?>
                                 </a>
                             </h5>
