@@ -215,14 +215,6 @@ File SQL đã bao gồm sẵn tài khoản Admin:
 
 ---
 
-**Liên hệ Website:**
-- 📧 Email: contact@perfumeshop.com
-- 📞 Hotline: 1900 1836
-- 📍 Địa chỉ: 126 Nguyễn Thiện Thành, Phường Hòa Thuận, tỉnh Vĩnh Long
-- ⏰ Giờ làm việc: 8:00 - 22:00 (Hàng ngày)
-
----
-
 ## 📝 License
 
 © 2026 Perfume Shop. Đồ án môn học - Nhóm sinh viên DA22TTA.
