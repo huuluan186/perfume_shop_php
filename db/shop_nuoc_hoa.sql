@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th1 05, 2026 lúc 10:18 AM
+-- Thời gian đã tạo: Th1 07, 2026 lúc 06:21 AM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -165,6 +165,13 @@ CREATE TABLE `lien_he` (
   `thoi_gian_gui` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Đang đổ dữ liệu cho bảng `lien_he`
+--
+
+INSERT INTO `lien_he` (`id`, `ho_ten`, `email`, `noi_dung`, `thoi_gian_gui`) VALUES
+(1, 'fdfdf', 'luanphamhuu2004@gmail.com', 'dfdfdggfgrtrtr', '2026-01-05 16:26:21');
+
 -- --------------------------------------------------------
 
 --
@@ -189,7 +196,7 @@ CREATE TABLE `nguoi_dung` (
 --
 
 INSERT INTO `nguoi_dung` (`id`, `username`, `gioi_tinh`, `ngay_sinh`, `email`, `password`, `vai_tro`, `trang_thai`, `ngay_tao`, `ngay_xoa`) VALUES
-(1, 'luan2', '', '2025-12-08', 'luanphamhuu2004@gmail.com', 'bbb8aae57c104cda40c93843ad5e6db8', 'khach_hang', 0, '2026-01-01 20:10:23', NULL),
+(1, 'luan2', '', '2025-12-08', 'luanphamhuu2004@gmail.com', 'bbb8aae57c104cda40c93843ad5e6db8', 'khach_hang', 1, '2026-01-01 20:10:23', NULL),
 (2, 'admin', NULL, NULL, 'admin@gmail.com', '0192023a7bbd73250516f069df18b500', 'quan_tri_vien', 1, '2026-01-02 17:31:02', NULL);
 
 -- --------------------------------------------------------
@@ -459,7 +466,7 @@ ALTER TABLE `gio_hang`
 -- AUTO_INCREMENT cho bảng `lien_he`
 --
 ALTER TABLE `lien_he`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT cho bảng `nguoi_dung`
