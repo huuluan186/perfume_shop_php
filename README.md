@@ -11,7 +11,6 @@ Website thương mại điện tử chuyên bán nước hoa cao cấp, được
 - [Hướng dẫn sử dụng](#hướng-dẫn-sử-dụng)
 
 ## Công nghệ sử dụng
-
 ### Backend
 - **PHP 8.x** - Ngôn ngữ lập trình chính
 - **MySQL/MariaDB** - Hệ quản trị cơ sở dữ liệu
