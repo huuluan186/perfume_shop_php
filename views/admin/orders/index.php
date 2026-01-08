@@ -226,8 +226,9 @@ include __DIR__ . '/../layout/header.php';
 <?php include __DIR__ . '/../layout/footer.php'; ?>
 
 <script>
-// Lấy ASSETS_URL từ PHP
+// Lấy URL từ PHP
 const ASSETS_URL = '<?php echo ASSETS_URL; ?>';
+const UPLOAD_URL = '<?php echo UPLOAD_URL; ?>';
 
 $(document).ready(function() {
     // View order detail
@@ -304,15 +305,18 @@ $(document).ready(function() {
             
             items.forEach(function(item) {
                 let imagePath = item.duong_dan_hinh_anh || '';
-                if (imagePath && !imagePath.startsWith('http')) {
-                    if (imagePath.startsWith('products/')) {
-                        imagePath = ASSETS_URL + imagePath;
+                let imageUrl = '';
+                if (imagePath) {
+                    // Xử lý giống y hệt products/index.php
+                    if (imagePath.indexOf('/') !== -1) {
+                        imageUrl = ASSETS_URL + decodeURIComponent(imagePath);
                     } else {
-                        imagePath = ASSETS_URL + 'products/' + imagePath;
+                        imageUrl = UPLOAD_URL + imagePath;
                     }
-                } else if (!imagePath) {
-                    imagePath = ASSETS_URL + 'images/placeholder.png';
+                } else {
+                    imageUrl = ASSETS_URL + 'images/placeholder.png';
                 }
+                imagePath = imageUrl;
                 
                 productsHtml += `
                     <tr>

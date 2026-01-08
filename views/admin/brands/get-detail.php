@@ -37,17 +37,21 @@ try {
     // Format dữ liệu sản phẩm
     $productsFormatted = [];
     foreach ($products as $product) {
-        // Xử lý đường dẫn hình ảnh
+        // Xử lý đường dẫn hình ảnh giống y hệt products/index.php
         $imagePath = $product['duong_dan_hinh_anh'] ?? '';
-        if (!empty($imagePath) && strpos($imagePath, 'products/') !== 0) {
-            $imagePath = 'products/' . $imagePath;
+        if (!empty($imagePath)) {
+            $imageUrl = (strpos($imagePath, '/') !== false) 
+                ? ASSETS_URL . urldecode($imagePath) 
+                : UPLOAD_URL . $imagePath;
+        } else {
+            $imageUrl = ASSETS_URL . 'images/placeholder.png';
         }
         
         $productsFormatted[] = [
             'id' => $product['id'],
             'ten_san_pham' => $product['ten_san_pham'],
             'ten_danh_muc' => $product['ten_danh_muc'] ?? 'N/A',
-            'image_path' => $imagePath,
+            'image_url' => $imageUrl,
             'gia_ban' => $product['gia_ban'],
             'gia_ban_formatted' => format_currency($product['gia_ban']),
             'so_luong_ton' => $product['so_luong_ton'] ?? 0,

@@ -152,33 +152,20 @@ include __DIR__ . '/../layout/header.php';
                             <tr>
                                 <td>
                                     <?php 
-                                    $image_path = !empty($item['duong_dan_hinh_anh']) ? $item['duong_dan_hinh_anh'] : '';
-                                    
-                                    // Nếu có đường dẫn hình ảnh
-                                    if ($image_path) {
-                                        // Kiểm tra định dạng đường dẫn
-                                        if (!preg_match('/^https?:\/\//', $image_path)) {
-                                            // Nếu có dấu '/' thì là đường dẫn cũ trong products/
-                                            if (strpos($image_path, '/') !== false) {
-                                                $full_image_path = ASSETS_URL . urldecode($image_path);
-                                            } else {
-                                                // Đường dẫn mới trong uploads/
-                                                $full_image_path = UPLOAD_URL . $image_path;
-                                            }
-                                        } else {
-                                            $full_image_path = $image_path;
-                                        }
+                                    // Xử lý đường dẫn ảnh giống y hệt products/index.php
+                                    $image_path = $item['duong_dan_hinh_anh'] ?? '';
+                                    if (!empty($image_path)) {
+                                        $image_url = (strpos($image_path, '/') !== false) 
+                                            ? ASSETS_URL . urldecode($image_path) 
+                                            : UPLOAD_URL . $image_path;
+                                    } else {
+                                        $image_url = ASSETS_URL . 'images/placeholder.png';
+                                    }
                                     ?>
-                                        <img src="<?php echo htmlspecialchars($full_image_path); ?>" 
-                                             class="rounded" style="width: 60px; height: 60px; object-fit: cover;"
-                                             alt="<?php echo htmlspecialchars($item['ten_san_pham']); ?>"
-                                             onerror="this.src='<?php echo ASSETS_URL; ?>images/placeholder.png'">
-                                    <?php } else { ?>
-                                        <div class="bg-light rounded d-flex align-items-center justify-content-center" 
-                                             style="width: 60px; height: 60px;">
-                                            <i class="fas fa-image text-muted"></i>
-                                        </div>
-                                    <?php } ?>
+                                    <img src="<?php echo $image_url; ?>" 
+                                         class="rounded" style="width: 60px; height: 60px; object-fit: cover;"
+                                         alt="<?php echo htmlspecialchars($item['ten_san_pham']); ?>"
+                                         onerror="this.src='<?php echo ASSETS_URL; ?>images/placeholder.png'">
                                 </td>
                                 <td>
                                     <?php echo htmlspecialchars($item['ten_san_pham']); ?>

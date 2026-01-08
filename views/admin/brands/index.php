@@ -218,7 +218,8 @@ function renderBrandDetail(brand, products, productCount) {
     let productsHtml = '';
     if (products && products.length > 0) {
         products.forEach(function(p) {
-            const imagePath = p.image_path ? ASSETS_URL + p.image_path : ASSETS_URL + 'images/product-placeholder.png';
+            // Đường dẫn ảnh đã được xử lý từ backend, trả về là full URL
+            const imageUrl = p.image_url || ASSETS_URL + 'images/product-placeholder.png';
             const statusBadge = p.trang_thai == 1 
                 ? '<span class="badge bg-success">Đang bán</span>' 
                 : '<span class="badge bg-danger">Ngừng bán</span>';
@@ -226,7 +227,7 @@ function renderBrandDetail(brand, products, productCount) {
             productsHtml += `
                 <tr>
                     <td class="text-center">
-                        <img src="${imagePath}" 
+                        <img src="${imageUrl}" 
                              alt="${p.ten_san_pham}" 
                              style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;"
                              onerror="this.onerror=null; this.src='${ASSETS_URL}images/product-placeholder.png';">

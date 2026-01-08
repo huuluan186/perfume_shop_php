@@ -325,13 +325,13 @@ class Order {
         return $row['total'];
     }
     
-    // Thống kê doanh thu
+    // Thống kê doanh thu (chỉ tính đơn hoàn thành)
     public function getRevenue($start_date = null, $end_date = null) {
         $query = "SELECT SUM(tong_tien) as total_revenue, COUNT(*) as total_orders 
                   FROM {$this->table} 
-                  WHERE trang_thai != ? AND ngay_xoa IS NULL";
+                  WHERE trang_thai = ? AND ngay_xoa IS NULL";
         
-        $params = [ORDER_STATUS_CANCELLED];
+        $params = [ORDER_STATUS_COMPLETED];
         $types = "i";
         
         if ($start_date) {
