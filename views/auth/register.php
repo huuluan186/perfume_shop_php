@@ -121,9 +121,9 @@ include __DIR__ . '/../layout/header.php';
                             </div>
                             
                             <div class="mb-3 form-check">
-                                <input type="checkbox" class="form-check-input" id="agree" required>
+                                <input type="checkbox" class="form-check-input" id="agree" checked required>
                                 <label class="form-check-label" for="agree">
-                                    Tôi đồng ý với các <a href="#" class="text-primary">điều khoản dịch vụ</a>
+                                    Tôi đồng ý với các điều khoản dịch vụ <span class="text-danger"> *</span></label>
                                 </label>
                             </div>
                             

@@ -121,7 +121,7 @@ include __DIR__ . '/../layout/header.php';
                     
                     <?php if (is_logged_in()): ?>
                     <a href="checkout.php" class="btn btn-primary w-100 btn-lg mb-2">
-                        <i class="fas fa-credit-card me-2"></i>Thanh toán
+                        <i class="fas fa-credit-card me-2"></i>Đặt hàng
                     </a>
                     <?php else: ?>
                     <a href="<?php echo BASE_URL; ?>views/auth/login.php?redirect=cart/checkout.php" 

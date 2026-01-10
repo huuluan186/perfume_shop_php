@@ -70,12 +70,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$page_title = "Thanh toán";
+$page_title = "Đặt hàng";
 include __DIR__ . '/../layout/header.php';
 ?>
 
 <div class="container my-5">
-    <h2 class="fw-bold mb-4"><i class="fas fa-credit-card me-2"></i>Thanh toán</h2>
+    <h2 class="fw-bold mb-4"><i class="fas fa-credit-card me-2"></i>Đặt hàng</h2>
     
     <?php if (!empty($errors)): ?>
     <div class="alert alert-danger">
